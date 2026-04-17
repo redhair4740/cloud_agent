@@ -34,6 +34,7 @@
 - Findings（必须先给）：`严重级别 + 文件路径 + 问题说明 + 影响 + 建议修复`
 - Open Questions / Assumptions（可选）
 - 简要结论（可选）
+- 评审结论除对话输出外，还需同步更新 `./docs/review-tracking/review-and-optimization-checklist.md`，并把每条问题写成可勾选任务。
 
 若未发现问题，必须明确写“未发现评审问题”，并补充残余风险或测试盲区。
 
