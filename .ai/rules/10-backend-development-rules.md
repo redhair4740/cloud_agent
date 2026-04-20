@@ -19,7 +19,7 @@
 ## 3. 模块边界强制约束
 
 - `vmesh-server` 仅承载启动、装配与默认入口，不承载业务编排。
-- `vmesh-module-system`、`vmesh-module-infra`、`vmesh-module-vision`、`edge` 属于当前已存在域模块，作为优先归属候选，不视为最终定稿清单。
+- `vmesh-module-system`、`vmesh-module-infra`、`vmesh-module-vision`、`edge` 属于已存在域模块，作为优先归属候选，不视为最终定稿清单。
 - AI 在需求分析阶段必须先判断是否可放入现有域；仅当现有域都不合适时，才提出并创建新域，且需同步说明新增域职责、边界、与现有域关系。
 - `edge` 仅承载边缘接入、节点治理、设备协同相关能力，不吸收无关平台业务。
 - `vmesh-framework` 只放跨域通用技术底座，不放具体业务语义。
@@ -28,12 +28,13 @@
 - 不允许为了方便直接跨域共享内部实现细节。
 - 不要跨域直接复用另一个域的 mapper、dataobject 作为常规手段。
 - 跨域协作优先走稳定的 service 契约、VO/DTO、明确的应用服务。
-- 如果某能力未来明显可独立拆服务，当前实现也要保持接口边界清晰。
+- 如果某能力未来明显可独立拆服务，实现也要保持接口边界清晰。
 
 ## 4. 开发过程强制要求
 
 - 开发前必须先确认需求归属域，再编码；不能先写代码再回填边界解释。
 - 对象分层与目录组织继续遵循 `11-backend-object-layering-rules.md` 的轻量模块化规则：模块内默认 `controller/**/vo + dal/dataobject/**`，不默认引入 `service/bo`。
+- 域模块目录默认按轻量模块化组织：`config`、`controller/{子域}/vo`、`service/{子域}`、`dal/{dataobject,mapper}`；新增目录层级前需先说明必要性，不为习惯或对齐旧实现额外加层。
 - 规范推荐的 Mapper 目录统一使用 `dal/mapper/**`。
 - 重点收口两类越界：`controller -> mapper` 直连、controller 直接编排跨子域聚合；新增实现必须统一经 service 边界收敛。
 - 变更描述必须包含：目标、落地文件、影响模块、边界决策、回归风险。

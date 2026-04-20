@@ -5,7 +5,7 @@
 ## 1. 适用范围
 
 - 适用于后端域模块中的对象分层、目录组织、方法入参与返回对象设计。
-- 优先约束 `edge` 域；其他域新增同类结构时同步遵循本规则。
+- 适用于所有业务域模块与后续新增模块，不绑定某个单独域。
 
 ## 2. 轻量默认对象模型
 
@@ -46,46 +46,37 @@
 
 ## 4. 推荐目录结构（默认无 BO）
 
-`vmesh-module-edge` 推荐按下列结构组织：
+任一域模块推荐按下列结构组织：
 
 ```text
-com/wf/vmesh/module/edge
+com/wf/vmesh/module/<domain>
+├── config
+│   └── <Domain>Configuration.java
 ├── controller
-│   └── admin
-│       ├── device
-│       │   ├── EdgeDeviceController.java
-│       │   └── vo
-│       ├── group
-│       │   ├── EdgeDeviceGroupController.java
-│       │   └── vo
-│       └── node
-│           ├── EdgeNodeController.java
-│           └── vo
+│   ├── <subdomain>
+│   │   ├── <Subdomain>Controller.java
+│   │   └── vo
+│   └── ...
 ├── service
-│   ├── device
-│   │   ├── EdgeDeviceService.java
-│   │   └── EdgeDeviceServiceImpl.java
-│   ├── group
-│   │   ├── EdgeDeviceGroupService.java
-│   │   └── EdgeDeviceGroupServiceImpl.java
-│   └── node
-│       ├── EdgeNodeService.java
-│       └── EdgeNodeServiceImpl.java
+│   ├── <subdomain>
+│   │   ├── <Subdomain>Service.java
+│   │   └── <Subdomain>ServiceImpl.java
+│   └── ...
 ├── dal
 │   ├── dataobject
-│   │   ├── device
-│   │   ├── group
-│   │   └── node
+│   │   ├── <subdomain>
+│   │   └── ...
 │   └── mapper
-│       ├── device
-│       ├── group
-│       └── node
+│       ├── <subdomain>
+│       └── ...
 └── enums
 ```
 
 说明：
 
-- 规范推荐结构从现在开始统一写作 `dal/mapper/**`，避免把目录命名和数据库品牌绑定。
+- `config/**` 用于模块级配置，承载该域自己的装配、文档分组、模块内 Web 配置等内容。
+- `controller/{子域}`、`service/{子域}` 表达的是业务拆分边界；只有在子域确实有独立职责时才新增一层，不机械制造目录。
+- 规范推荐结构统一写作 `dal/mapper/**`，避免把目录命名和数据库品牌绑定。
 - 无论目录命名如何，底层 SQL、方言、驱动、脚本都必须保持 PostgreSQL 兼容。
 
 ## 5. 对象职责边界
@@ -109,7 +100,8 @@ com/wf/vmesh/module/edge
 - 新增或改造功能时，默认按 VO + DO 直观分层落地，不预设 BO。
 - 已存在 `controller -> mapper` 直连的代码，逐步收敛到 `controller -> service`。
 - 已存在跨子域聚合的 controller 逻辑，逐步下沉到服务边界清晰的 service 能力。
-- 不要求一次性替换历史代码；禁止新增新的越界写法。
+- `src/test/java` 下的 controller/service 测试目录优先镜像生产目录；测试包名、层级与生产结构保持一致，不额外制造平行目录体系。
+- 不要求一次性替换存量代码；禁止新增新的越界写法。
 
 ## 7. 命名与演进约束
 
