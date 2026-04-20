@@ -4,7 +4,7 @@
 
 ## 1. 读取顺序
 
-1. 先读本文件 `AGENT.md`
+1. 先读本文件 `AGENTS.md`
 2. 再读 [`.ai/agent.md`](./.ai/agent.md)
 3. 最后按需读取：
    - `./.ai/rules/`

@@ -68,11 +68,11 @@
 按任务类型加载规则集合：
 
 1. `backend-agent`
-   - 规则继承：`00-repo-baseline.md + 10-backend-development-rules.md`
+   - 规则继承：`00-repo-baseline.md + 10-backend-development-rules.md + 11-backend-object-layering-rules.md`
 2. `frontend-agent`
    - 规则继承：`00-repo-baseline.md + 20-frontend-development-rules.md`
 3. `fullstack-agent`
-   - 规则继承：`00-repo-baseline.md + 10-backend-development-rules.md + 20-frontend-development-rules.md + 30-fullstack-linkage-rules.md`
+   - 规则继承：`00-repo-baseline.md + 10-backend-development-rules.md + 11-backend-object-layering-rules.md + 20-frontend-development-rules.md + 30-fullstack-linkage-rules.md`
 4. `review-agent`
    - 规则继承：按被评审对象加载对应规则集合
    - 评审后端改动：加载 `backend-agent` 规则集
@@ -90,6 +90,8 @@
 - 前后端联动按“接口契约 + 页面行为”共同验收，禁止单边定义为准。
 - 原型只用于参考布局与功能点，不作为字段、接口、数据结构的直接实现依据。
 - 模块化设计以未来微服务化为目标，先清晰定义域边界，再落地模块职责。
+- 后端对象管理默认走轻量模块化：模块间强调边界，模块内默认保持 `VO + DO` 即可，不默认引入 `BO` 中间层。
+- 规范目标目录统一使用 `dal/mapper` 这类中性命名。
 - 跨域协作必须明确输入输出，避免隐式耦合与跨域直接依赖扩散。
 
 ## 8. Skill 沉淀建议机制

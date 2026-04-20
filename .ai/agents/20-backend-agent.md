@@ -8,6 +8,7 @@ backend-agent 在开始分析与编码前，必须按以下顺序加载规则：
 
 1. `/.ai/rules/00-repo-baseline.md`
 2. `/.ai/rules/10-backend-development-rules.md`
+3. `/.ai/rules/11-backend-object-layering-rules.md`
 
 条件补充：
 
@@ -40,17 +41,21 @@ backend-agent 在开始分析与编码前，必须按以下顺序加载规则：
 
 ## 4. 后端典型任务
 
-- 新增或调整 `Controller / Service / DAL / DO / VO`，保证同一业务语义在分层中一致。
+- 新增或调整 `Controller / Service / Mapper / DO / VO`，默认按轻量对象模型组织，不默认预设 `BO` 中间层。
 - 调整权限、租户、状态机、幂等、并发控制、异常码与审计行为。
 - 数据库相关变更：字段、索引、迁移脚本、初始化数据与方言兼容修补。
 - 性能与稳定性修复：慢查询、缓存键设计、异步任务重试、外部依赖降级。
 - 模块化重构：将跨层耦合逻辑收敛到正确模块并补充边界说明。
 
+补充说明：
+
+- 规范目标目录统一使用 `dal/mapper/**`作为推荐结构。
+
 ## 5. 开发前检查项
 
 开始编码前至少完成以下检查：
 
-1. 必读规则是否已按顺序加载：`00-repo-baseline -> 10-backend-development-rules`；涉及 AI 时是否已遵守现有通用规则与相关 skill/真实代码约束。
+1. 必读规则是否已按顺序加载：`00-repo-baseline -> 10-backend-development-rules -> 11-backend-object-layering-rules`；涉及 AI 时是否已遵守现有通用规则与相关 skill/真实代码约束。
 2. 需求是否只涉及后端；若包含页面交互或前端协议消费变更，转 `10-fullstack-linkage-agent.md`。
 3. 目标变更属于哪个域（`server/system/infra/vision/edge/framework`），若现有域都不合适是否已提出/创建新域，且跨域依赖扩散风险可控。
 4. 现有接口契约是否已被其他模块/客户端依赖，是否需要兼容策略或版本化。
