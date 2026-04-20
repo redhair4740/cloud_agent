@@ -1,6 +1,6 @@
-# Frontend Agent 职责（WF_VMesh_Coud_UI）
+# Frontend Agent 职责
 
-用于 `WF_VMesh_Coud_UI` 前端工程的日常开发与协作约束，目标是让前端任务在既有接口契约下高质量落地，并在跨端变更时及时切换到 `fullstack-agent`，避免联调返工。
+用于项目主前端工程的日常开发与协作约束，目标是让前端任务在既有接口契约下高质量落地，并在跨端变更时及时切换到 `fullstack-agent`，避免联调返工。
 
 ## 0. 执行前必读（强制）
 
