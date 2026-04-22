@@ -1,0 +1,1131 @@
+# 边云协同 MQTT、监控中心与任务中心总览及实施路线图
+
+## 1. 文档定位
+
+本文档是当前边云协同方案的单一总览入口，目标是替代分散阅读：
+
+- `WF_VMesh_Coud/docs/edge/edge-mqtt-emqx-design.md`
+- `docs/MQTT云边通信契约规范.md`
+- `docs/云边协同MQTT通信链路时序图.md`
+- `docs/边缘监控与链路系统设计规范.md`
+- `docs/边缘监控与任务中心详细设计.md`
+
+本文档同时覆盖以下内容：
+
+- 架构边界
+- EMQX 接入方式
+- MQTT Topic 与 Payload 契约
+- Cloud runtime 事件模型
+- 监控中心指标、评分与告警
+- PostgreSQL / Redis 设计
+- REST API 契约
+- 当前仓库差距
+- 开发顺序总览 / 实施路线图
+
+如果只保留一份文档，建议以后以本文作为唯一阅读入口和唯一更新入口。
+
+## 2. 一句话总览
+
+本方案要建立一条完整的云边协同主链路：
+
+- Edge 通过 MQTT 长连 EMQX
+- Cloud 不直接长期订阅 MQTT，而是通过 EMQX 的 HTTP Authentication、Rule Engine Webhook 和 Management API 完成鉴权、上报处理和命令下发
+- 上行消息驱动节点实时状态、链路监控和任务进度
+- 下行命令由 Cloud 创建任务后统一编排，再通过 EMQX 发布给指定节点
+- Frontend 统一通过 Cloud REST API 查询监控中心和任务中心
+
+主链路可以概括为：
+
+```text
+Edge -> EMQX -> Cloud -> PostgreSQL / Redis -> Frontend
+Cloud -> EMQX -> Edge
+```
+
+## 3. 组件职责
+
+### 3.1 Edge
+
+负责：
+
+- 连接 EMQX
+- 发送 `register`、`heartbeat`、`device/report`、`event`
+- 订阅 `{topicRoot}/command/{commandKey}`
+- 执行命令并回传 `task_progress`
+
+### 3.2 EMQX
+
+负责：
+
+- MQTT 长连接、Listener、TLS、会话管理
+- HTTP Authentication
+- 基于 ACL 做 Topic 授权
+- Rule Engine 把上行消息和连接事件转成 HTTP Webhook 发给 Cloud
+- Management API 接收 Cloud 的 publish 请求
+
+### 3.3 Cloud
+
+负责：
+
+- 节点台账、凭证、Topic Root 管理
+- 鉴权接口与 runtime 事件入口
+- 节点实时快照、链路监控、监控历史聚合
+- 任务中心、命令编排、任务日志与进度聚合
+- 对前端提供监控中心和任务中心 REST API
+
+### 3.4 Frontend
+
+负责：
+
+- 展示监控中心总览、节点列表、趋势图和告警摘要
+- 展示任务中心列表、详情、日志与执行进度
+- 发起任务下发请求
+
+## 4. 当前仓库事实边界
+
+当前仓库中已经存在的真实入口：
+
+- `POST /admin-api/edge/mqtt/authenticate`
+- `POST /admin-api/edge/mqtt/events`
+- `POST /admin-api/edge/mqtt/command/send`
+
+当前仓库中已实现的 runtime 处理类型：
+
+- `client.connected`
+- `client.disconnected`
+- `register`
+- `heartbeat`
+- `device.report`
+
+当前仓库中仍未实现的目标态能力：
+
+- `task_progress`
+- `/admin-api/edge/task/*`
+- `/admin-api/edge/monitor/*`
+- 监控中心页面
+- 任务中心页面
+
+## 5. 统一关键约定
+
+### 5.1 接入身份
+
+```text
+clientid = edge-node:{deviceId}
+username = {deviceId}
+password = credentialSecret
+topicRoot = vmesh/edge/node/{deviceId}
+```
+
+说明：
+
+- `deviceId` 来源于节点凭证
+- 若节点配置了自定义 `mqtt_topic`，则允许覆盖默认 `topicRoot`
+
+### 5.2 Topic 目录
+
+| 方向 | Topic | 用途 | QoS |
+| --- | --- | --- | --- |
+| 上行 | `{topicRoot}/register` | 节点注册与首次上线 | 1 |
+| 上行 | `{topicRoot}/heartbeat` | 心跳、资源指标、链路指标 | 0 |
+| 上行 | `{topicRoot}/device/report` | 设备快照上报 | 1 |
+| 上行 | `{topicRoot}/event` | 业务事件，V1 主要是 `task_progress` | 1 |
+| 下行 | `{topicRoot}/command/{commandKey}` | Cloud 下发命令 | 1 |
+
+### 5.3 命名规则
+
+- MQTT Payload 使用 `snake_case`
+- EMQX 转给 Cloud 的 Webhook Body 使用 `camelCase`
+- 管理后台 REST API 使用 `camelCase`
+- 数据库字段使用仓库既有风格，例如 `create_time`、`update_time`
+
+### 5.4 核心 REST 接口
+
+#### 接入层
+
+- `POST /admin-api/edge/mqtt/authenticate`
+- `POST /admin-api/edge/mqtt/events`
+- `POST /admin-api/edge/mqtt/command/send`
+
+#### 监控中心
+
+- `GET /admin-api/edge/monitor/overview`
+- `GET /admin-api/edge/monitor/nodes`
+- `GET /admin-api/edge/monitor/nodes/{nodeId}/trend`
+
+#### 任务中心
+
+- `POST /admin-api/edge/task/dispatch`
+- `GET /admin-api/edge/task/page`
+- `GET /admin-api/edge/task/{taskKey}`
+- `GET /admin-api/edge/task/{taskKey}/logs`
+
+## 6. EMQX 接入方案
+
+### 6.1 HTTP Authentication 请求体
+
+EMQX 调用 Cloud 鉴权接口时，统一发送：
+
+```json
+{
+  "clientid": "edge-node:device-001",
+  "username": "device-001",
+  "password": "secret-001",
+  "peerhost": "10.20.10.15",
+  "proto_ver": "5"
+}
+```
+
+Cloud 侧校验规则：
+
+- `clientid == edge-node:{deviceId}`
+- `username == credentialDeviceId`
+- `password == credentialSecret`
+- 节点处于启用状态
+
+### 6.2 HTTP Authentication 响应体
+
+```json
+{
+  "result": "allow",
+  "is_superuser": false,
+  "client_attrs": {
+    "node_id": 1024,
+    "tenant_id": 1,
+    "serial": "SN-EDGE-001",
+    "credential_device_id": "device-001",
+    "mqtt_topic_root": "vmesh/edge/node/device-001",
+    "activation_status": 1,
+    "last_heartbeat_time": "2026-04-21T10:00:00"
+  },
+  "acl": [
+    {
+      "permission": "allow",
+      "action": "publish",
+      "topic": "vmesh/edge/node/device-001/register"
+    },
+    {
+      "permission": "allow",
+      "action": "publish",
+      "topic": "vmesh/edge/node/device-001/heartbeat"
+    },
+    {
+      "permission": "allow",
+      "action": "publish",
+      "topic": "vmesh/edge/node/device-001/device/report"
+    },
+    {
+      "permission": "allow",
+      "action": "publish",
+      "topic": "vmesh/edge/node/device-001/event"
+    },
+    {
+      "permission": "allow",
+      "action": "subscribe",
+      "topic": "vmesh/edge/node/device-001/command/#"
+    }
+  ]
+}
+```
+
+### 6.3 Rule Engine / Webhook 映射
+
+EMQX 将上行业务消息与连接事件统一转发到：
+
+```text
+POST /admin-api/edge/mqtt/events
+```
+
+统一附带 Header：
+
+```text
+X-EMQX-SECRET: <shared-secret>
+```
+
+Webhook Body 统一形状：
+
+```json
+{
+  "eventType": "heartbeat",
+  "eventId": "evt-001",
+  "messageId": "hb-20260421-0001",
+  "clientId": "edge-node:device-001",
+  "username": "device-001",
+  "deviceId": "device-001",
+  "topic": "vmesh/edge/node/device-001/heartbeat",
+  "occurredAt": 1713672030000,
+  "reason": null,
+  "payload": {
+    "message_id": "hb-20260421-0001"
+  }
+}
+```
+
+`eventType` 映射规则：
+
+- EMQX 原生 `client.connected` -> `client.connected`
+- EMQX 原生 `client.disconnected` -> `client.disconnected`
+- `{topicRoot}/register` -> `register`
+- `{topicRoot}/heartbeat` -> `heartbeat`
+- `{topicRoot}/device/report` -> `device.report`
+- `{topicRoot}/event` 且 `payload.event_type = task_progress` -> `task_progress`
+
+### 6.4 Management API
+
+Cloud 不直接常驻订阅 Broker，而是通过 EMQX Management API 做 publish。
+
+约定：
+
+- `emqxApiBaseUrl` 必须配置到 `/api/v5`
+- Cloud publish URL 为：`{emqxApiBaseUrl}/publish`
+
+Cloud 发给 EMQX 的 publish Body 统一为：
+
+```json
+{
+  "topic": "vmesh/edge/node/device-001/command/ota_update",
+  "payload": "{\"message_id\":\"cmd-20260421-0001\",\"occurred_at\":1713672120000,\"task_key\":\"TASK-20260421-0001\",\"command_key\":\"ota_update\",\"node_id\":1024,\"device_id\":\"device-001\",\"client_id\":\"edge-node:device-001\",\"payload\":{\"target_version\":\"v2.1.0\"}}",
+  "qos": 1,
+  "retain": false
+}
+```
+
+### 6.5 安全部署基线
+
+V1 基线：
+
+- 关闭匿名连接
+- 生产环境优先只开放 TLS Listener
+- EMQX 管理 API `18083` 仅开放给 Cloud 内网
+- Rule Engine Webhook 必须携带共享密钥
+- Cloud 必须校验来源 IP 白名单
+
+V1 内网降级允许：
+
+- Webhook 使用 HTTP
+- Management API 使用 HTTP
+- OTA 大文件下载使用 HTTP
+
+前提：
+
+- 仅限受控内网或园区网络
+- 后续公网部署统一升级为 HTTPS
+- OTA 文件完整性校验统一使用 `SHA-256`
+
+## 7. MQTT 业务消息契约
+
+### 7.1 通用字段
+
+所有 MQTT 业务 Payload 默认包含：
+
+- `message_id`
+- `occurred_at`
+
+说明：
+
+- `message_id` 由发送方生成，用于幂等和去重
+- `occurred_at` 使用 13 位毫秒时间戳
+
+### 7.2 注册消息
+
+Topic：
+
+```text
+{topicRoot}/register
+```
+
+Payload：
+
+```json
+{
+  "message_id": "reg-20260421-0001",
+  "occurred_at": 1713672000000,
+  "agent_version": "2.1.0",
+  "boot_id": "boot-20260421-01",
+  "os_name": "Ubuntu",
+  "os_version": "22.04.4 LTS",
+  "local_ip": "192.168.1.100",
+  "mac_address": "00:1A:2B:3C:4D:5E",
+  "metadata": {
+    "hostname": "edge-gateway-01",
+    "arch": "x86_64"
+  }
+}
+```
+
+### 7.3 心跳消息
+
+Topic：
+
+```text
+{topicRoot}/heartbeat
+```
+
+Payload：
+
+```json
+{
+  "message_id": "hb-20260421-0001",
+  "occurred_at": 1713672030000,
+  "runtime_status": "ONLINE",
+  "metrics": {
+    "cpu_usage_pct": 45.2,
+    "memory_usage_pct": 62.8,
+    "gpu_usage_pct": 78.0,
+    "storage_usage_pct": 35.5
+  },
+  "network": {
+    "edge_rtt_ms": 42.5,
+    "packet_loss_pct": 0.1
+  },
+  "device_snapshots": [
+    {
+      "serial": "CAM-001",
+      "status": "ONLINE"
+    },
+    {
+      "serial": "IPC-002",
+      "status": "WARNING"
+    }
+  ]
+}
+```
+
+说明：
+
+- `runtime_status` 是节点运行态
+- `metrics` 是资源使用快照
+- `network` 是边缘端自测链路指标
+- `device_snapshots` 是设备状态快照，可选
+
+### 7.4 设备快照消息
+
+Topic：
+
+```text
+{topicRoot}/device/report
+```
+
+Payload：
+
+```json
+{
+  "message_id": "dr-20260421-0001",
+  "occurred_at": 1713672060000,
+  "devices": [
+    {
+      "serial": "CAM-001",
+      "name": "东侧摄像头",
+      "type": "camera",
+      "model": "IPC-01",
+      "status": "ONLINE"
+    },
+    {
+      "serial": "PLC-001",
+      "name": "产线 PLC",
+      "type": "plc",
+      "model": "S7-1200",
+      "status": "RUNNING"
+    }
+  ]
+}
+```
+
+### 7.5 事件消息
+
+Topic：
+
+```text
+{topicRoot}/event
+```
+
+V1 只支持一种业务事件：
+
+- `task_progress`
+
+Payload：
+
+```json
+{
+  "message_id": "evt-20260421-0001",
+  "occurred_at": 1713672090000,
+  "event_type": "task_progress",
+  "data": {
+    "task_key": "TASK-20260421-0001",
+    "command_key": "ota_update",
+    "stage": "download",
+    "status": "PROCESSING",
+    "progress_pct": 65,
+    "log_level": "INFO",
+    "message": "Downloading firmware 65%",
+    "error_code": null,
+    "error_message": null
+  }
+}
+```
+
+### 7.6 云端命令消息
+
+Topic：
+
+```text
+{topicRoot}/command/{commandKey}
+```
+
+Payload：
+
+```json
+{
+  "message_id": "cmd-20260421-0001",
+  "occurred_at": 1713672120000,
+  "task_key": "TASK-20260421-0001",
+  "command_key": "ota_update",
+  "node_id": 1024,
+  "device_id": "device-001",
+  "client_id": "edge-node:device-001",
+  "payload": {
+    "target_version": "v2.1.0",
+    "download_url": "http://oss.vmesh.com/fw/v2.1.0.tar.gz",
+    "file_sha256": "3d08186c518b501f5bed43a749500d2b814475bc09c755335d6f8143365265dc",
+    "file_size_bytes": 10485760
+  }
+}
+```
+
+约束：
+
+- `task_key` 必须由 Cloud 创建任务时生成
+- `command_key` 同时出现在 Topic 和 Payload 中
+- OTA 文件统一使用 `file_sha256`，不再使用 `md5`
+
+## 8. 四条主链路
+
+### 8.1 节点接入
+
+1. Edge 以 `clientid/username/password` 连接 EMQX
+2. EMQX 调用 `/admin-api/edge/mqtt/authenticate`
+3. Cloud 校验节点凭证并返回 `allow + acl + client_attrs`
+4. Edge 建立会话后发送 `register`
+5. EMQX 通过 Rule Engine 把 `register` 转发给 Cloud
+6. Cloud 更新节点注册快照与运行态
+
+### 8.2 实时监控
+
+1. Edge 周期性发送 `heartbeat`
+2. EMQX 将 `heartbeat` 转发给 Cloud
+3. Cloud 更新 Redis 滚动位图与最新链路指标
+4. Cloud 更新 PostgreSQL 的 `edge_node` 实时快照
+5. Frontend 通过 `/edge/monitor/*` 轮询获取总览、列表和趋势
+
+### 8.3 异常离线
+
+1. 如果 EMQX 立即感知连接断开，则发 `client.disconnected`
+2. Cloud 收到后直接把节点标为 `OFFLINE`
+3. 如果未收到断开事件，则由心跳超时扫描兜底判离线
+4. 监控中心和告警中心都以 Cloud 最终快照为准
+
+### 8.4 任务下发与进度跟踪
+
+1. Frontend 调用 `/admin-api/edge/task/dispatch`
+2. Cloud 创建 `edge_task`，生成 `taskKey`
+3. Cloud 将 `taskKey` 注入 MQTT command envelope
+4. Cloud 调用 EMQX Management API 发布到 `{topicRoot}/command/{commandKey}`
+5. Edge 执行任务并通过 `{topicRoot}/event` 回传 `task_progress`
+6. EMQX 将该事件转发给 Cloud
+7. Cloud 更新 `edge_task` 和 `edge_task_log`
+8. Frontend 通过 `/edge/task/*` 轮询查看任务进度和日志
+
+## 9. 监控中心设计摘要
+
+### 9.1 输出目标
+
+监控中心 V1 必须输出：
+
+- 节点注册阶段统计
+- 节点运行态统计
+- 最近 30 个心跳槽位的脉冲图
+- 节点滚动 24 小时心跳健康度
+- 节点链路延迟与丢包率
+- 节点综合健康分与健康等级
+- 链路异常与离线告警
+
+### 9.2 状态模型
+
+#### 注册阶段状态
+
+- `PREPARED`
+- `CONNECTING`
+- `ACTIVATED`
+
+统计口径：
+
+```text
+正在注册节点 = PREPARED + CONNECTING
+```
+
+#### 运行态状态
+
+- `ONLINE`
+- `OFFLINE`
+- `RUNNING`
+- `WARNING`
+
+说明：
+
+- 注册阶段状态与运行态状态是两套维度
+- 监控页中的在线、离线、运行中、告警中卡片以运行态为准
+
+### 9.3 心跳健康度
+
+V1 默认心跳周期为 `20` 秒，因此：
+
+```text
+24 小时理论槽位数 = 86400 / 20 = 4320
+```
+
+监控拆成 3 个不同指标：
+
+- `heartbeat_pulse`
+  最近 `30` 个心跳槽位，用于脉冲图
+- `heartbeat_success_rate_24h`
+  滚动 24 小时心跳成功率
+- `heartbeat_health_score`
+  由成功率直接换算得到的心跳健康分
+
+计算口径：
+
+```text
+heartbeat_success_rate_24h = 成功槽位数 / 4320 * 100
+heartbeat_health_score = round(heartbeat_success_rate_24h)
+```
+
+### 9.4 链路指标
+
+V1 固定保留：
+
+- `edge_rtt_ms`
+- `packet_loss_pct`
+- `cloud_probe_rtt_ms`
+
+综合健康分按以下 3 个维度加权：
+
+- 心跳健康分：`50%`
+- 延迟得分：`30%`
+- 丢包率得分：`20%`
+
+最终输出：
+
+- `health_score`
+- `health_level`
+
+#### 延迟得分映射
+
+| `edge_rtt_ms` | 延迟得分 |
+| --- | --- |
+| `<= 50` | `100` |
+| `<= 100` | `90` |
+| `<= 200` | `75` |
+| `<= 500` | `50` |
+| `> 500` | `20` |
+
+#### 丢包率得分映射
+
+| `packet_loss_pct` | 丢包率得分 |
+| --- | --- |
+| `<= 0.5` | `100` |
+| `<= 1` | `90` |
+| `<= 3` | `75` |
+| `<= 5` | `50` |
+| `> 5` | `20` |
+
+### 9.5 健康等级
+
+| `health_score` | `health_level` |
+| --- | --- |
+| `>= 90` | `Excellent` |
+| `>= 75` | `Good` |
+| `>= 60` | `Fair` |
+| `>= 40` | `Poor` |
+| `< 40` | `Critical` |
+
+### 9.6 告警基线
+
+V1 支持：
+
+- 节点异常离线
+- 高延迟
+- 高丢包率
+- 链路抖动
+
+判定基线：
+
+- 节点异常离线：
+  收到 `client.disconnected` 或超过 `heartbeat_timeout_seconds` 未收到心跳
+- 高延迟：
+  `edge_rtt_ms > 500` 且连续 `15` 个心跳槽位满足
+- 高丢包率：
+  `packet_loss_pct > 5` 且连续 `15` 个心跳槽位满足
+- 链路抖动：
+  最近 `15` 个 `edge_rtt_ms` 样本的标准差大于均值的 `50%`，且平均值大于 `100 ms`
+
+## 10. 任务中心设计摘要
+
+### 10.1 目标
+
+任务中心 V1 要解决 4 件事：
+
+- Cloud 能创建标准化边缘任务
+- Edge 执行任务时能回传可追踪的进度事件
+- 后台能分页查看任务列表
+- 后台能查看任务详情和执行日志
+
+### 10.2 状态机
+
+```text
+CREATED
+  -> DISPATCHED
+  -> ACCEPTED
+  -> PROCESSING
+  -> SUCCESS | FAILED | CANCELED | TIMEOUT
+```
+
+阶段语义：
+
+- `prepare`
+- `download`
+- `verify`
+- `install`
+- `restart`
+- `finalize`
+
+### 10.3 核心数据模型
+
+#### `edge_task`
+
+主表，负责：
+
+- 保存任务主状态
+- 保存最新进度与最新消息
+- 作为任务列表和详情的主数据源
+
+#### `edge_task_log`
+
+子表，负责：
+
+- 保存每次 `task_progress`
+- 作为任务日志抽屉的数据源
+
+### 10.4 核心规则
+
+- `taskKey` 是任务业务唯一号
+- `message_id` 是单条事件唯一号
+- `task_progress` 去重键是 `task_key + message_id`
+- Frontend 不直接调用底层 `/edge/mqtt/command/send`
+- `/edge/mqtt/command/send` 只作为 Cloud 内部或底层能力入口保留
+
+## 11. PostgreSQL 与 Redis 设计
+
+### 11.1 PostgreSQL
+
+V1 数据库口径：
+
+- JSON 字段使用 `jsonb`
+- 时间字段使用 `timestamp with time zone`
+
+需要的核心表：
+
+- 扩展现有 `edge_node`
+- 新增 `edge_task`
+- 新增 `edge_task_log`
+- 新增 `edge_link_metrics_hourly`
+
+#### `edge_node` 扩展字段
+
+- `registration_status`
+- `heartbeat_success_rate_24h`
+- `heartbeat_health_score`
+- `latest_edge_rtt_ms`
+- `latest_packet_loss_pct`
+- `latest_cloud_probe_rtt_ms`
+- `health_score`
+- `health_level`
+- `last_metric_time`
+
+#### `edge_task`
+
+关键字段：
+
+- `id`
+- `task_key`
+- `node_id`
+- `device_id`
+- `command_key`
+- `status`
+- `stage`
+- `progress_pct`
+- `dispatch_topic`
+- `request_payload`
+- `latest_report_payload`
+- `last_message`
+- `error_code`
+- `error_message`
+- `dispatched_at`
+- `started_at`
+- `finished_at`
+- `creator`
+- `create_time`
+- `updater`
+- `update_time`
+- `deleted`
+- `tenant_id`
+
+建议索引：
+
+- `uk_edge_task_tenant_task_key (tenant_id, task_key, deleted)`
+- `idx_edge_task_node_status (tenant_id, node_id, status, deleted)`
+- `idx_edge_task_create_time (tenant_id, create_time desc, deleted)`
+
+#### `edge_task_log`
+
+关键字段：
+
+- `id`
+- `task_id`
+- `task_key`
+- `node_id`
+- `message_id`
+- `log_level`
+- `status`
+- `stage`
+- `progress_pct`
+- `message`
+- `payload`
+- `occurred_at`
+- `creator`
+- `create_time`
+- `updater`
+- `update_time`
+- `deleted`
+- `tenant_id`
+
+建议索引：
+
+- `uk_edge_task_log_tenant_task_msg (tenant_id, task_key, message_id, deleted)`
+- `idx_edge_task_log_task_time (tenant_id, task_key, occurred_at desc, deleted)`
+
+#### `edge_link_metrics_hourly`
+
+关键字段：
+
+- `id`
+- `node_id`
+- `device_id`
+- `bucket_start`
+- `avg_edge_rtt_ms`
+- `max_packet_loss_pct`
+- `avg_cloud_probe_rtt_ms`
+- `avg_health_score`
+- `creator`
+- `create_time`
+- `updater`
+- `update_time`
+- `deleted`
+- `tenant_id`
+
+建议索引：
+
+- `uk_edge_link_hourly_tenant_node_bucket (tenant_id, node_id, bucket_start, deleted)`
+
+### 11.2 Redis
+
+需要的核心结构：
+
+#### 心跳滚动位图
+
+```text
+vmesh:edge:health:bitmap:{deviceId}:{yyyyMMdd}
+```
+
+说明：
+
+- 每天一个 Bitmap
+- 每个槽位表示一个心跳周期
+- 在 20 秒周期下，单日槽位数为 `4320`
+- TTL 建议 `48` 小时
+
+#### 最新链路指标
+
+```text
+vmesh:edge:link:latest:{deviceId}
+```
+
+结构：
+
+- Redis Hash
+
+字段：
+
+- `edge_rtt_ms`
+- `packet_loss_pct`
+- `cloud_probe_rtt_ms`
+- `health_score`
+- `health_level`
+- `last_metric_time`
+
+#### 最近链路样本
+
+```text
+vmesh:edge:link:recent:{deviceId}
+```
+
+结构：
+
+- Redis List
+
+约束：
+
+- 固定保留最近 `60` 个样本
+- 每个样本至少包含 `occurred_at`、`edge_rtt_ms`、`packet_loss_pct`
+
+## 12. REST API 契约摘要
+
+### 12.1 任务下发
+
+接口：
+
+```text
+POST /admin-api/edge/task/dispatch
+```
+
+Request：
+
+```json
+{
+  "nodeId": 1024,
+  "commandKey": "ota_update",
+  "payload": {
+    "targetVersion": "v2.1.0",
+    "downloadUrl": "http://oss.vmesh.com/fw/v2.1.0.tar.gz",
+    "fileSha256": "3d08186c518b501f5bed43a749500d2b814475bc09c755335d6f8143365265dc",
+    "fileSizeBytes": 10485760
+  },
+  "qos": 1,
+  "retain": false
+}
+```
+
+Response：
+
+```json
+{
+  "code": 0,
+  "data": {
+    "taskKey": "TASK-20260421-0001",
+    "status": "DISPATCHED",
+    "topic": "vmesh/edge/node/device-001/command/ota_update"
+  },
+  "msg": ""
+}
+```
+
+### 12.2 任务分页
+
+接口：
+
+```text
+GET /admin-api/edge/task/page
+```
+
+Query：
+
+- `pageNo`
+- `pageSize`
+- `nodeId`
+- `status`
+- `commandKey`
+- `taskKey`
+
+### 12.3 任务详情
+
+接口：
+
+```text
+GET /admin-api/edge/task/{taskKey}
+```
+
+### 12.4 任务日志
+
+接口：
+
+```text
+GET /admin-api/edge/task/{taskKey}/logs
+```
+
+### 12.5 监控总览
+
+接口：
+
+```text
+GET /admin-api/edge/monitor/overview
+```
+
+输出：
+
+- 注册阶段卡片
+- 运行态卡片
+- 全网链路均值
+- 全网平均健康分
+- 告警计数
+
+### 12.6 监控节点列表
+
+接口：
+
+```text
+GET /admin-api/edge/monitor/nodes
+```
+
+输出：
+
+- 节点名称
+- 设备 ID
+- 注册阶段状态
+- 运行态状态
+- `heartbeatPulse`
+- `heartbeatSuccessRate24h`
+- `latestEdgeRttMs`
+- `latestPacketLossPct`
+- `healthScore`
+- `healthLevel`
+- `lastMetricTime`
+
+### 12.7 节点趋势
+
+接口：
+
+```text
+GET /admin-api/edge/monitor/nodes/{nodeId}/trend
+```
+
+输出：
+
+- 小时级延迟趋势
+- 小时级丢包率趋势
+- 小时级健康分趋势
+
+## 13. 当前仓库差距总览
+
+当前文档已经统一成目标态，但仓库实现仍存在这些明确差距：
+
+- 当前 runtime 处理器尚未支持 `task_progress`
+- 当前命令 MQTT payload 仍未完全切换到本文档要求的 `snake_case`
+- 当前 `edge_node` 尚未保存完整监控字段，例如 `heartbeat_success_rate_24h`、`health_score`、`health_level`
+- 当前仓库没有 `edge_task`、`edge_task_log`、`edge_link_metrics_hourly` 相关领域实现
+- 当前前端只有 `EdgeManagement` 页面，没有独立监控中心和任务中心页面
+- 当前监控查询接口只有 `/edge/node/stats`，没有 `/edge/monitor/*`
+- 当前任务中心接口 `/edge/task/*` 仍未实现
+
+## 14. 开发顺序总览 / 实施路线图
+
+### 阶段一：接入与契约收口
+
+目标：
+
+- 固定接入身份、Topic Root、MQTT payload、Webhook 映射、命令 envelope
+
+实施项：
+
+1. 固定 Edge `clientid/username/password/topicRoot`
+2. 固定 EMQX HTTP Authentication 请求/响应形状
+3. 固定 Rule Engine 到 `/admin-api/edge/mqtt/events` 的映射体
+4. 固定 MQTT 上下行消息结构，尤其是 `heartbeat` 和 `task_progress`
+
+完成标志：
+
+- Edge、EMQX、Cloud 三端对 Topic、字段名、事件类型没有歧义
+
+### 阶段二：Cloud runtime 事件处理扩展
+
+目标：
+
+- 让 Cloud 能正确处理 `register`、`heartbeat`、`device.report`、`task_progress`
+
+实施项：
+
+1. 扩展 runtime 处理器支持 `task_progress`
+2. 扩展 runtime 处理器解析监控字段
+3. 统一幂等与去重规则
+4. 保留 `client.disconnected` 与心跳超时扫描双保险
+
+完成标志：
+
+- Cloud 能基于事件更新节点快照和任务进度
+
+### 阶段三：数据库与缓存层落地
+
+目标：
+
+- 建立监控中心与任务中心的数据承载层
+
+实施项：
+
+1. 扩展 `edge_node`
+2. 新增 `edge_task`
+3. 新增 `edge_task_log`
+4. 新增 `edge_link_metrics_hourly`
+5. 落地 Redis 位图、最新链路指标、最近样本缓存
+
+完成标志：
+
+- Cloud 有稳定的 PostgreSQL / Redis 承载结构
+
+### 阶段四：后端 API 落地
+
+目标：
+
+- 把监控中心和任务中心都变成前端可直接调用的 REST API
+
+实施项：
+
+1. 实现 `/admin-api/edge/task/dispatch`
+2. 实现 `/admin-api/edge/task/page`
+3. 实现 `/admin-api/edge/task/{taskKey}`
+4. 实现 `/admin-api/edge/task/{taskKey}/logs`
+5. 实现 `/admin-api/edge/monitor/overview`
+6. 实现 `/admin-api/edge/monitor/nodes`
+7. 实现 `/admin-api/edge/monitor/nodes/{nodeId}/trend`
+
+完成标志：
+
+- 前端可以不依赖临时 mock，直接联 Cloud API
+
+### 阶段五：前端页面落地
+
+目标：
+
+- 给运营和管理后台提供完整可用的监控页与任务页
+
+实施项：
+
+1. 新增监控中心页面
+2. 新增任务中心页面
+3. 对接 `/edge/monitor/*` 与 `/edge/task/*`
+4. 保留 `EdgeManagement` 作为节点台账与凭证入口
+
+完成标志：
+
+- 用户能从前端查看监控、发起任务、查看任务进度和日志
+
+### 阶段六：联调与验收
+
+目标：
+
+- 验证整条云边链路能从接入走到监控，再走到任务中心闭环
+
+联调顺序：
+
+1. 先验证 MQTT 鉴权成功
+2. 再验证 `register`
+3. 再验证 `heartbeat`
+4. 再验证 `client.disconnected`
+5. 再验证 `task/dispatch`
+6. 再验证 `task_progress`
+7. 最后验监控页与任务页展示
