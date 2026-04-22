@@ -17,3 +17,9 @@
 !WF_VMesh_Coud/**
 !WF_VMesh_Coud_UI/
 !WF_VMesh_Coud_UI/**
+!cloud/
+!cloud/**
+!cloud_design/
+!cloud_design/**
+!cloud_ui/
+!cloud_ui/**
