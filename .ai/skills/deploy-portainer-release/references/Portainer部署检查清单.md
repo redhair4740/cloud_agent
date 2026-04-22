@@ -38,21 +38,26 @@
 | --- | --- | --- |
 | 构建位置 | Jenkins | 让构建和运行分离 |
 | 镜像仓库 | Harbor | 已有内网能力，不重复造轮子 |
-| 发布平台 | Portainer Stack | 保持发布入口统一 |
+| 发布平台 | Portainer Stack | 保持每个发布单元的入口清晰 |
 | Portainer 是否 build | 否 | 目标环境不承担构建职责 |
 | PostgreSQL / Redis 是否进 Stack | 否 | 应用和中间件生命周期解耦 |
 | 前端镜像策略 | 按环境构建 | 当前项目基址是构建期固化 |
 | 后端配置策略 | 外部挂载 | 不污染业务仓 profile |
+| 部署资产位置 | 前后端各自 deploy | 前后端各自管理、各自发布 |
 
 ## 3. 推荐交付物
 
 ### 最小交付物
 
-- 部署方案文档
-- Portainer `stack.yml`
+- 根仓总览部署方案文档
+- 后端 `Jenkinsfile`
+- 后端 `stack.yml`
 - 后端外部配置模板
+- 后端首发操作清单
+- 前端 `Jenkinsfile`
+- 前端 `stack.yml`
 - 前端 nginx 反代配置
-- Jenkinsfile
+- 前端首发操作清单
 
 ### 进阶交付物
 
@@ -81,6 +86,12 @@ Portainer Stack 里建议只保留：
 - Maven / Node 构建命令
 - 中间件初始化 SQL 挂载
 - 依赖旧源码目录的相对路径
+
+如果前后端拆成独立 Stack，再额外检查：
+
+- 是否使用同一个共享外部 Docker 网络
+- 后端是否在该网络上提供 alias `backend`
+- 前端 nginx 是否仍通过 `http://backend:48080` 访问后端
 
 ## 5. 后端配置检查项
 
@@ -120,12 +131,13 @@ Portainer Stack 里建议只保留：
 
 发布前至少确认：
 
-1. Harbor 中已存在目标 tag 的前后端镜像
+1. Harbor 中已存在目标 tag 的业务镜像
 2. Portainer 可拉取 Harbor 镜像
-3. 后端外部配置已挂载
-4. 前端 nginx 配置已挂载或已打入镜像
-5. PostgreSQL / Redis 连通信息已确认
-6. Stack 使用的不是 `latest`
+3. 外部共享 Docker 网络已创建
+4. 后端外部配置已挂载
+5. 前端 nginx 配置已挂载或已打入镜像
+6. PostgreSQL / Redis 连通信息已确认
+7. Stack 使用的不是 `latest`
 
 ## 8. 回滚检查清单
 
