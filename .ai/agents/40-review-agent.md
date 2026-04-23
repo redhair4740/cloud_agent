@@ -34,9 +34,14 @@
 - Findings（必须先给）：`严重级别 + 文件路径 + 问题说明 + 影响 + 建议修复`
 - Open Questions / Assumptions（可选）
 - 简要结论（可选）
-- 评审结论除对话输出外，还需同步更新 `./docs/review-tracking/review-and-optimization-checklist.md`，并把每条问题写成可勾选任务。
+- 评审结论除对话输出外，还需同步更新 `./docs/review-tracking/` 下对应的 review 清单文件，并把每条问题写成可勾选任务。清单文件按以下规则组织：
+  - 按日期创建文件夹：`./docs/review-tracking/yyyy-MM-dd/`
+  - 按时间创建清单文件：`./docs/review-tracking/yyyy-MM-dd/review清单-hh-mm-ss.md`
+  - 同一天多次评审生成多个清单文件，时间精确到秒
+  - 清单文件格式与现有 review 清单一致（来源、勾选项、位置、问题、完成标准、完成说明）
+  - 更新 `./docs/review-tracking/README.md` 索引，追加本次评审记录
 
-若未发现问题，必须明确写“未发现评审问题”，并补充残余风险或测试盲区。
+若未发现问题，必须明确写"未发现评审问题"，并补充残余风险或测试盲区。
 
 ## 6. 严重级别定义
 

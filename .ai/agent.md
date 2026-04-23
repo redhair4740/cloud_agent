@@ -19,7 +19,13 @@
 - 项目协作规范目录：`./.ai`
   - 承载当前项目的 agents / rules / skills 规范体系。
 - 项目文档目录：`./docs`
-  - 承载评审结论、优化建议、路线图和其他需要持续追踪的 Markdown 工件。
+  - 承载评审结论、设计方案、交接文档、治理评审、部署方案和其他需要持续追踪的 Markdown 工件。
+  - `./docs/design/`：承载技术设计方案及对应的 AI 交接文档，按日期子目录组织。
+  - `./docs/governance/`：承载治理评审、协作分析、规范评估文档，按日期子目录组织。
+  - `./docs/deployment/`：承载部署方案、运维方案，按日期子目录组织。
+  - `./docs/review-tracking/`：承载评审清单与跟踪记录，按日期子目录组织。
+  - 文档命名格式：`hh-mm-ss-类型标签-文档名称.md`，时间戳在前保证默认排序按时间排列。
+  - 文档索引与使用约定：`./docs/README.md`
 
 ## 3. 目录职责（agents / rules / skills）
 
@@ -149,7 +155,8 @@
 
 ## 11. Review 与优化建议归档要求
 
-- 遇到代码 review 结论、联调问题或优化建议时，除对话输出外，还要同步更新 `./docs/review-tracking/review-and-optimization-checklist.md`。
+- 遇到代码 review 结论、联调问题或优化建议时，除对话输出外，还要同步更新 `./docs/review-tracking/` 下对应的 review 清单文件。
+- 评审清单按日期目录组织：`./docs/review-tracking/yyyy-MM-dd/review清单-hh-mm-ss.md`。
 - 文档中的每个待办事项必须使用 Markdown 勾选框记录，默认新增为 `[ ]`。
 - 对应代码完成后，需要在同一文档里同步把事项更新为 `[x]`，并补充完成说明；若未做真实验证，必须继续标注“未验证”。
 - 若同一次 review 同时覆盖多个仓库或前后端联动问题，统一收敛到同一章节，避免拆散上下文。
