@@ -36,8 +36,9 @@
 - 简要结论（可选）
 - 评审结论除对话输出外，还需同步更新 `./docs/review-tracking/` 下对应的 review 清单文件，并把每条问题写成可勾选任务。清单文件按以下规则组织：
   - 按日期创建文件夹：`./docs/review-tracking/yyyy-MM-dd/`
-  - 按时间创建清单文件：`./docs/review-tracking/yyyy-MM-dd/review清单-hh-mm-ss.md`
+  - 按时间创建清单文件：`./docs/review-tracking/yyyy-MM-dd/review清单-hh-mm-ss-文档名称-状态.md`
   - 同一天多次评审生成多个清单文件，时间精确到秒
+  - `状态` 仅允许 `已完成`、`未完成`；若清单状态变化，文件名与 README 索引必须同步更新
   - 清单文件格式与现有 review 清单一致（来源、勾选项、位置、问题、完成标准、完成说明）
   - 更新 `./docs/review-tracking/README.md` 索引，追加本次评审记录
 
