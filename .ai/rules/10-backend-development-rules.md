@@ -15,6 +15,13 @@
 - 任何 SQL 变更都要先判断 PostgreSQL 可执行性，再考虑其他数据库兼容。
 - 新增/修改字段、索引、初始化脚本时，必须说明 PostgreSQL 下的行为与风险点。
 - 若同时涉及分页插件与 MyBatis/MyBatis-Plus 版本组合，必须先确认依赖收敛，避免运行时签名冲突。
+- PostgreSQL 的 `jsonb` 字段不得按“Java 字段改成 `Map` / `Object` 就一定可写入”进行假设，必须同时确认 JDBC 绑定类型。
+- MyBatis / MyBatis-Plus 写入 PostgreSQL `jsonb` 时，若默认 `TypeHandler` 仍按 `varchar` 传参，则禁止直接用于 `jsonb` 列。
+- 项目内新增或修改 PostgreSQL `jsonb` 字段时，必须优先复用项目级 `jsonb` 专用 TypeHandler；当前项目统一使用 `com.wf.vmesh.framework.mybatis.core.type.PgJsonbTypeHandler`。
+- `jsonb` 字段的 DO 声明必须同时满足：字段类型与业务结构一致、`@TableField(typeHandler = PgJsonbTypeHandler.class)` 明确声明、`@TableName(..., autoResultMap = true)` 正确开启结果映射。
+- Service 层处理 JSON 载荷时，优先直接使用 `Map<String, Object>` 或明确结构对象，禁止无必要地在 `String -> Object -> String -> Map` 之间来回转换。
+- 若接收到的动态 JSON 需要转为 `Map<String, Object>`，优先使用项目统一 JSON 工具的对象转换能力，例如 `JsonUtils.convertObject(...)` 或 `JsonUtils.parseObject(..., new TypeReference<Map<String, Object>>() {})`，避免使用无类型的 `Object.class` 解析后再做二次猜测。
+- 出现类似 `column xxx is of type jsonb but expression is of type character varying` 时，默认优先排查 TypeHandler/JDBC 参数绑定类型，不要先把问题误判为 SQL 文本错误或数据库字段类型错误。
 
 ## 3. 数据库建表与增量 SQL 规范
 
@@ -53,13 +60,16 @@
 - 涉及建表或结构变更时，变更说明中必须写明新增 SQL 的落地路径、日期目录、文件名以及是否新增了通用字段。
 - 涉及 AI 平台配置时，密钥等敏感信息只允许通过配置项/环境变量注入，禁止硬编码或在交付说明中回显。
 
-## 6. 测试与未验证边界
+## 6. 编译验证与未验证边界
 
-- 只要有业务代码变更，默认同步提交可运行单元测试；目录结构使用模块标准 `src/test/java`、`src/test/resources`。
-- 测试框架默认沿用 Maven + Surefire + JUnit 5，不用伪代码、注释测试、临时 main 方法替代可执行测试。
-- 单元测试至少覆盖正常路径、关键边界/分支、异常/失败路径；测试命名应直接表达业务语义。
-- 对 service 层优先覆盖核心业务规则，不只测 getter/setter；对 controller 层优先覆盖协议与权限边界；对 DAL 层优先覆盖 SQL/映射行为。
-- 优先复用目标模块已有测试基建、mock、SQL 脚本、`application-unit-test.yaml`；能做纯单测时不要无意义拉起过重上下文。
+- 后端代码是否必须做编译验证，按变更复杂度决定，但默认偏向执行最小可行编译验证，而不是仅靠阅读代码判断。
+- 低复杂度变更可不强制执行编译命令，但必须满足：仅局部文案/常量/注解/明显无语义歧义的小范围改动，且 IDE/语言诊断无错误；若未执行编译，交付时必须明确标注“未编译验证”。
+- 中复杂度变更必须执行模块级编译验证，典型包括：新增/修改方法签名、泛型与类型转换调整、Mapper/DO/VO 字段改动、依赖注入改动、配置键改动、SQL 映射改动、TypeHandler 改动、序列化/反序列化逻辑改动。
+- 高复杂度变更除模块级编译外，还应建议更高强度验证，典型包括：跨模块重构、数据库迁移、鉴权链路、启动装配、消息链路、第三方集成、批量结构调整；若用户未明确允许执行测试，只能完成编译并明确列出“未测试”的风险。
+- 只要修改范围涉及 `WF_VMesh_Coud/vmesh-module-edge` 后端源码，默认优先使用以下模块编译命令：`mvn compile -pl vmesh-module-edge -am`
+- 若改动发生在其他后端模块，应优先使用“目标模块 + `-am`”的最小编译范围命令，避免无必要全量构建。
+- 若改动同时覆盖框架层与业务模块，优先确保受影响业务模块能够随依赖链一起编译通过，不只编译框架层本身。
+- 编译命令、执行范围、是否成功，必须在交付说明中明确写出；没有真实命令与结果时，不得写成“编译通过”。
 - 未经明确确认，不执行测试命令；但不执行测试不等于可以省略测试代码交付要求。
 - 没有实际运行验证时，必须明确标注“未验证”或“未执行测试”，禁止使用“已通过”“已修复完成”等表述。
 - 高风险变更（鉴权链路、数据库迁移、跨模块重构）必须单列风险与后续验证建议。
