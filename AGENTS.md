@@ -132,6 +132,26 @@ cd "$FRONTEND_DIR" && pnpm build:prod
    - `./.ai/agents/`（协作角色定义）
    - `./.ai/skills/`（可复用执行方法，当前已有 deploy-portainer-release、dynamic-menu-sync）
 
+### 1.1 任务类型加载矩阵
+
+| 任务类型 | 必读规则/文件 |
+|----------|---------------|
+| 通用任务 | `./.ai/rules/00-repo-baseline.md` + `./.ai/rules/01-business-dictionary.md` |
+| 后端任务 | 通用规则 + `./.ai/rules/10-backend-development-rules.md` + `./.ai/rules/11-backend-object-layering-rules.md` |
+| 前端任务 | 通用规则 + `./.ai/rules/20-frontend-development-rules.md` |
+| 前后端联动任务 | 通用规则 + `./.ai/rules/10-backend-development-rules.md` + `./.ai/rules/20-frontend-development-rules.md` + `./.ai/rules/30-fullstack-linkage-rules.md` + `./.ai/api-status.yml` |
+| Review 任务 | 按被评审对象加载对应规则；联动评审必须额外加载 `30-fullstack-linkage-rules.md` 与 `.ai/api-status.yml` |
+
+### 1.2 核心红线摘要
+
+- 业务词不得自行翻译；新增命名必须先查 `01-business-dictionary.md`，未收录词需标注待确认。
+- 接口字段、类型、枚举和错误码以 OpenAPI（`/v3/api-docs`）为唯一契约真源，不得前端猜字段。
+- 接口联调状态以 `.ai/api-status.yml` 为准，AI 不得自行把接口状态提升为 `ready`。
+- Mock 只能落在统一 Mock 层或统一 mock 目录，禁止散落到 Vue 组件、Pinia action 或 API SDK 内部。
+- 后端变更必须遵守模块边界、对象分层和增量 SQL 规则；历史 SQL 不得直接改写。
+- 默认允许只读命令、静态检查、类型检查、编译与单元测试；删除、批量改写、数据库迁移、生产 API、权限/环境变更必须先确认。
+- 没有真实验证证据时，必须明确标注“未验证/未执行测试/未编译验证”，不得写成“已通过/已完成”。
+
 ## 2. 输出与证据要求
 
 1. 默认使用简体中文输出分析、说明、注释与结论。

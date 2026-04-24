@@ -103,8 +103,8 @@
 | 适配器 | 投影目标 | 投影方式 |
 |--------|----------|----------|
 | `codex/` | `AGENTS.md` | 无需投影，源即目标（基准平台） |
-| `claude-code/` | `CLAUDE.md` | 规则内联投影，所有 rules 合并为单文件 |
-| `gemini-cli/` | `GEMINI.md` + `.gemini/settings.json` | 规则内联投影 + contextFileName 配置 |
+| `claude-code/` | `CLAUDE.md` | 摘要投影 + 规则路径引用 |
+| `gemini-cli/` | `GEMINI.md` + `.gemini/settings.json` | 摘要投影 + 规则路径引用 + contextFileName 配置 |
 | `trae-cn/` | `.trae/rules/` | 规则逐文件复制 + project_rules.md 汇总 |
 
 ## 投影文件说明
@@ -118,13 +118,14 @@
 ### CLAUDE.md
 
 - **用途**：Claude Code 的原生项目指令入口
-- **来源**：投影自 `AGENTS.md` + `.ai/agent.md` + `.ai/rules/*.md`
-- **特点**：Claude Code 不支持多文件自动级联读取，所有规则需内联到单文件
+- **来源**：投影自 `AGENTS.md` + `.ai/agent.md` 的核心摘要，并引用 `.ai/rules/*.md` 详细规则路径
+- **特点**：使用摘要模式降低默认上下文占用，按任务类型加载详细规则
 
 ### GEMINI.md
 
 - **用途**：Gemini CLI 的原生项目指令入口
-- **来源**：投影自 `AGENTS.md` + `.ai/agent.md` + `.ai/rules/*.md`
+- **来源**：投影自 `AGENTS.md` + `.ai/agent.md` 的核心摘要，并引用 `.ai/rules/*.md` 详细规则路径
+- **特点**：使用摘要模式降低默认上下文占用，按任务类型加载详细规则
 - **配置**：`.gemini/settings.json` 指定 `contextFileName: "GEMINI.md"`
 
 ### .trae/rules/

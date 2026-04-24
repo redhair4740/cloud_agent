@@ -24,7 +24,7 @@ Gemini CLI 使用以下配置文件：
 | `.ai/agent.md` § 5 | `GEMINI.md` § Git 使用边界 | 原文投影 |
 | `.ai/agent.md` § 6 | `GEMINI.md` § 规则组合继承 | 原文投影 |
 | `.ai/agent.md` § 7-11 | `GEMINI.md` § 项目模块与输出要求 | 原文投影 |
-| `.ai/rules/*.md` | `GEMINI.md` § 规则附录 | 按规则编号顺序内联投影 |
+| `.ai/rules/*.md` + `.ai/api-status.yml` | `GEMINI.md` § 规则摘要与路径引用 | 摘要投影 + 按任务类型路径引用 |
 
 ### 2. .gemini/settings.json 投影
 
@@ -74,31 +74,13 @@ Gemini CLI 使用以下配置文件：
 
 {投影自 .ai/agent.md § 10}
 
-## 规则附录
+## 规则摘要与路径引用
 
-### 00-repo-baseline
+{核心红线摘要：业务字典、OpenAPI 真源、api-status 状态、Mock 落点、后端边界、高风险确认、未验证口径}
 
-{投影自 .ai/rules/00-repo-baseline.md}
+{任务类型加载矩阵：通用 / 后端 / 前端 / 联动 / Review}
 
-### 01-business-dictionary
-
-{投影自 .ai/rules/01-business-dictionary.md}
-
-### 10-backend-development-rules
-
-{投影自 .ai/rules/10-backend-development-rules.md}
-
-### 11-backend-object-layering-rules
-
-{投影自 .ai/rules/11-backend-object-layering-rules.md}
-
-### 20-frontend-development-rules
-
-{投影自 .ai/rules/20-frontend-development-rules.md}
-
-### 30-fullstack-linkage-rules
-
-{投影自 .ai/rules/30-fullstack-linkage-rules.md}
+{详细规则路径引用：.ai/rules/*.md + .ai/api-status.yml}
 ```
 
 ## 同步策略
@@ -113,6 +95,6 @@ Gemini CLI 使用以下配置文件：
 
 ## 注意事项
 
-- Gemini CLI 不支持多文件自动级联读取，因此需要将规则内联投影到 `GEMINI.md` 中。
-- `.ai/agents/` 和 `.ai/skills/` 的内容按需引用，不默认内联投影。
+- `GEMINI.md` 使用摘要模式，默认只投影核心红线与任务加载矩阵，详细规则保留路径引用以降低上下文占用。
+- `.ai/rules/`、`.ai/agents/` 和 `.ai/skills/` 的内容按需引用，不默认全文内联；`GEMINI.md` 必须提示按任务类型读取对应路径。
 - `contextFileName` 默认设为 `GEMINI.md`，确保 Gemini CLI 启动时自动加载。

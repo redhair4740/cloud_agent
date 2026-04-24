@@ -103,25 +103,17 @@
 
 按任务类型加载规则集合：
 
-1. `backend-agent`
-   - 规则继承：`00-repo-baseline.md + 10-backend-development-rules.md + 11-backend-object-layering-rules.md`
-   - 涉及新接口或接口变更时，必须先走"API 契约先行"流程（`20-backend-agent.md` 第 9 节）。
-2. `frontend-agent`
-   - 规则继承：`00-repo-baseline.md + 20-frontend-development-rules.md`
-   - 接口调用必须按 OpenAPI 文档（`/v3/api-docs`）对齐，不得自行猜测字段。
-3. `review-agent`
-   - 规则继承：按被评审对象加载对应规则集合
-   - 评审后端改动：加载 `backend-agent` 规则集
-   - 评审前端改动：加载 `frontend-agent` 规则集
-   - 评审联动改动：加载 `backend-agent` + `frontend-agent` + `30-fullstack-linkage-rules.md`
+| 任务类型 | 必读规则/文件 |
+|----------|---------------|
+| 通用任务 | `./.ai/rules/00-repo-baseline.md` + `./.ai/rules/01-business-dictionary.md` |
+| 后端任务 | 通用规则 + `./.ai/rules/10-backend-development-rules.md` + `./.ai/rules/11-backend-object-layering-rules.md` |
+| 前端任务 | 通用规则 + `./.ai/rules/20-frontend-development-rules.md` |
+| 前后端联动任务 | 通用规则 + `./.ai/rules/10-backend-development-rules.md` + `./.ai/rules/20-frontend-development-rules.md` + `./.ai/rules/30-fullstack-linkage-rules.md` + `./.ai/api-status.yml` |
+| Review 任务 | 按被评审对象加载对应规则；联动评审必须额外加载 `30-fullstack-linkage-rules.md` 与 `.ai/api-status.yml` |
 
 跨端联动任务调度原则：
 
-- 按 API-First 流程执行：
-  1. Backend Agent 先走"API 契约先行"流程（写 Controller 骨架，生成 `/v3/api-docs`）
-  2. 与前端确认契约无误
-  3. Backend Agent 完成 Service 实现，Frontend Agent 完成前端实现
-  4. 使用 `contract-check` skill 做最终一致性验证
+- 按 API-First 流程执行：Backend Agent 先输出 OpenAPI 契约 → 后端/人工确认 `.ai/api-status.yml` → 前后端按契约实现 → `contract-check` 做一致性验证。
 - 联动任务必须遵守 `30-fullstack-linkage-rules.md` 的所有硬约束。
 
 ## 7. 项目模块与边界说明
@@ -270,9 +262,9 @@ description: <描述>           # 必填，Skill 功能与适用场景描述
 | 平台 | 适配目录 | 投影目标 | 说明 |
 |------|----------|----------|------|
 | Codex | `.ai/adapters/codex/` | `AGENTS.md` | 基准平台，`AGENTS.md` 即原生入口，无需额外投影 |
-| Gemini CLI | `.ai/adapters/gemini-cli/` | `GEMINI.md` + `.gemini/settings.json` | 规则内联投影到单一入口文件 |
+| Gemini CLI | `.ai/adapters/gemini-cli/` | `GEMINI.md` + `.gemini/settings.json` | 摘要投影 + 规则路径引用 |
 | Trae-CN | `.ai/adapters/trae-cn/` | `.trae/rules/` | 规则文件按原文复制到 `.trae/rules/` 目录 |
-| Claude Code | `.ai/adapters/claude-code/` | `CLAUDE.md` | 规则内联投影到单一入口文件 |
+| Claude Code | `.ai/adapters/claude-code/` | `CLAUDE.md` | 摘要投影 + 规则路径引用 |
 
 ### 12.3 投影规则
 

@@ -70,26 +70,23 @@
 
 按任务类型加载规则集合：
 
-1. `backend-agent`
-   - 规则继承：`00-repo-baseline.md + 01-business-dictionary.md + 10-backend-development-rules.md + 11-backend-object-layering-rules.md`
-   - 涉及新接口或接口变更时，必须先走"API 契约先行"流程（`20-backend-agent.md` 第 9 节）。
-2. `frontend-agent`
-   - 规则继承：`00-repo-baseline.md + 01-business-dictionary.md + 20-frontend-development-rules.md`
-   - 接口调用必须按 OpenAPI 文档（`/v3/api-docs`）对齐，不得自行猜测字段。
-3. `review-agent`
-   - 规则继承：按被评审对象加载对应规则集合
-   - 评审后端改动：加载 `backend-agent` 规则集
-   - 评审前端改动：加载 `frontend-agent` 规则集
-   - 评审联动改动：加载 `backend-agent` + `frontend-agent` + `01-business-dictionary.md` + `30-fullstack-linkage-rules.md`
+| 任务类型 | 必读规则/文件 |
+|----------|---------------|
+| 通用任务 | `./.ai/rules/00-repo-baseline.md` + `./.ai/rules/01-business-dictionary.md` |
+| 后端任务 | 通用规则 + `./.ai/rules/10-backend-development-rules.md` + `./.ai/rules/11-backend-object-layering-rules.md` |
+| 前端任务 | 通用规则 + `./.ai/rules/20-frontend-development-rules.md` |
+| 前后端联动任务 | 通用规则 + `./.ai/rules/10-backend-development-rules.md` + `./.ai/rules/20-frontend-development-rules.md` + `./.ai/rules/30-fullstack-linkage-rules.md` + `./.ai/api-status.yml` |
+| Review 任务 | 按被评审对象加载对应规则；联动评审必须额外加载 `30-fullstack-linkage-rules.md` 与 `.ai/api-status.yml` |
 
-跨端联动任务调度原则：
+## 核心红线摘要
 
-- 按 API-First 流程执行：
-  1. Backend Agent 先走"API 契约先行"流程（写 Controller 骨架，生成 `/v3/api-docs`）
-  2. 与前端确认契约无误
-  3. Backend Agent 完成 Service 实现，Frontend Agent 完成前端实现
-  4. 使用 `contract-check` skill 做最终一致性验证
-- 联动任务必须遵守 `30-fullstack-linkage-rules.md` 的所有硬约束。
+- 业务词不得自行翻译；新增命名必须先查 `01-business-dictionary.md`，未收录词需标注待确认。
+- 接口字段、类型、枚举和错误码以 OpenAPI（`/v3/api-docs`）为唯一契约真源，不得前端猜字段。
+- 接口联调状态以 `.ai/api-status.yml` 为准，AI 不得自行把接口状态提升为 `ready`。
+- Mock 只能落在统一 Mock 层或统一 mock 目录，禁止散落到 Vue 组件、Pinia action 或 API SDK 内部。
+- 后端变更必须遵守模块边界、对象分层和增量 SQL 规则；历史 SQL 不得直接改写。
+- 默认允许只读命令、静态检查、类型检查、编译与单元测试；删除、批量改写、数据库迁移、生产 API、权限/环境变更必须先确认。
+- 没有真实验证证据时，必须明确标注“未验证/未执行测试/未编译验证”，不得写成“已通过/已完成”。
 
 ## 项目模块与边界说明
 
