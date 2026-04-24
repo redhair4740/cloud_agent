@@ -60,7 +60,8 @@ docs/
 
 | 日期 | 时间 | 类型 | 文件 | 说明 |
 |------|------|------|------|------|
-| 2026-04-24 | 23:03:37 | API文档 | [Edge与Algorithm模块API文档](./api/2026-04-24/23-03-37-API文档-Edge与Algorithm模块API文档.md) | Edge/Algorithm 模块 API 文档（含前后端契约） |
+| 2026-04-24 | 23:13:22 | API文档 | [Edge边缘模块API文档](./api/2026-04-24/23-13-22-API文档-Edge边缘模块API文档.md) | Edge 模块 51 个接口 |
+| 2026-04-24 | 23:13:22 | API文档 | [Algorithm算法模块API文档](./api/2026-04-24/23-13-22-API文档-Algorithm算法模块API文档.md) | Algorithm 模块 22 个接口 |
 
 ### governance（治理评审）
 
