@@ -1,6 +1,9 @@
 ---
 name: deploy-portainer-release
-description: 为 AI_Vision 这类前后端项目输出 Jenkins 构建、Harbor 推送、Portainer Stack 发布的简化部署方案，并沉淀部署文档、检查清单与交付边界。用于用户要求重建或替换旧 Docker/Compose 资产、梳理“不改业务代码”的部署路线、生成 Portainer 发布方案、整理外部配置边界或补部署文档时。
+version: "1.0.0"
+depends_on:
+  - ".ai/rules/00-repo-baseline.md"
+description: 为 AI_Vision 这类前后端项目输出 Jenkins 构建、Harbor 推送、Portainer Stack 发布的简化部署方案，并沉淀部署文档、检查清单与交付边界。用于用户要求重建或替换旧 Docker/Compose 资产、梳理"不改业务代码"的部署路线、生成 Portainer 发布方案、整理外部配置边界或补部署文档时。
 ---
 
 # Portainer 部署发布
@@ -22,7 +25,7 @@ Jenkins 构建 -> Harbor 推镜像 -> Portainer 重部署
 - PostgreSQL / Redis 等中间件外置
 - 生产配置由部署侧外部挂载
 - 前端按环境构建镜像
-- 如果用户要求前后端各自管理部署资产，则优先采用“前后端各自 deploy、自主发布”的结构
+- 如果用户要求前后端各自管理部署资产，则优先采用"前后端各自 deploy、自主发布"的结构
 
 ## 工作流
 
@@ -30,17 +33,17 @@ Jenkins 构建 -> Harbor 推镜像 -> Portainer 重部署
 
 优先读取：
 
-- `WF_VMesh_Coud/vmesh-server/Dockerfile`
-- `WF_VMesh_Coud/vmesh-server/pom.xml`
-- `WF_VMesh_Coud/pom.xml`
-- `WF_VMesh_Coud/vmesh-server/src/main/resources/application*.yaml`
-- `WF_VMesh_Coud_UI/package.json`
-- `WF_VMesh_Coud_UI/.env.prod`
-- `WF_VMesh_Coud_UI/src/config/axios/config.ts`
+- `{{dirs.backend}}/vmesh-server/Dockerfile`
+- `{{dirs.backend}}/vmesh-server/pom.xml`
+- `{{dirs.backend}}/pom.xml`
+- `{{dirs.backend}}/vmesh-server/src/main/resources/application*.yaml`
+- `{{dirs.frontend}}/package.json`
+- `{{dirs.frontend}}/.env.prod`
+- `{{dirs.frontend}}/src/config/axios/config.ts`
 
 如果仓库里还存在旧部署资产，再额外读取：
 
-- `WF_VMesh_Coud/script/docker/*`
+- `{{dirs.backend}}/script/docker/*`
 - 任何旧 `Docker-HOWTO.md`
 - 任何旧 `docker-compose.yml`
 
@@ -53,12 +56,12 @@ Jenkins 构建 -> Harbor 推镜像 -> Portainer 重部署
 - 仍假设在目标机执行 Maven / Node build
 - 仍依赖演示环境的一把起中间件
 
-### 第 3 步：优先按“各自 deploy、自主发布”落地
+### 第 3 步：优先按"各自 deploy、自主发布"落地
 
 如果用户希望前后端各自管理部署资产，默认路径固定为：
 
-- 后端：`WF_VMesh_Coud/deploy/`
-- 前端：`WF_VMesh_Coud_UI/deploy/`
+- 后端：`{{dirs.backend}}/deploy/`
+- 前端：`{{dirs.frontend}}/deploy/`
 
 默认不要继续把新资产放到根仓 `deploy/`。
 
@@ -113,12 +116,12 @@ Jenkins 构建 -> Harbor 推镜像 -> Portainer 重部署
 
 ### 第 7 步：首发操作清单也按前后端拆分
 
-如果用户要求补“首发操作清单”，默认不是写根仓统一清单，而是：
+如果用户要求补"首发操作清单"，默认不是写根仓统一清单，而是：
 
-- `WF_VMesh_Coud/deploy/首发操作清单.md`
-- `WF_VMesh_Coud_UI/deploy/首发操作清单.md`
+- `{{dirs.backend}}/deploy/首发操作清单.md`
+- `{{dirs.frontend}}/deploy/首发操作清单.md`
 
-两份清单都要写清“共享 Docker 网络”的前提和验证步骤。
+两份清单都要写清"共享 Docker 网络"的前提和验证步骤。
 
 ### 第 8 步：输出时必须写清验证边界
 
@@ -127,11 +130,11 @@ Jenkins 构建 -> Harbor 推镜像 -> Portainer 重部署
 - 已验证：真实构建、真实推送、真实发布、真实联通检查
 - 未验证：仅阅读代码、仅写文档、仅生成配置模板
 
-如果本轮没有真实 Jenkins / Harbor / Portainer 操作，只能写“未验证”。
+如果本轮没有真实 Jenkins / Harbor / Portainer 操作，只能写"未验证"。
 
 ## 产物建议
 
-用户要求“落实为文档”时，默认优先产出：
+用户要求"落实为文档"时，默认优先产出：
 
 1. 根仓总览方案文档
 2. 后端 deploy 文档与首发清单
@@ -162,6 +165,6 @@ Jenkins 构建 -> Harbor 推镜像 -> Portainer 重部署
 
 - 不要默认让 Portainer 直接构建源码
 - 不要把旧 compose 当成必须兼容的包袱
-- 不要把外部 PostgreSQL / Redis 又塞回 Stack，只为看起来“完整”
+- 不要把外部 PostgreSQL / Redis 又塞回 Stack，只为看起来"完整"
 - 不要把仓库里的示例地址、示例密钥、示例账号当成生产配置
-- 不要把“文档已写完”描述成“部署已完成”
+- 不要把"文档已写完"描述成"部署已完成"

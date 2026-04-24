@@ -1,0 +1,36 @@
+# AI_Vision 项目元数据
+# 此文件为项目路径与参数的唯一配置来源，AI 代理和投影脚本从此文件读取变量值。
+# 每位协作者 clone 后只需修改此文件即可适配自己的目录结构。
+
+# 项目目录映射
+dirs:
+  backend: "WF_VMesh_Coud"
+  frontend: "WF_VMesh_Coud_UI"
+  design: "wf_vmesh_cloud_design"
+  docs: "docs"
+  sql: "sql/postgresql"
+
+# 后端技术栈
+backend_stack:
+  jdk: "21"
+  spring_boot: "3.5.x"
+  orm: "MyBatis-Plus 3.5.x"
+  database: "PostgreSQL"
+  build_tool: "Maven"
+  edge_module: "vmesh-module-edge"
+  server_module: "vmesh-server"
+  system_module: "vmesh-module-system"
+
+# 前端技术栈
+frontend_stack:
+  node: "20.x"
+  framework: "Vue 3.x"
+  build_tool: "Vite 5.x"
+  ui_library: "Element Plus"
+  state_management: "Pinia"
+  package_manager: "pnpm"
+
+# 项目信息
+project:
+  name: "AI_Vision (VMesh Cloud)"
+  version: "2026.01-SNAPSHOT"

@@ -6,8 +6,7 @@ WF_VMesh_Coud_UI/deploy/build/
 cloud
 cloud_design
 cloud_ui
-GEMINI.md
-CLAUDE.md
+# AI 工具投影文件（纳入版本控制）
 .codex
 .DS_Store
-.trae/
+.trae/specs/
