@@ -104,14 +104,13 @@ GEMINI.md                 ← Gemini CLI 原生入口（投影自 .ai/）
 | 单一来源 | `.ai/` 是所有规范的定义中心，投影文件均为自动生成产物 |
 | 单向投影 | `.ai/` → 各平台配置，禁止反向修改投影文件 |
 | 规则优先级 | `rules` > `agent.md` > `agents` > `skills` |
-| 跨端联动 | 涉及前后端契约变更时，必须按 fullstack 联动任务处理 |
+| 契约先行 | 涉及前后端契约变更时，必须走 API-First 流程：OpenAPI 文档定版后再各自实现 |
 
 ### 协作角色
 
 | 角色 | 文件 | 规则继承 | 适用场景 |
 |------|------|----------|----------|
-| Fullstack Agent | `agents/10-fullstack-linkage-agent.md` | 全部规则 + 联动规则 | 前后端联动任务 |
-| Backend Agent | `agents/20-backend-agent.md` | 基线 + 后端规则 | 后端单侧闭环任务 |
+| Backend Agent | `agents/20-backend-agent.md` | 基线 + 后端规则 + API 契约先行 | 后端单侧闭环任务 |
 | Frontend Agent | `agents/30-frontend-agent.md` | 基线 + 前端规则 | 前端单侧闭环任务 |
 | Review Agent | `agents/40-review-agent.md` | 按被评审对象加载 | 代码评审与风险扫描 |
 
@@ -129,6 +128,7 @@ GEMINI.md                 ← Gemini CLI 原生入口（投影自 .ai/）
 
 | Skill | 版本 | 说明 |
 |-------|------|------|
+| `contract-check` | 1.0.0 | 前后端接口契约一致性检查（对照 OpenAPI 文档与前端代码） |
 | `deploy-portainer-release` | 1.0.0 | Jenkins 构建 → Harbor 推镜像 → Portainer Stack 发布 |
 | `dynamic-menu-sync` | 1.0.0 | 前端动态路由与后端数据库菜单同步 |
 

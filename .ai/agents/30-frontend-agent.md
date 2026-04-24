@@ -1,13 +1,16 @@
 # Frontend Agent 职责
 
-用于项目主前端工程的日常开发与协作约束，目标是让前端任务在既有接口契约下高质量落地，并在跨端变更时及时切换到 `fullstack-agent`，避免联调返工。
+用于项目主前端工程的日常开发与协作约束，目标是让前端任务在既有接口契约下高质量落地，并在跨端变更时通过 API-First 流程与后端对齐契约，避免联调返工。
 
 ## 0. 执行前必读（强制）
 
 - frontend-agent 在执行任何任务前，必须先加载：
   - `/.ai/rules/00-repo-baseline.md`
   - `/.ai/rules/20-frontend-development-rules.md`
-- 若任务涉及接口契约联动（字段/结构/错误码/权限/分页语义变化），frontend-agent 不得独立推进，必须切换 `fullstack-agent`，并补充 fullstack 联动规则与验收清单（参考 `/.ai/agents/10-fullstack-linkage-agent.md`）。
+- 若任务涉及新接口或接口变更，frontend-agent 不得独立推进。
+  - 必须先等待后端输出 OpenAPI 契约文档（`/v3/api-docs`）。
+  - 按 OpenAPI 文档对齐前端类型与调用参数后，再进入实现。
+  - 联动相关约束参考 `/.ai/rules/30-fullstack-linkage-rules.md` 和 `/.ai/skills/contract-check/SKILL.md`。
 
 ## 1. 适用范围
 
@@ -27,12 +30,13 @@
 ## 3. 接口对接边界
 
 - 只消费已存在且已确认的接口契约，不自行扩展请求/响应字段语义。
-- 请求参数名、分页字段、排序字段、枚举值必须与后端契约完全一致。
+- 请求参数名、分页字段、排序字段、枚举值必须与后端 OpenAPI 契约完全一致。
 - 仅在前端做展示级转换（如时间格式化、状态文案映射），不在前端重写业务规则。
-- 遇到以下情况必须停止 frontend-agent 独立推进并切 `fullstack-agent`：
+- 遇到以下情况必须停止 frontend-agent 独立推进，等待后端提供 OpenAPI 契约文档（`/v3/api-docs`）：
   - 需要新增/删除/重命名接口字段。
   - 当前响应结构无法支撑页面需求，需调整 VO 或错误码语义。
   - 需要新增接口、合并接口或改变接口鉴权/租户隔离策略。
+- 后端交付 OpenAPI 文档后，按文档实现；实现完成后使用 `contract-check` skill 做一致性验证。
 
 ## 4. 状态管理与 API SDK 约束
 
@@ -46,8 +50,8 @@
 
 - 原型仅用于参考布局结构、信息层级、交互流程与功能点范围。
 - 不参考原型中的实现代码、伪代码、临时字段命名或技术栈细节。
-- 原型与真实接口冲突时，以已确认接口契约和领域规则为准。
-- 如原型要求超出当前契约能力，先提交联动需求，切 `fullstack-agent` 处理。
+- 原型与真实接口冲突时，以 OpenAPI 契约文档（`/v3/api-docs`）和领域规则为准。
+- 如原型要求超出当前契约能力，先提交联动需求，等待后端输出 OpenAPI 文档后再实现。
 
 ## 6. 交付要求
 
@@ -56,11 +60,13 @@
 - 文案、提示、按钮可用性与业务状态保持一致，不使用“未知错误”吞上下文。
 - 明确标注“已验证/未验证”范围；未执行验证时必须写“未验证”。
 
-## 7. 协作切换规则（frontend-agent -> fullstack-agent）
+## 7. 协作切换规则（frontend-agent → API-First）
 
 - 任何接口契约变化（字段、结构、错误码、权限、分页语义）都不由 frontend-agent 单独闭环。
 - frontend-agent 在识别到契约阻塞后，应输出最小联动说明：
   - 受影响页面与交互点
   - 当前契约缺口
   - 需要后端确认或改造的项
-- 主代理据此切换 `fullstack-agent` 做前后端联动实现与统一验收，并补充 fullstack 联动规则与验收项后再进入实施。
+- 后端通过"API 契约先行"流程输出 OpenAPI 文档（`/v3/api-docs`），frontend-agent 按文档实现。
+- 实现完成后使用 `contract-check` skill 做一致性验证。
+- 联动相关约束参考 `/.ai/rules/30-fullstack-linkage-rules.md`。

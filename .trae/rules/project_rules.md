@@ -70,21 +70,24 @@
 
 1. `backend-agent`
    - 规则继承：`00-repo-baseline.md + 10-backend-development-rules.md + 11-backend-object-layering-rules.md`
+   - 涉及新接口或接口变更时，必须先走"API 契约先行"流程（`20-backend-agent.md` 第 9 节）。
 2. `frontend-agent`
    - 规则继承：`00-repo-baseline.md + 20-frontend-development-rules.md`
-3. `fullstack-agent`
-   - 规则继承：`00-repo-baseline.md + 10-backend-development-rules.md + 11-backend-object-layering-rules.md + 20-frontend-development-rules.md + 30-fullstack-linkage-rules.md`
-4. `review-agent`
+   - 接口调用必须按 OpenAPI 文档（`/v3/api-docs`）对齐，不得自行猜测字段。
+3. `review-agent`
    - 规则继承：按被评审对象加载对应规则集合
    - 评审后端改动：加载 `backend-agent` 规则集
    - 评审前端改动：加载 `frontend-agent` 规则集
-   - 评审 fullstack 改动：加载 `fullstack-agent` 规则集
+   - 评审联动改动：加载 `backend-agent` + `frontend-agent` + `30-fullstack-linkage-rules.md`
 
-调度原则：
+跨端联动任务调度原则：
 
-- 先判定任务对象（backend/frontend/fullstack/review），再绑定规则集合。
-- `fullstack-agent` 不能降级为单边规则，必须包含 `30-fullstack-linkage-rules.md` 联动规则。
-- `review-agent` 不使用独立规则替代对象规则，而是对对象规则做一致性复核。
+- 按 API-First 流程执行：
+  1. Backend Agent 先走"API 契约先行"流程（写 Controller 骨架，生成 `/v3/api-docs`）
+  2. 与前端确认契约无误
+  3. Backend Agent 完成 Service 实现，Frontend Agent 完成前端实现
+  4. 使用 `contract-check` skill 做最终一致性验证
+- 联动任务必须遵守 `30-fullstack-linkage-rules.md` 的所有硬约束。
 
 ## 项目模块与边界说明
 

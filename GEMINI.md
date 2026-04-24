@@ -58,7 +58,6 @@
   - 当前主用文档：
     - `./.ai/agents/20-backend-agent.md`
     - `./.ai/agents/30-frontend-agent.md`
-    - `./.ai/agents/10-fullstack-linkage-agent.md`
     - `./.ai/agents/40-review-agent.md`
 - `./.ai/rules/`
   - 定义项目硬约束与边界规则，属于必须遵守项。
@@ -85,21 +84,24 @@
 
 1. `backend-agent`
    - 规则继承：`00-repo-baseline.md + 10-backend-development-rules.md + 11-backend-object-layering-rules.md`
+   - 涉及新接口或接口变更时，必须先走"API 契约先行"流程。
 2. `frontend-agent`
    - 规则继承：`00-repo-baseline.md + 20-frontend-development-rules.md`
-3. `fullstack-agent`
-   - 规则继承：`00-repo-baseline.md + 10-backend-development-rules.md + 11-backend-object-layering-rules.md + 20-frontend-development-rules.md + 30-fullstack-linkage-rules.md`
-4. `review-agent`
+   - 接口调用必须按 OpenAPI 文档对齐，不得自行猜测字段。
+3. `review-agent`
    - 规则继承：按被评审对象加载对应规则集合
    - 评审后端改动：加载 `backend-agent` 规则集
    - 评审前端改动：加载 `frontend-agent` 规则集
-   - 评审 fullstack 改动：加载 `fullstack-agent` 规则集
+   - 评审联动改动：加载 `backend-agent` + `frontend-agent` + `30-fullstack-linkage-rules.md` 规则集
 
-调度原则：
+跨端联动任务调度原则：
 
-- 先判定任务对象（backend/frontend/fullstack/review），再绑定规则集合。
-- `fullstack-agent` 不能降级为单边规则，必须包含 `30-fullstack-linkage-rules.md` 联动规则。
-- `review-agent` 不使用独立规则替代对象规则，而是对对象规则做一致性复核。
+- 按 API-First 流程执行：
+  1. Backend Agent 先走"API 契约先行"流程（写 Controller 骨架，生成 `/v3/api-docs`）
+  2. 与前端确认契约无误
+  3. Backend Agent 完成 Service 实现，Frontend Agent 完成前端实现
+  4. 使用 `contract-check` skill 做最终一致性验证
+- 联动任务必须遵守 `30-fullstack-linkage-rules.md` 的所有硬约束。
 
 ## 项目模块与边界说明
 
@@ -264,7 +266,7 @@
 ## 7. 协作切换规则
 
 - 仅当需求可在后端单侧闭环时，由 backend-agent 独立处理。
-- 只要接口协议变更会影响前端页面渲染、交互流程、状态管理或联调验收，即切换或联合 fullstack-agent 处理。
+- 只要接口协议变更会影响前端页面渲染、交互流程、状态管理或联调验收，必须先走 API-First 流程：输出 OpenAPI 契约文档，与前端确认后再各自实现。contract-check 做最终验证。
 - 不允许后端单侧先改协议再要求前端被动兜底，联动需求必须从任务入口即按联动模式拆分与验收。
 
 ### 11-backend-object-layering-rules
@@ -399,7 +401,7 @@ com/wf/vmesh/module/<domain>
 - 所有后端请求必须经由项目既有 API SDK/请求封装层，不允许在页面组件内散落直连请求实现。
 - 新增接口调用时，必须同步补齐请求参数类型、响应类型、错误处理分支。
 - 前端只做展示层转换，不在 SDK 或页面中重写后端业务规则与权限规则。
-- 若发现接口契约缺失或不一致，不得前端"猜字段"硬编码兜底，应升级为 fullstack 联动处理。
+- 若发现接口契约缺失或不一致，不得前端"猜字段"硬编码兜底，应走 API-First 流程，等待后端 OpenAPI 契约文档。
 
 ## 3. Pinia 状态管理约束（强制）
 
@@ -425,13 +427,13 @@ com/wf/vmesh/module/<domain>
 - 必须显式标注"已验证"与"未验证"范围。
 - 未执行真实验证时，只能写"未验证"，不得使用"已完成/已修复/已通过"表述。
 
-## 7. 何时必须切换 fullstack
+## 7. 何时需要联动（API-First）
 
 - 需要新增、删除、重命名接口字段或调整响应结构。
 - 需要新增接口、合并接口、调整错误码语义或鉴权语义。
 - 前端需求无法在既有契约下实现，需要后端 VO/接口契约变更。
 
-出现以上任一情况，frontend-agent 必须停止独立闭环，切换 `fullstack-agent`，并补充 fullstack 联动规则与验收清单。
+出现以上任一情况，frontend-agent 必须停止独立闭环，等待后端提供 OpenAPI 契约文档（`/v3/api-docs`），按文档对齐类型与调用参数后，再进入实现。联动交付完成后以 `contract-check` skill 做一致性验证。
 
 ### 30-fullstack-linkage-rules
 

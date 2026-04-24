@@ -46,7 +46,6 @@
   - 当前主用文档：
     - `./.ai/agents/20-backend-agent.md`
     - `./.ai/agents/30-frontend-agent.md`
-    - `./.ai/agents/10-fullstack-linkage-agent.md`
     - `./.ai/agents/40-review-agent.md`
 - `./.ai/rules/`
   - 定义项目硬约束与边界规则，属于必须遵守项。
@@ -100,21 +99,24 @@
 
 1. `backend-agent`
    - 规则继承：`00-repo-baseline.md + 10-backend-development-rules.md + 11-backend-object-layering-rules.md`
+   - 涉及新接口或接口变更时，必须先走"API 契约先行"流程（`20-backend-agent.md` 第 9 节）。
 2. `frontend-agent`
    - 规则继承：`00-repo-baseline.md + 20-frontend-development-rules.md`
-3. `fullstack-agent`
-   - 规则继承：`00-repo-baseline.md + 10-backend-development-rules.md + 11-backend-object-layering-rules.md + 20-frontend-development-rules.md + 30-fullstack-linkage-rules.md`
-4. `review-agent`
+   - 接口调用必须按 OpenAPI 文档（`/v3/api-docs`）对齐，不得自行猜测字段。
+3. `review-agent`
    - 规则继承：按被评审对象加载对应规则集合
    - 评审后端改动：加载 `backend-agent` 规则集
    - 评审前端改动：加载 `frontend-agent` 规则集
-   - 评审 fullstack 改动：加载 `fullstack-agent` 规则集
+   - 评审联动改动：加载 `backend-agent` + `frontend-agent` + `30-fullstack-linkage-rules.md`
 
-调度原则：
+跨端联动任务调度原则：
 
-- 先判定任务对象（backend/frontend/fullstack/review），再绑定规则集合。
-- `fullstack-agent` 不能降级为单边规则，必须包含 `30-fullstack-linkage-rules.md` 联动规则。
-- `review-agent` 不使用独立规则替代对象规则，而是对对象规则做一致性复核。
+- 按 API-First 流程执行：
+  1. Backend Agent 先走"API 契约先行"流程（写 Controller 骨架，生成 `/v3/api-docs`）
+  2. 与前端确认契约无误
+  3. Backend Agent 完成 Service 实现，Frontend Agent 完成前端实现
+  4. 使用 `contract-check` skill 做最终一致性验证
+- 联动任务必须遵守 `30-fullstack-linkage-rules.md` 的所有硬约束。
 
 ## 7. 项目模块与边界说明
 
@@ -205,23 +207,31 @@ description: <描述>           # 必填，Skill 功能与适用场景描述
 1. `backend-agent`
    - 适用：仅后端模块改动（接口实现、服务逻辑、数据访问、后端测试）。
    - 排除：不包含前端页面/状态/调用链同步改造。
+   - 涉及新接口或接口变更时，必须先走"API 契约先行"流程（第 9 节），生成 OpenAPI 契约文档。
 2. `frontend-agent`
    - 适用：仅前端模块改动（页面、组件、状态管理、调用封装、交互文案）。
    - 排除：不包含后端契约与业务规则改造。
-3. `fullstack-agent`
-   - 适用：跨前后端联动改造，需统一接口契约与页面行为验收。
-   - 入口：`./.ai/agents/10-fullstack-linkage-agent.md`
-4. `review-agent`
+   - 接口调用必须按 OpenAPI 文档对齐，不得自行猜测字段。
+3. `review-agent`
    - 适用：评审任务，重点检查风险、回归、缺失测试、协议不一致、模块边界破坏。
    - 入口：`./.ai/agents/40-review-agent.md`
    - 规则：按被评审对象加载对应规则集，不单独替代对象规则。
 
+跨端联动任务执行方式：
+
+- 不再设独立 Agent，按 API-First 流程拆分执行：
+  1. Backend Agent 先走"API 契约先行"（写 Controller 骨架，生成 `/v3/api-docs`）
+  2. 与前端确认契约无误
+  3. Backend Agent 独立完成 Service 实现，Frontend Agent 独立完成前端实现
+  4. 使用 `contract-check` skill 做最终一致性验证
+- 联动任务必须遵守 `30-fullstack-linkage-rules.md` 所有硬约束。
+
 选择规则：
 
-- 同时涉及前后端协议与交互，优先 `fullstack-agent`。
-- 用户明确要求评审/回归检查，优先 `review-agent`。
 - 单边改动按职责选择 `backend-agent` 或 `frontend-agent`。
-- 若任务同时包含“实现 + 评审”，先实现（backend/frontend/fullstack），再由 `review-agent` 按对象规则集复核。
+- 涉及接口协议变更时，按 API-First 流程执行（见上）。
+- 用户明确要求评审/回归检查，优先 `review-agent`。
+- 若任务同时包含"实现 + 评审"，先实现再由 `review-agent` 按对象规则集复核。
 
 ## 10. 团队最低输出要求
 

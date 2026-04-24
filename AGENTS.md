@@ -88,7 +88,6 @@ pnpm build:prod
 .ai/
 ├── agent.md          # 项目协作总入口（规则、模块边界、技术细节）
 ├── agents/           # 协作角色定义
-│   ├── 10-fullstack-linkage-agent.md
 │   ├── 20-backend-agent.md
 │   ├── 30-frontend-agent.md
 │   └── 40-review-agent.md

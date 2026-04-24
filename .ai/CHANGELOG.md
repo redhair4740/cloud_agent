@@ -20,6 +20,36 @@
 
 ### 2026-04-24
 
+#### 新增 contract-check skill
+- **变更类型**: 新增
+- **变更摘要**: 新增 contract-check skill，以 OpenAPI 文档（`/v3/api-docs`）为契约唯一真源，逐项对照前端 API 调用与后端接口定义，输出不一致清单（P0-P3 严重级别）
+- **影响范围**: `.ai/skills/contract-check/`
+- **变更人**: AI Agent
+
+#### 新增 API 契约先行（Backend Agent 第 9 节）
+- **变更类型**: 新增
+- **变更摘要**: Backend Agent 新增第 9 节"API 契约先行"，涉及新接口或接口变更时必须先写 Controller 骨架 + OpenAPI 注解，生成 `/v3/api-docs` 契约文档，与前端确认后再填写 Service 实现
+- **影响范围**: `.ai/agents/20-backend-agent.md`
+- **变更人**: AI Agent
+
+#### 废除 Fullstack Agent
+- **变更类型**: 移除
+- **变更摘要**: 废除 `10-fullstack-linkage-agent.md`，联动任务不再由单一 Agent 处理，改为 API-First 流程：Backend Agent 契约先行 → OpenAPI 定版 → 前后端独立实现 → contract-check 验证
+- **影响范围**: `.ai/agents/10-fullstack-linkage-agent.md`、`.ai/agents/30-frontend-agent.md`、`.ai/agent.md`
+- **变更人**: AI Agent
+
+#### 增强 30-fullstack-linkage-rules.md
+- **变更类型**: 修改
+- **变更摘要**: 联动规则新增第 6 节"契约唯一真源与 API-First 流程"，明确 OpenAPI 文档为契约唯一真源，定义 API-First 执行流程，补充 contract-check 验证要求
+- **影响范围**: `.ai/rules/30-fullstack-linkage-rules.md`、`.trae/rules/30-fullstack-linkage-rules.md`
+- **变更人**: AI Agent
+
+#### 同步 .trae/rules/ 投影
+- **变更类型**: 修改
+- **变更摘要**: 同步所有 .trae/rules/ 投影文件（project_rules.md、30-fullstack-linkage-rules.md），移除 fullstack-agent 调度线，新增 API-First 流程和 contract-check skill 引用
+- **影响范围**: `.trae/rules/project_rules.md`、`.trae/rules/30-fullstack-linkage-rules.md`
+- **变更人**: AI Agent
+
 #### 新增 adapters/ 目录
 - **变更类型**: 新增
 - **变更摘要**: 新增模型适配器目录，用于存放 AI 模型适配器配置与实现
@@ -68,7 +98,7 @@
 
 | 日期 | 新增 | 修改 | 移除 | 总计 |
 |------|------|------|------|------|
-| 2026-04-24 | 4 | 3 | 0 | 7 |
+| 2026-04-24 | 6 | 5 | 1 | 12 |
 
 ---
 

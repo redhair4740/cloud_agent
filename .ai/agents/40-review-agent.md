@@ -18,7 +18,7 @@
 - review-agent 不单独定义一套替代规则，必须按被评审对象加载对应规则集。
 - 评审后端改动：加载 `backend-agent` 对应规则集（`00-repo-baseline.md + 10-backend-development-rules.md`）。
 - 评审前端改动：加载 `frontend-agent` 对应规则集（`00-repo-baseline.md + 20-frontend-development-rules.md`）。
-- 评审 fullstack 改动：加载 `fullstack-agent` 对应规则集（`00-repo-baseline.md + 10-backend-development-rules.md + 20-frontend-development-rules.md + 30-fullstack-linkage-rules.md`）。
+- 评审联动改动：加载 `backend-agent` + `frontend-agent` + `30-fullstack-linkage-rules.md` 规则集。
 - 若评审对象涉及 AI 相关改动，遵守现有通用规则与相关 skill/真实代码约束。
 
 ## 4. 评审重点
