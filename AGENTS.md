@@ -10,7 +10,7 @@
 
 ## 技术栈
 
-### 后端 ({{dirs.backend}})
+### 后端（目录由 `.ai/project.yml` 的 `dirs.backend` 指定）
 - **语言**: Java 21
 - **框架**: Spring Boot 3.5.9
 - **构建工具**: Maven
@@ -19,7 +19,7 @@
 - **缓存**: Redis
 - **其他**: Lombok, MapStruct 1.6.3
 
-### 前端 ({{dirs.frontend}})
+### 前端（目录由 `.ai/project.yml` 的 `dirs.frontend` 指定）
 - **语言**: TypeScript 5.3
 - **框架**: Vue 3.5 + Vite 5.1
 - **UI 组件**: Element Plus 2.11
@@ -30,48 +30,67 @@
 ## 开发命令
 
 ### 后端
+
+后端目录不得假定为仓库根目录，执行命令前必须从 `.ai/project.yml` 动态读取 `dirs.backend`：
+
 ```bash
 # 编译项目
-mvn clean compile
+BACKEND_DIR=$(awk -F'"' '/^[[:space:]]+backend:/ {print $2; exit}' .ai/project.yml)
+cd "$BACKEND_DIR" && mvn clean compile
 
 # 打包项目（跳过测试）
-mvn clean package -DskipTests
+BACKEND_DIR=$(awk -F'"' '/^[[:space:]]+backend:/ {print $2; exit}' .ai/project.yml)
+cd "$BACKEND_DIR" && mvn clean package -DskipTests
 
 # 运行单元测试
-mvn test
+BACKEND_DIR=$(awk -F'"' '/^[[:space:]]+backend:/ {print $2; exit}' .ai/project.yml)
+cd "$BACKEND_DIR" && mvn test
 
 # 完整构建（含测试）
-mvn clean verify
+BACKEND_DIR=$(awk -F'"' '/^[[:space:]]+backend:/ {print $2; exit}' .ai/project.yml)
+cd "$BACKEND_DIR" && mvn clean verify
 
 # 启动服务（需先编译）
-java -jar vmesh-server/target/vmesh-server.jar
+BACKEND_DIR=$(awk -F'"' '/^[[:space:]]+backend:/ {print $2; exit}' .ai/project.yml)
+java -jar "$BACKEND_DIR/vmesh-server/target/vmesh-server.jar"
 ```
 
 ### 前端
+
+前端目录同样从 `.ai/project.yml` 动态读取 `dirs.frontend`：
+
 ```bash
 # 安装依赖
-pnpm install
+FRONTEND_DIR=$(awk -F'"' '/^[[:space:]]+frontend:/ {print $2; exit}' .ai/project.yml)
+cd "$FRONTEND_DIR" && pnpm install
 
 # 启动本地开发服务器
-pnpm dev
+FRONTEND_DIR=$(awk -F'"' '/^[[:space:]]+frontend:/ {print $2; exit}' .ai/project.yml)
+cd "$FRONTEND_DIR" && pnpm dev
 
 # 启动连接后端开发服务器
-pnpm dev-server
+FRONTEND_DIR=$(awk -F'"' '/^[[:space:]]+frontend:/ {print $2; exit}' .ai/project.yml)
+cd "$FRONTEND_DIR" && pnpm dev-server
 
 # TypeScript 类型检查
-pnpm ts:check
+FRONTEND_DIR=$(awk -F'"' '/^[[:space:]]+frontend:/ {print $2; exit}' .ai/project.yml)
+cd "$FRONTEND_DIR" && pnpm ts:check
 
 # ESLint 代码检查
-pnpm lint:eslint
+FRONTEND_DIR=$(awk -F'"' '/^[[:space:]]+frontend:/ {print $2; exit}' .ai/project.yml)
+cd "$FRONTEND_DIR" && pnpm lint:eslint
 
 # Prettier 格式化
-pnpm lint:format
+FRONTEND_DIR=$(awk -F'"' '/^[[:space:]]+frontend:/ {print $2; exit}' .ai/project.yml)
+cd "$FRONTEND_DIR" && pnpm lint:format
 
 # StyleLint 样式检查
-pnpm lint:style
+FRONTEND_DIR=$(awk -F'"' '/^[[:space:]]+frontend:/ {print $2; exit}' .ai/project.yml)
+cd "$FRONTEND_DIR" && pnpm lint:style
 
 # 构建生产版本
-pnpm build:prod
+FRONTEND_DIR=$(awk -F'"' '/^[[:space:]]+frontend:/ {print $2; exit}' .ai/project.yml)
+cd "$FRONTEND_DIR" && pnpm build:prod
 ```
 
 ## 代码风格
@@ -119,7 +138,7 @@ pnpm build:prod
 
 ## 3. 执行边界
 
-1. 未获明确确认，不运行测试。
+1. 默认允许执行只读命令、静态检查、类型检查、编译与单元测试；后台执行单元测试时建议设置最大超时时间 60s，避免任务卡死。
 2. 未获明确确认，不执行高风险操作（删除/批量改写/环境与权限变更/生产数据与密钥相关操作）。
 3. 需执行高风险操作时，先说明影响范围与风险，再等待明确确认。
 4. 若发现当前任务存在适合沉淀为可复用 skill 的稳定流程或检查清单，先给出 skill 化建议；未获明确同意前，不直接生成 skill 文件。经确认后生成的项目级 skill 统一保存到 `./.ai/skills/`。

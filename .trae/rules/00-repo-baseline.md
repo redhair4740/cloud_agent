@@ -2,7 +2,7 @@
 
 本文件仅定义跨前后端通用规则；后端专属规范放 `10-backend-development-rules.md`，前端专属规范放 `20-frontend-development-rules.md`。
 
-> 此文件由 .ai/ 自动生成，请勿直接编辑。
+> 此文件由 .ai/ 投影生成；测试阶段需手工同步，请勿脱离源文件单独修改。
 > 源文件：.ai/rules/00-repo-baseline.md
 > 投影时间：2026-04-24
 

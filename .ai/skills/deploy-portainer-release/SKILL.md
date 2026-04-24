@@ -33,17 +33,17 @@ Jenkins 构建 -> Harbor 推镜像 -> Portainer 重部署
 
 优先读取：
 
-- `{{dirs.backend}}/vmesh-server/Dockerfile`
-- `{{dirs.backend}}/vmesh-server/pom.xml`
-- `{{dirs.backend}}/pom.xml`
-- `{{dirs.backend}}/vmesh-server/src/main/resources/application*.yaml`
-- `{{dirs.frontend}}/package.json`
-- `{{dirs.frontend}}/.env.prod`
-- `{{dirs.frontend}}/src/config/axios/config.ts`
+- `<backend-dir>/vmesh-server/Dockerfile`
+- `<backend-dir>/vmesh-server/pom.xml`
+- `<backend-dir>/pom.xml`
+- `<backend-dir>/vmesh-server/src/main/resources/application*.yaml`
+- `<frontend-dir>/package.json`
+- `<frontend-dir>/.env.prod`
+- `<frontend-dir>/src/config/axios/config.ts`
 
 如果仓库里还存在旧部署资产，再额外读取：
 
-- `{{dirs.backend}}/script/docker/*`
+- `<backend-dir>/script/docker/*`
 - 任何旧 `Docker-HOWTO.md`
 - 任何旧 `docker-compose.yml`
 
@@ -60,8 +60,8 @@ Jenkins 构建 -> Harbor 推镜像 -> Portainer 重部署
 
 如果用户希望前后端各自管理部署资产，默认路径固定为：
 
-- 后端：`{{dirs.backend}}/deploy/`
-- 前端：`{{dirs.frontend}}/deploy/`
+- 后端：`<backend-dir>/deploy/`
+- 前端：`<frontend-dir>/deploy/`
 
 默认不要继续把新资产放到根仓 `deploy/`。
 
@@ -118,8 +118,8 @@ Jenkins 构建 -> Harbor 推镜像 -> Portainer 重部署
 
 如果用户要求补"首发操作清单"，默认不是写根仓统一清单，而是：
 
-- `{{dirs.backend}}/deploy/首发操作清单.md`
-- `{{dirs.frontend}}/deploy/首发操作清单.md`
+- `<backend-dir>/deploy/首发操作清单.md`
+- `<frontend-dir>/deploy/首发操作清单.md`
 
 两份清单都要写清"共享 Docker 网络"的前提和验证步骤。
 

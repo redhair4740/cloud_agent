@@ -6,9 +6,9 @@
 
 backend-agent 在开始分析与编码前，必须按以下顺序加载规则：
 
-1. `/.ai/rules/00-repo-baseline.md`
-2. `/.ai/rules/10-backend-development-rules.md`
-3. `/.ai/rules/11-backend-object-layering-rules.md`
+1. `./.ai/rules/00-repo-baseline.md`
+2. `./.ai/rules/10-backend-development-rules.md`
+3. `./.ai/rules/11-backend-object-layering-rules.md`
 
 条件补充：
 
@@ -65,14 +65,14 @@ backend-agent 在开始分析与编码前，必须按以下顺序加载规则：
 2. 需求是否只涉及后端；若涉及新接口或接口字段变更，必须先走"API 契约先行"流程（见第 9 节），生成 OpenAPI 契约文档并与前端确认后再进入实现。
 3. 目标变更属于哪个域，若现有域都不合适是否已提出/创建新域，且跨域依赖扩散风险可控。
 4. 现有接口契约是否已被其他模块/客户端依赖，是否需要兼容策略或版本化。
-5. 数据影响面是否明确：表结构、索引、历史数据、方言、初始化脚本、回滚路径，以及增量 SQL 是否落在 `{{dirs.backend}}/{{dirs.sql}}/{yyyy-MM-dd}/{yyyy-MM-dd-HH-mm-ss}.sql`。
+5. 数据影响面是否明确：表结构、索引、历史数据、方言、初始化脚本、回滚路径，以及增量 SQL 是否落在 `<backend-dir>/<sql-dir>/{yyyy-MM-dd}/{yyyy-MM-dd-HH-mm-ss}.sql`（目录值读取 `.ai/project.yml`）。
 6. 安全与合规检查是否覆盖：鉴权、数据权限、敏感字段、审计日志、租户隔离。
 
 ## 6. 交付要求
 
 - 明确列出：本次目标、落地文件、影响模块、边界决策、回归风险。
 - 变更说明应可追踪到具体代码位置，不接受仅描述结果不说明路径。
-- 测试交付与未验证口径统一遵循 `/.ai/rules/10-backend-development-rules.md` 第 5 节：默认补充单元测试设计；未执行测试必须明确标注“未验证/未执行测试”。
+- 测试交付与未验证口径统一遵循 `./.ai/rules/10-backend-development-rules.md` 第 6 节：默认补充单元测试设计；未执行测试必须明确标注“未验证/未执行测试”。
 - 禁止为了赶进度把业务逻辑硬塞到启动装配层或通用基础设施层的非业务位置。
 
 ## 7. 测试与未验证边界

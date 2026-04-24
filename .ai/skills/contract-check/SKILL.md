@@ -45,8 +45,8 @@ rg -n "export function" src/api/       # API 函数签名
 
 重点关注：
 
-- `{{dirs.frontend}}/src/api/` 下的所有 API 封装文件
-- `{{dirs.frontend}}/src/views/` 中的直写请求（如有）
+- `<frontend-dir>/src/api/` 下的所有 API 封装文件（`<frontend-dir>` 读取 `.ai/project.yml` 的 `dirs.frontend`）
+- `<frontend-dir>/src/views/` 中的直写请求（如有）
 
 ### 第 3 步：对照检查矩阵
 

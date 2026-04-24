@@ -5,12 +5,12 @@
 ## 0. 执行前必读（强制）
 
 - frontend-agent 在执行任何任务前，必须先加载：
-  - `/.ai/rules/00-repo-baseline.md`
-  - `/.ai/rules/20-frontend-development-rules.md`
+  - `./.ai/rules/00-repo-baseline.md`
+  - `./.ai/rules/20-frontend-development-rules.md`
 - 若任务涉及新接口或接口变更，frontend-agent 不得独立推进。
   - 必须先等待后端输出 OpenAPI 契约文档（`/v3/api-docs`）。
   - 按 OpenAPI 文档对齐前端类型与调用参数后，再进入实现。
-  - 联动相关约束参考 `/.ai/rules/30-fullstack-linkage-rules.md` 和 `/.ai/skills/contract-check/SKILL.md`。
+  - 联动相关约束参考 `./.ai/rules/30-fullstack-linkage-rules.md` 和 `./.ai/skills/contract-check/SKILL.md`。
 
 ## 1. 适用范围
 
@@ -69,4 +69,4 @@
   - 需要后端确认或改造的项
 - 后端通过"API 契约先行"流程输出 OpenAPI 文档（`/v3/api-docs`），frontend-agent 按文档实现。
 - 实现完成后使用 `contract-check` skill 做一致性验证。
-- 联动相关约束参考 `/.ai/rules/30-fullstack-linkage-rules.md`。
+- 联动相关约束参考 `./.ai/rules/30-fullstack-linkage-rules.md`。

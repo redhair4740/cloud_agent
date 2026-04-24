@@ -119,14 +119,14 @@
 
 | 模块名称 | 目录路径 | 职责说明 | 当前状态 | 注意事项 |
 |----------|----------|----------|----------|----------|
-| 设备管理 | {{dirs.backend}}/device | 设备注册、状态查询、批量导入 | 🟢正常 | 批量导入超过 500 条时需分批 |
-| 监控看板 | {{dirs.frontend}}/views/dashboard | 实时数据展示 | 🟡待优化 | WebSocket 偶发断连，需手动刷新 |
+| 设备管理 | <backend-dir>/device | 设备注册、状态查询、批量导入 | 🟢正常 | 批量导入超过 500 条时需分批 |
+| 监控看板 | <frontend-dir>/views/dashboard | 实时数据展示 | 🟡待优化 | WebSocket 偶发断连，需手动刷新 |
 
 ## 4. 部署流程
 
 ### 4.2 部署步骤
 
-1. 后端：`mvn clean package -DskipTests` → 上传 jar → `java -jar xxx.jar`
+1. 后端：先从 `.ai/project.yml` 读取 `dirs.backend`，再执行 `cd "$BACKEND_DIR" && mvn clean package -DskipTests` → 上传 jar → `java -jar xxx.jar`
 2. 前端：`npm run build` → 上传 dist 到 Nginx
 3. 验证：访问 /health 端点确认服务启动
 

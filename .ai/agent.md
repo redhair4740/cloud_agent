@@ -10,13 +10,13 @@
 
 ## 2. 项目目录映射
 
-> 目录名变量引用自 `.ai/project.yml`，修改项目名只需改该文件。
+> 目录名统一从 `.ai/project.yml` 的 `dirs.*` 动态读取，每位协作者可按本地目录结构调整该文件。
 
-- 后端主工程目录：`./{{dirs.backend}}`
+- 后端主工程目录：由 `.ai/project.yml` 的 `dirs.backend` 指定
   - 承载后端接口、领域模型、数据访问、后端配置与后端测试代码。
-- 前端主工程目录：`./{{dirs.frontend}}`
+- 前端主工程目录：由 `.ai/project.yml` 的 `dirs.frontend` 指定
   - 承载页面、组件、状态管理、API 调用封装与前端交互逻辑。
-- 原型/设计参考目录：`./{{dirs.design}}`
+- 原型/设计参考目录：由 `.ai/project.yml` 的 `dirs.design` 指定
   - 只用于参考布局、信息层级、交互流程与功能点，不作为代码实现来源。
 - 项目协作规范目录：`./.ai`
   - 承载当前项目的 agents / rules / skills 规范体系。

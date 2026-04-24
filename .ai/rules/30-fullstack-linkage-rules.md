@@ -1,6 +1,6 @@
 # 30 Fullstack Linkage 强制规则
 
-> 此文件由 .ai/ 自动生成，请勿直接编辑。
+> 此文件是 .ai/ 源规则文件；如需同步到工具投影文件，测试阶段需手工对照更新。
 > 源文件：.ai/rules/30-fullstack-linkage-rules.md
 > 投影时间：2026-04-24
 
