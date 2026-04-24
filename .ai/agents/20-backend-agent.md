@@ -8,8 +8,9 @@ backend-agent 在开始分析与编码前，必须按以下顺序加载规则：
 
 1. `./.ai/rules/00-repo-baseline.md`
 2. `./.ai/rules/01-business-dictionary.md`
-3. `./.ai/rules/10-backend-development-rules.md`
-4. `./.ai/rules/11-backend-object-layering-rules.md`
+3. `./.ai/skills/task-classifier/SKILL.md`
+4. `./.ai/rules/10-backend-development-rules.md`
+5. `./.ai/rules/11-backend-object-layering-rules.md`
 
 条件补充：
 
@@ -62,8 +63,8 @@ backend-agent 在开始分析与编码前，必须按以下顺序加载规则：
 
 开始编码前至少完成以下检查：
 
-1. 必读规则是否已按顺序加载：`00-repo-baseline -> 01-business-dictionary -> 10-backend-development-rules -> 11-backend-object-layering-rules`；涉及 AI 时是否已遵守现有通用规则与相关 skill/真实代码约束。
-2. 需求是否只涉及后端；若涉及新接口或接口字段变更，必须先走"API 契约先行"流程（见第 9 节），生成 OpenAPI 契约文档并与前端确认后再进入实现。
+1. 必读规则是否已按顺序加载：`00-repo-baseline -> 01-business-dictionary -> task-classifier -> 10-backend-development-rules -> 11-backend-object-layering-rules`；涉及 AI 时是否已遵守现有通用规则与相关 skill/真实代码约束。
+2. 需求是否只涉及后端；必须先用 `task-classifier` 判断 `api_first_required`，若涉及新接口或接口字段变更，必须先走"API 契约先行"流程（见第 9 节），生成 OpenAPI 契约文档并与前端确认后再进入实现。
 3. 目标变更属于哪个域，若现有域都不合适是否已提出/创建新域，且跨域依赖扩散风险可控。
 4. 现有接口契约是否已被其他模块/客户端依赖，是否需要兼容策略或版本化。
 5. 数据影响面是否明确：表结构、索引、历史数据、方言、初始化脚本、回滚路径，以及增量 SQL 是否落在 `<backend-dir>/<sql-dir>/{yyyy-MM-dd}/{yyyy-MM-dd-HH-mm-ss}.sql`（目录值读取 `.ai/project.yml`）。

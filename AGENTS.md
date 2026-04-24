@@ -130,7 +130,13 @@ cd "$FRONTEND_DIR" && pnpm build:prod
 3. 最后按需读取：
    - `./.ai/rules/`（硬约束与边界规则，必须遵守；先读 `00-repo-baseline.md` 与 `01-business-dictionary.md`）
    - `./.ai/agents/`（协作角色定义）
-   - `./.ai/skills/`（可复用执行方法，当前已有 deploy-portainer-release、dynamic-menu-sync）
+   - `./.ai/skills/`（可复用执行方法，当前已有 contract-check、deploy-portainer-release、dynamic-menu-sync、task-classifier）
+
+### 1.0 任务开始分类
+
+- 每轮任务开始先参考 `./.ai/skills/task-classifier/SKILL.md` 做只读分类，输出 `task_type`、`api_first_required`、`required_rules` 与判断原因。
+- 若同时命中后端接口信号（Controller/VO/OpenAPI 注解）与前端接口消费信号（`src/api`、`src/views`、`src/store`、Mock），自动切换为前后端联动任务。
+- 分类不确定时先补充只读搜索证据；仍无法判断时，必须明确标注 `task_type: uncertain` 并请求确认是否涉及接口契约变更。
 
 ### 1.1 任务类型加载矩阵
 

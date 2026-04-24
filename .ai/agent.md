@@ -103,6 +103,8 @@
 
 按任务类型加载规则集合：
 
+任务开始先参考 `./.ai/skills/task-classifier/SKILL.md` 做只读分类，输出 `task_type`、`api_first_required`、`required_rules` 与判断原因；若同时命中后端接口信号与前端接口消费信号，自动切换为前后端联动任务。
+
 | 任务类型 | 必读规则/文件 |
 |----------|---------------|
 | 通用任务 | `./.ai/rules/00-repo-baseline.md` + `./.ai/rules/01-business-dictionary.md` |

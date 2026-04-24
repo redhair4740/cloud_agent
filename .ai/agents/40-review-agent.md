@@ -15,10 +15,10 @@
 
 ## 3. 规则加载方式（按对象）
 
-- review-agent 不单独定义一套替代规则，必须按被评审对象加载对应规则集。
+- review-agent 不单独定义一套替代规则，必须先参考 `./.ai/skills/task-classifier/SKILL.md` 对评审对象做只读分类，再按被评审对象加载对应规则集。
 - 评审后端改动：加载 `backend-agent` 对应规则集（`00-repo-baseline.md + 10-backend-development-rules.md`）。
 - 评审前端改动：加载 `frontend-agent` 对应规则集（`00-repo-baseline.md + 20-frontend-development-rules.md`）。
-- 评审联动改动：加载 `backend-agent` + `frontend-agent` + `30-fullstack-linkage-rules.md` 规则集。
+- 评审联动改动：加载 `backend-agent` + `frontend-agent` + `30-fullstack-linkage-rules.md` + `.ai/api-status.yml` 规则集，并标注 `api_first_required`。
 - 若评审对象涉及 AI 相关改动，遵守现有通用规则与相关 skill/真实代码约束。
 
 ## 4. 评审重点

@@ -85,6 +85,7 @@
 | `contract-check` | 1.0.0 | 前后端接口契约一致性检查（对照 OpenAPI 文档与前端代码） |
 | `deploy-portainer-release` | 1.0.0 | Jenkins 构建 → Harbor 推镜像 → Portainer Stack 发布 |
 | `dynamic-menu-sync` | 1.0.0 | 前端动态路由与后端数据库菜单同步 |
+| `task-classifier` | 1.0.0 | 任务开始阶段判断任务类型、必读规则与是否触发 API-First 联动 |
 
 ### templates/ — 文档模板
 

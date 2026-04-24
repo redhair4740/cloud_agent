@@ -139,6 +139,12 @@
 
 本文件使用摘要模式，不再全量内联 `.ai/rules/*.md`。执行任务时必须按任务类型加载下列详细规则文件。
 
+### 任务开始分类
+
+- 每轮任务开始先参考 `./.ai/skills/task-classifier/SKILL.md` 做只读分类，输出 `task_type`、`api_first_required`、`required_rules` 与判断原因。
+- 若同时命中后端接口信号（Controller/VO/OpenAPI 注解）与前端接口消费信号（`src/api`、`src/views`、`src/store`、Mock），自动切换为前后端联动任务。
+- 分类不确定时先补充只读搜索证据；仍无法判断时，必须明确标注 `task_type: uncertain` 并请求确认是否涉及接口契约变更。
+
 ### 任务类型加载矩阵
 
 | 任务类型 | 必读规则/文件 |
@@ -163,6 +169,7 @@
 
 - `./.ai/rules/00-repo-baseline.md`：跨端通用基线、证据表达、未验证口径、通用风险边界。
 - `./.ai/rules/01-business-dictionary.md`：业务领域字典、推荐英文、禁用译法、表/权限前缀。
+- `./.ai/skills/task-classifier/SKILL.md`：任务类型分类、必读规则判断与 API-First 触发判断。
 - `./.ai/rules/10-backend-development-rules.md`：后端技术栈、SQL、模块边界、编译验证。
 - `./.ai/rules/11-backend-object-layering-rules.md`：后端对象分层与目录组织。
 - `./.ai/rules/20-frontend-development-rules.md`：前端 API SDK、状态管理、Mock 与交付规则。

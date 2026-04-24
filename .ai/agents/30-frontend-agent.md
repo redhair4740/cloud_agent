@@ -7,8 +7,9 @@
 - frontend-agent 在执行任何任务前，必须先加载：
   - `./.ai/rules/00-repo-baseline.md`
   - `./.ai/rules/01-business-dictionary.md`
+  - `./.ai/skills/task-classifier/SKILL.md`
   - `./.ai/rules/20-frontend-development-rules.md`
-- 若任务涉及新接口或接口变更，frontend-agent 不得独立推进。
+- 若 `task-classifier` 输出 `api_first_required: true`，或任务涉及新接口/接口变更，frontend-agent 不得独立推进。
   - 必须先等待后端输出 OpenAPI 契约文档（`/v3/api-docs`）。
   - 按 OpenAPI 文档对齐前端类型与调用参数后，再进入实现。
   - 联动相关约束参考 `./.ai/rules/30-fullstack-linkage-rules.md` 和 `./.ai/skills/contract-check/SKILL.md`。
