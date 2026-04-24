@@ -80,6 +80,10 @@ Gemini CLI 使用以下配置文件：
 
 {投影自 .ai/rules/00-repo-baseline.md}
 
+### 01-business-dictionary
+
+{投影自 .ai/rules/01-business-dictionary.md}
+
 ### 10-backend-development-rules
 
 {投影自 .ai/rules/10-backend-development-rules.md}

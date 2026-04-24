@@ -59,9 +59,15 @@
     - `./.ai/agents/20-backend-agent.md`
     - `./.ai/agents/30-frontend-agent.md`
     - `./.ai/agents/40-review-agent.md`
+- `./.ai/api-status.yml`
+  - 记录接口联调状态，由后端或人工确认后更新。
+  - 前端与 AI 只消费状态，用于决定是否 Mock、是否切真实 API、是否清理失效 Mock。
 - `./.ai/rules/`
   - 定义项目硬约束与边界规则，属于必须遵守项。
-  - 涵盖模块归属、开发边界、交付标准、测试与验证口径。
+  - 涵盖业务命名、模块归属、开发边界、交付标准、测试与验证口径。
+  - 核心基线文档：
+    - `./.ai/rules/00-repo-baseline.md`（跨端通用基线）
+    - `./.ai/rules/01-business-dictionary.md`（业务领域字典与命名映射）
   - 联动规则文档：
     - `./.ai/rules/30-fullstack-linkage-rules.md`（前后端联动强制规则）
 - `./.ai/skills/`
@@ -83,16 +89,16 @@
 按任务类型加载规则集合：
 
 1. `backend-agent`
-   - 规则继承：`00-repo-baseline.md + 10-backend-development-rules.md + 11-backend-object-layering-rules.md`
+   - 规则继承：`00-repo-baseline.md + 01-business-dictionary.md + 10-backend-development-rules.md + 11-backend-object-layering-rules.md`
    - 涉及新接口或接口变更时，必须先走"API 契约先行"流程。
 2. `frontend-agent`
-   - 规则继承：`00-repo-baseline.md + 20-frontend-development-rules.md`
+   - 规则继承：`00-repo-baseline.md + 01-business-dictionary.md + 20-frontend-development-rules.md`
    - 接口调用必须按 OpenAPI 文档对齐，不得自行猜测字段。
 3. `review-agent`
    - 规则继承：按被评审对象加载对应规则集合
    - 评审后端改动：加载 `backend-agent` 规则集
    - 评审前端改动：加载 `frontend-agent` 规则集
-   - 评审联动改动：加载 `backend-agent` + `frontend-agent` + `30-fullstack-linkage-rules.md` 规则集
+   - 评审联动改动：加载 `backend-agent` + `frontend-agent` + `01-business-dictionary.md` + `30-fullstack-linkage-rules.md` 规则集
 
 跨端联动任务调度原则：
 
@@ -141,15 +147,15 @@
 
 - 全程使用简体中文沟通（需求澄清、分析、变更说明、交付说明）。
 - 关键判断必须证据化：优先给出 `文件路径 + 方法/配置键 + 命令/参数 + 真实行为`，避免无依据结论。
-- 结论需可复查，不使用"应该/可能"替代可执行动作。
+- 结论需可复查，不使用“应该/可能”替代可执行动作。
 
 ## 2. 未验证口径
 
-- 未执行真实验证时，必须明确标注"未验证"或"未执行测试"。
-- 只有存在实际验证证据时，才可使用"已修复""已通过""已完成"。
+- 未执行真实验证时，必须明确标注“未验证”或“未执行测试”。
+- 只有存在实际验证证据时，才可使用“已修复”“已通过”“已完成”。
 - 禁止把静态分析、阅读代码、局部推断表述成已验证结论。
-- 若按规则判断当前任务不强制执行编译命令，也必须明确标注"未编译验证"，不得默认省略。
-- 只要声称"编译通过"，必须同时给出真实编译命令、执行范围与结果。
+- 若按规则判断当前任务不强制执行编译命令，也必须明确标注“未编译验证”，不得默认省略。
+- 只要声称“编译通过”，必须同时给出真实编译命令、执行范围与结果。
 
 ## 3. 原型与实现边界
 
@@ -185,11 +191,62 @@
 - 评审清单继续遵循 `review-tracking/` 的 `review清单-hh-mm-ss-文档名称-状态.md` 规则。
 - `review-tracking/` 的状态后缀仅允许 `已完成`、`未完成`；当清单状态变化时，需同步重命名文件并更新索引链接。
 
+### 01-business-dictionary
+
+# Rule: 业务领域字典（Business Domain Glossary）
+
+本规则用于统一项目内业务名词、英文命名、表前缀与代码标识。AI 在新增或修改后端、前端、SQL、接口契约、文档时，必须优先按本字典命名；未收录词不得自行随意翻译。
+
+## 1. 使用原则
+
+- 中文业务名词是语义源，英文命名是代码落地形式；同一业务概念只能使用一个推荐英文。
+- 新增类名、字段名、接口路径、枚举、表名、菜单权限标识时，先查本字典，再查既有代码与表结构。
+- 发现未收录业务词时，先在交付说明中标注“待补充业务词”，不得把临时翻译直接固化为公共命名。
+- 禁止为了局部实现方便创造同义英文，例如同一概念同时出现 `Tenant`、`Merchant`、`Customer`。
+- 若既有代码命名与本字典冲突，新增代码优先遵循既有兼容边界；涉及重命名或兼容迁移时必须单独说明影响范围。
+
+## 2. 核心业务实体命名
+
+| 中文名词 | 推荐英文 | 禁用/慎用英文 | 典型代码命名 | 表/权限前缀 |
+|----------|----------|---------------|--------------|-------------|
+| 租户 | Tenant | Merchant、Customer | `TenantDO`、`tenantId` | `system_tenant`、`tenant:*` |
+| 用户 | User | Account（仅登录账号语义可用） | `UserDO`、`userId` | `system_users`、`system:user:*` |
+| 角色 | Role | Group | `RoleDO`、`roleId` | `system_role`、`system:role:*` |
+| 菜单 | Menu | Navigation | `MenuDO`、`menuId` | `system_menu`、`system:menu:*` |
+| 权限 | Permission | Auth（仅鉴权动作可用） | `permission`、`permissionCode` | `system:permission:*` |
+| 组织 | Organization | Org（仅缩写场景慎用） | `OrganizationDO`、`organizationId` | `system_org`、`system:org:*` |
+| 部门 | Dept | Department（文档可用，代码优先 Dept） | `DeptDO`、`deptId` | `system_dept`、`system:dept:*` |
+| 岗位 | Post | Position、Job | `PostDO`、`postId` | `system_post`、`system:post:*` |
+| 商户 | Merchant | Tenant、Customer | `MerchantDO`、`merchantId` | `business_merchant`、`merchant:*` |
+| 客户 | Customer | Tenant、Merchant | `CustomerDO`、`customerId` | `business_customer`、`customer:*` |
+| 设备 | Device | Equipment（仅泛设备文档可用） | `DeviceDO`、`deviceId` | `edge_device`、`edge:device:*` |
+| 边缘节点 | EdgeNode | EdgeDevice | `EdgeNodeDO`、`edgeNodeId` | `edge_node`、`edge:node:*` |
+| 算法 | Algorithm | Algo（仅局部变量慎用） | `AlgorithmDO`、`algorithmId` | `algorithm_*`、`algorithm:*` |
+| 模型 | Model | Module | `ModelDO`、`modelId` | `algorithm_model`、`algorithm:model:*` |
+| 视觉任务 | VisionTask | VisualTask、Job | `VisionTaskDO`、`visionTaskId` | `vision_task`、`vision:task:*` |
+| 告警 | Alarm | Alert（仅前端展示可用） | `AlarmDO`、`alarmId` | `edge_alarm`、`edge:alarm:*` |
+| 报表 | Report | Statement | `ReportDO`、`reportId` | `report_*`、`report:*` |
+| 审计日志 | AuditLog | OperationLog（操作日志另有语义时慎用） | `AuditLogDO`、`auditLogId` | `system_audit_log`、`system:audit:*` |
+
+## 3. 命名落地规则
+
+- 后端实体默认按 `XxxDO`、`XxxMapper`、`XxxService`、`XxxController` 命名，`Xxx` 必须来自推荐英文。
+- 前端类型默认按 `XxxVO`、`XxxRespVO`、`XxxReqVO`、`XxxPageReqVO` 对齐后端契约，不得自行替换业务词。
+- 数据库表名优先使用已存在模块前缀；新增表名前缀必须能体现归属域，例如 `system_`、`edge_`、`algorithm_`、`vision_`、`report_`。
+- 权限标识按 `<domain>:<resource>:<action>` 组织，`domain` 与 `resource` 应使用字典推荐英文的小写形式。
+- 前端路由、菜单 `component` 与 `name` 不得使用禁用英文；需要兼容既有路由时，必须说明兼容原因。
+
+## 4. 未收录词处理
+
+- 若任务中出现本字典未覆盖的核心业务词，AI 必须先查既有代码、SQL、OpenAPI 与产品文档。
+- 仍无法确认时，交付说明中列出候选中文词、建议英文、影响文件，等待人工确认。
+- 经人工确认后，才允许补充本文件并同步投影文件。
+
 ### 10-backend-development-rules
 
 # Rule: 后端开发强制规则
 
-本规则用于项目后端主工程的协作开发。凡是后端开发、重构、排障、协议变更任务，必须遵守本文件，不得以"临时实现"为由绕过。
+本规则用于项目后端主工程的协作开发。凡是后端开发、重构、排障、协议变更任务，必须遵守本文件，不得以“临时实现”为由绕过。
 
 ## 1. 技术栈强制约束
 
@@ -204,7 +261,7 @@
 - 任何 SQL 变更都要先判断 PostgreSQL 可执行性，再考虑其他数据库兼容。
 - 新增/修改字段、索引、初始化脚本时，必须说明 PostgreSQL 下的行为与风险点。
 - 若同时涉及分页插件与 MyBatis/MyBatis-Plus 版本组合，必须先确认依赖收敛，避免运行时签名冲突。
-- PostgreSQL 的 `jsonb` 字段不得按"Java 字段改成 `Map` / `Object` 就一定可写入"进行假设，必须同时确认 JDBC 绑定类型。
+- PostgreSQL 的 `jsonb` 字段不得按“Java 字段改成 `Map` / `Object` 就一定可写入”进行假设，必须同时确认 JDBC 绑定类型。
 - MyBatis / MyBatis-Plus 写入 PostgreSQL `jsonb` 时，若默认 `TypeHandler` 仍按 `varchar` 传参，则禁止直接用于 `jsonb` 列。
 - 项目内新增或修改 PostgreSQL `jsonb` 字段时，必须优先复用项目级 `jsonb` 专用 TypeHandler；当前项目统一使用 `com.wf.vmesh.framework.mybatis.core.type.PgJsonbTypeHandler`。
 - `jsonb` 字段的 DO 声明必须同时满足：字段类型与业务结构一致、`@TableField(typeHandler = PgJsonbTypeHandler.class)` 明确声明、`@TableName(..., autoResultMap = true)` 正确开启结果映射。
@@ -244,7 +301,7 @@
 - 规范推荐的 Mapper 目录统一使用 `dal/mapper/**`。
 - 重点收口两类越界：`controller -> mapper` 直连、controller 直接编排跨子域聚合；新增实现必须统一经 service 边界收敛。
 - 变更描述必须包含：目标、落地文件、影响模块、边界决策、回归风险。
-- 涉及接口协议变更时，必须明确请求参数、响应结构、错误码、鉴权影响，不得只给"接口已改"结论。
+- 涉及接口协议变更时，必须明确请求参数、响应结构、错误码、鉴权影响，不得只给“接口已改”结论。
 - 涉及数据库变更时，必须明确迁移路径、回滚思路与历史数据影响。
 - 涉及建表或结构变更时，变更说明中必须写明新增 SQL 的落地路径、日期目录、文件名以及是否新增了通用字段。
 - 涉及 AI 平台配置时，密钥等敏感信息只允许通过配置项/环境变量注入，禁止硬编码或在交付说明中回显。
@@ -252,15 +309,15 @@
 ## 6. 编译验证与未验证边界
 
 - 后端代码是否必须做编译验证，按变更复杂度决定，但默认偏向执行最小可行编译验证，而不是仅靠阅读代码判断。
-- 低复杂度变更可不强制执行编译命令，但必须满足：仅局部文案/常量/注解/明显无语义歧义的小范围改动，且 IDE/语言诊断无错误；若未执行编译，交付时必须明确标注"未编译验证"。
+- 低复杂度变更可不强制执行编译命令，但必须满足：仅局部文案/常量/注解/明显无语义歧义的小范围改动，且 IDE/语言诊断无错误；若未执行编译，交付时必须明确标注“未编译验证”。
 - 中复杂度变更必须执行模块级编译验证，典型包括：新增/修改方法签名、泛型与类型转换调整、Mapper/DO/VO 字段改动、依赖注入改动、配置键改动、SQL 映射改动、TypeHandler 改动、序列化/反序列化逻辑改动。
 - 高复杂度变更除模块级编译外，还应建议更高强度验证，典型包括：跨模块重构、数据库迁移、鉴权链路、启动装配、消息链路、第三方集成、批量结构调整；其中只读检查、编译与单元测试默认允许，高风险验证（数据库迁移、生产 API、外部服务写入、批量数据变更）必须先获得明确确认。
 - 只要修改范围涉及 `<backend-dir>/<edge-module>` 后端源码，默认优先从 `.ai/project.yml` 读取 `dirs.backend` 与 `backend_stack.edge_module` 后执行模块编译：`BACKEND_DIR=$(awk -F'"' '/^[[:space:]]+backend:/ {print $2; exit}' .ai/project.yml); EDGE_MODULE=$(awk -F'"' '/^[[:space:]]+edge_module:/ {print $2; exit}' .ai/project.yml); cd "$BACKEND_DIR" && mvn compile -pl "$EDGE_MODULE" -am`
-- 若改动发生在其他后端模块，应优先使用"目标模块 + `-am`"的最小编译范围命令，避免无必要全量构建。
+- 若改动发生在其他后端模块，应优先使用“目标模块 + `-am`”的最小编译范围命令，避免无必要全量构建。
 - 若改动同时覆盖框架层与业务模块，优先确保受影响业务模块能够随依赖链一起编译通过，不只编译框架层本身。
-- 编译命令、执行范围、是否成功，必须在交付说明中明确写出；没有真实命令与结果时，不得写成"编译通过"。
+- 编译命令、执行范围、是否成功，必须在交付说明中明确写出；没有真实命令与结果时，不得写成“编译通过”。
 - 默认允许执行只读命令、静态检查、类型检查、编译与单元测试；后台执行单元测试时建议设置最大超时时间 60s。高风险验证（数据库迁移、生产 API、外部服务写入、批量数据变更）必须先获得明确确认。
-- 没有实际运行验证时，必须明确标注"未验证"或"未执行测试"，禁止使用"已通过""已修复完成"等表述。
+- 没有实际运行验证时，必须明确标注“未验证”或“未执行测试”，禁止使用“已通过”“已修复完成”等表述。
 - 高风险变更（鉴权链路、数据库迁移、跨模块重构）必须单列风险与后续验证建议。
 
 ## 7. 协作切换规则
@@ -294,7 +351,7 @@
 非默认项：
 
 - `service/**/bo` 不作为默认分层要求。
-- 仅在"单一模块内存在多个入口复用同一复杂业务入参/返回聚合"时，才允许引入 `BO`，并在变更说明中写明必要性。
+- 仅在“单一模块内存在多个入口复用同一复杂业务入参/返回聚合”时，才允许引入 `BO`，并在变更说明中写明必要性。
 - `Mapper` 目录统一使用 `dal/mapper/**` 这类中性命名，不再使用带数据库品牌的包名。
 
 ## 3. 依赖方向与硬边界
@@ -315,7 +372,7 @@
 说明：
 
 - controller 需要数据聚合时，统一经 service 契约编排，不在 controller 拼装跨子域查询。
-- 跨子域协作统一走稳定 service 能力，避免形成"跨域 mapper 网状依赖"。
+- 跨子域协作统一走稳定 service 能力，避免形成“跨域 mapper 网状依赖”。
 
 ## 4. 推荐目录结构（默认无 BO）
 
@@ -379,13 +436,13 @@ com/wf/vmesh/module/<domain>
 ## 7. 命名与演进约束
 
 - 不在同一域同时引入多套同义对象命名（`bo/dto/param/query` 并存）。
-- 需要扩展对象层前，先在规范补充"为什么必须新增这一层"。
+- 需要扩展对象层前，先在规范补充“为什么必须新增这一层”。
 
 ### 20-frontend-development-rules
 
 # Rule: 前端开发强制规范
 
-本规范用于项目主前端工程，属于强制规则。前端代理执行任务前，必须先加载本文件与 `00-repo-baseline.md`。
+本规范用于项目主前端工程，属于强制规则。前端代理执行任务前，必须先加载本文件、`00-repo-baseline.md` 与 `01-business-dictionary.md`。
 
 ## 1. 技术栈与版本基线（强制）
 
@@ -418,14 +475,21 @@ com/wf/vmesh/module/<domain>
 ## 5. Mock 使用边界（强制）
 
 - Mock 仅用于开发阶段短期阻塞解除与界面占位验证，不得作为长期依赖。
-- 一旦后端可联调，必须在同任务或紧邻任务中切回真实 API 并清理失效 mock。
-- 不允许出现"生产路径依赖 mock 才可运行"的交付形态。
+- 接口联调状态以 `.ai/api-status.yml` 为准，前端与 AI 只消费状态，不得自行把接口标记为 `ready`。
+- 状态为 `planned` 时，不得猜字段或自造响应结构，必须等待 OpenAPI 契约或后端确认。
+- 状态为 `contracted` 或 `mockable` 时，可基于 OpenAPI 契约走统一 Mock 层，但必须保留切换真实 API 的边界。
+- 状态为 `partial` 时，已确认可联调的字段与路径接真实 API，未完成部分继续走统一 Mock 层并在交付说明中标注。
+- 状态为 `ready` 时，默认切真实 API，并清理仅服务该接口的失效 Mock；若暂不清理，必须说明原因和保留期限。
+- 状态为 `deprecated` 时，禁止新增依赖，已有调用必须提出替代或迁移方案。
+- Mock 只能落在项目统一 Mock 层或统一 mock 目录；若项目暂无统一机制，必须先提出统一落点方案，不得把 Mock 逻辑硬编码在 Vue 组件、Pinia action 或 API SDK 内部。
+- 不允许出现“生产路径依赖 mock 才可运行”的交付形态。
 
 ## 6. 交付与验证边界（强制）
 
 - 交付说明必须覆盖：变更页面/组件、API 调用点、状态流转点、失败路径处理。
-- 必须显式标注"已验证"与"未验证"范围。
-- 未执行真实验证时，只能写"未验证"，不得使用"已完成/已修复/已通过"表述。
+- 涉及接口调用时，必须标注 `.ai/api-status.yml` 中对应接口状态、Mock 是否保留、真实 API 是否已切换。
+- 必须显式标注“已验证”与“未验证”范围。
+- 未执行真实验证时，只能写“未验证”，不得使用“已完成/已修复/已通过”表述。
 
 ## 7. 何时需要联动（API-First）
 
@@ -439,19 +503,33 @@ com/wf/vmesh/module/<domain>
 
 # 30 Fullstack Linkage 强制规则
 
+> 此文件是 .ai/ 源规则文件；如需同步到工具投影文件，测试阶段需手工对照更新。
+> 源文件：.ai/rules/30-fullstack-linkage-rules.md
+> 投影时间：2026-04-24
+
 ## 1. 适用范围
 
 - 适用于同时涉及后端与前端的联动任务：接口契约变更、字段链路变更、页面行为同步改造、联调回归修复。
 - 本规则是联动增强规则，不替代基础规则与单边规则。
+- 联动任务按 API-First 流程执行（本文件第 6 节）：Backend Agent 契约先行 + Frontend Agent 按 OpenAPI 文档实现 + contract-check 验证。
 
 ## 2. 强制继承规则集合
 
-fullstack 任务必须同时继承以下规则集合：
+联动任务必须同时继承以下规则集合：
 
 1. `00-repo-baseline.md` 全局基线规则（global）
-2. `10-backend-development-rules.md` 后端开发规则（backend）
-3. `20-frontend-development-rules.md` 前端开发规则（frontend）
-4. `30-fullstack-linkage-rules.md` 联动规则（linkage，本文件）
+2. `01-business-dictionary.md` 业务领域字典（business glossary）
+3. `10-backend-development-rules.md` 后端开发规则（backend）
+4. `20-frontend-development-rules.md` 前端开发规则（frontend）
+5. `30-fullstack-linkage-rules.md` 联动规则（linkage，本文件）
+
+联动执行流程：
+
+1. Backend Agent 先走"API 契约先行"流程（见 `20-backend-agent.md` 第 9 节），输出 OpenAPI 契约文档。
+2. 前/后端确认契约无误（以 `/v3/api-docs` 为准）。
+3. Backend Agent 独立完成 Service 实现。
+4. Frontend Agent 独立完成前端实现（按 OpenAPI 文档对齐类型与调用）。
+5. 使用 `contract-check` skill 做最终一致性验证。
 
 按任务内容追加：
 
@@ -462,19 +540,68 @@ fullstack 任务必须同时继承以下规则集合：
 
 ## 3. 联动执行硬约束
 
-- 禁止将 fullstack 理解为"只改一个端"；必须同步核对前后端契约与页面行为。
+- 禁止将联动理解为"只改一个端"；必须同步核对前后端契约与页面行为。
 - 禁止以联调为由绕过后端或前端既有规则；任何临时逻辑不得落到错误层级。
 - 字段、枚举、错误码、分页筛选参数必须端到端一致，出现不一致必须先修正再交付。
 
 ## 4. 最低交付清单
 
 - 规则继承声明：本次任务实际继承的规则集合。
+- 契约文档快照：`/v3/api-docs` JSON 或可访问地址。
+- 接口联调状态：`.ai/api-status.yml` 中对应接口的状态、确认人与更新时间。
 - 联动变更映射：后端字段/接口 -> 前端类型/调用 -> 页面行为。
 - 回归影响说明：受影响模块、页面、接口与失败路径。
 - 测试覆盖说明：后端单元测试覆盖场景（正常、边界、失败）与前端关键交互回归点；未执行测试必须写明原因。
+- 契约一致性检查结果：`contract-check` skill 输出或手动对照结果。
 - 验证结论：已验证项与未验证项（未验证必须写原因）。
 
 ## 5. 冲突处理
 
 - 文档冲突时，优先级遵循总入口：`rules > agent.md > agents > skills`。
 - 若 `30` 与单边规则存在表述差异，以"不降低单边约束、补强联动约束"为原则处理。
+
+## 6. 契约唯一真源与 API-First 流程
+
+### 6.1 契约唯一真源
+
+- OpenAPI 文档（`/v3/api-docs`）是接口契约的唯一真实来源。
+- `.ai/api-status.yml` 是接口联调状态的唯一真实来源，只描述接口是否可 Mock、是否可联调、是否废弃，不替代 OpenAPI 契约。
+- 后端通过 springdoc + knife4j 的注解（`@Operation` / `@Schema` / `@ApiResponse`）自动生成契约文档。
+- 前端实现必须以 OpenAPI 文档为准，不得自行猜测字段名、类型、枚举值或错误码语义。
+- 后端 Controller 注解是契约文档的生成源，任何接口变更必须反映在注解中。
+- 接口状态由后端或人工确认后更新；AI 不得根据代码存在、接口可访问或本地联调成功自行把状态提升为 `ready`。
+
+### 6.2 接口状态流转
+
+| 状态 | 含义 | 前端/AI 动作 |
+|------|------|-------------|
+| `planned` | 已规划，未提供稳定契约 | 不猜字段，等待契约或后端确认 |
+| `contracted` | OpenAPI 契约已提供 | 可生成类型，不默认联调 |
+| `mockable` | 允许基于契约 Mock | 只走统一 Mock 层，不散落硬编码 |
+| `partial` | 部分字段或路径可联调 | 稳定部分接真实 API，未完成部分继续 Mock |
+| `ready` | 后端确认可联调 | 默认切真实 API，清理仅服务该接口的 Mock |
+| `deprecated` | 接口废弃 | 禁止新增依赖，提出迁移方案 |
+
+状态变更必须记录确认人、更新时间与前端处理建议。若状态与 OpenAPI 契约冲突，以 OpenAPI 契约字段为准，同时要求后端更新状态清单。
+
+### 6.3 API-First 执行流程
+
+```text
+1. Backend Agent 写 Controller 骨架（含完整注解）
+   ↓
+2. 启动后端服务，访问 /v3/api-docs 拿到 OpenAPI 文档
+   ↓
+3. 与前端确认契约（路径、方法、字段、错误码），并由后端/人工确认 .ai/api-status.yml 状态
+   ↓
+4. Backend Agent 实现 Service 逻辑
+5. Frontend Agent 按 OpenAPI 文档实现前端
+   ↓
+6. 使用 contract-check skill 做一致性验证
+```
+
+### 6.4 contract-check
+
+- 联动交付完成后，必须执行契约一致性检查。
+- 检查方式：使用 `.ai/skills/contract-check/SKILL.md` 定义的流程。
+- 检查范围：所有变更涉及的前端 API 调用与后端 OpenAPI 文档。
+- 检查输出：不一致清单（含严重级别 P0-P3），作为联动交付的组成部分。

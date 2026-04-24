@@ -1,0 +1,23 @@
+# AI_Vision 接口联调状态清单
+# 本文件由后端/人工确认后维护，前端与 AI 只消费状态，不得自行猜测并提升为 ready。
+# OpenAPI（/v3/api-docs）仍是接口契约唯一真源；本文件只描述联调状态与 Mock 策略。
+
+status_values:
+  planned: 已规划，未提供稳定契约；前端不得猜字段。
+  contracted: OpenAPI 契约已提供；可生成类型，后端未承诺可联调。
+  mockable: 允许前端基于契约走统一 Mock 层。
+  partial: 部分字段或路径可联调；已稳定部分接真实 API，未完成部分继续 Mock。
+  ready: 后端确认可联调；前端默认切真实 API，并清理仅服务该接口的 Mock。
+  deprecated: 接口废弃；禁止新增依赖。
+
+interfaces:
+  - path: /example/path
+    method: GET
+    module: example
+    owner: backend-confirmed
+    status: planned
+    contract: /v3/api-docs
+    confirmed_by: 待确认
+    updated_at: 2026-04-25
+    frontend_action: 不猜字段；等待契约或后端确认后再实现。
+    notes: 示例项，新增真实接口时复制本结构并替换。

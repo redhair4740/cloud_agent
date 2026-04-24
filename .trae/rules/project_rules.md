@@ -33,6 +33,8 @@
   - 只用于参考布局、信息层级、交互流程与功能点，不作为代码实现来源。
 - 项目协作规范目录：`./.ai`
   - 承载当前项目的 agents / rules / skills 规范体系。
+- 接口联调状态清单：`./.ai/api-status.yml`
+  - 由后端或人工确认后更新；前端与 AI 只消费状态，用于决定 Mock、真实 API 切换与失效 Mock 清理。
 - 项目文档目录：`./docs`
   - 承载评审结论、设计方案、交接文档、治理评审、部署方案和其他需要持续追踪的 Markdown 工件。
   - `./docs/design/`：承载技术设计方案及对应的 AI 交接文档，按日期子目录组织。
@@ -47,7 +49,7 @@
 标准读取顺序：
 
 1. `./.ai/agent.md`（先明确项目协作总入口）
-2. `./.ai/rules/*.md`（再明确硬约束与边界）
+2. `./.ai/rules/*.md`（再明确硬约束与边界；其中 `00-repo-baseline.md` 与 `01-business-dictionary.md` 优先读取）
 3. `./.ai/agents/*.md`（再匹配任务协作模式）
 4. `./.ai/skills/*/SKILL.md`（若存在可用 skill，再作为最后一步读取）
 
@@ -69,16 +71,16 @@
 按任务类型加载规则集合：
 
 1. `backend-agent`
-   - 规则继承：`00-repo-baseline.md + 10-backend-development-rules.md + 11-backend-object-layering-rules.md`
+   - 规则继承：`00-repo-baseline.md + 01-business-dictionary.md + 10-backend-development-rules.md + 11-backend-object-layering-rules.md`
    - 涉及新接口或接口变更时，必须先走"API 契约先行"流程（`20-backend-agent.md` 第 9 节）。
 2. `frontend-agent`
-   - 规则继承：`00-repo-baseline.md + 20-frontend-development-rules.md`
+   - 规则继承：`00-repo-baseline.md + 01-business-dictionary.md + 20-frontend-development-rules.md`
    - 接口调用必须按 OpenAPI 文档（`/v3/api-docs`）对齐，不得自行猜测字段。
 3. `review-agent`
    - 规则继承：按被评审对象加载对应规则集合
    - 评审后端改动：加载 `backend-agent` 规则集
    - 评审前端改动：加载 `frontend-agent` 规则集
-   - 评审联动改动：加载 `backend-agent` + `frontend-agent` + `30-fullstack-linkage-rules.md`
+   - 评审联动改动：加载 `backend-agent` + `frontend-agent` + `01-business-dictionary.md` + `30-fullstack-linkage-rules.md`
 
 跨端联动任务调度原则：
 

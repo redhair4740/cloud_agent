@@ -106,12 +106,14 @@ cd "$FRONTEND_DIR" && pnpm build:prod
 ```
 .ai/
 ├── agent.md          # 项目协作总入口（规则、模块边界、技术细节）
+├── api-status.yml    # 接口联调状态清单（后端/人工确认，前端消费）
 ├── agents/           # 协作角色定义
 │   ├── 20-backend-agent.md
 │   ├── 30-frontend-agent.md
 │   └── 40-review-agent.md
 ├── rules/            # 项目硬约束与边界规则
 │   ├── 00-repo-baseline.md
+│   ├── 01-business-dictionary.md
 │   ├── 10-backend-development-rules.md
 │   ├── 11-backend-object-layering-rules.md
 │   ├── 20-frontend-development-rules.md
@@ -126,7 +128,7 @@ cd "$FRONTEND_DIR" && pnpm build:prod
 1. 先读本文件 `AGENTS.md`
 2. 再读 [`.ai/agent.md`](./.ai/agent.md)
 3. 最后按需读取：
-   - `./.ai/rules/`（硬约束与边界规则，必须遵守）
+   - `./.ai/rules/`（硬约束与边界规则，必须遵守；先读 `00-repo-baseline.md` 与 `01-business-dictionary.md`）
    - `./.ai/agents/`（协作角色定义）
    - `./.ai/skills/`（可复用执行方法，当前已有 deploy-portainer-release、dynamic-menu-sync）
 

@@ -47,9 +47,15 @@
     - `./.ai/agents/20-backend-agent.md`
     - `./.ai/agents/30-frontend-agent.md`
     - `./.ai/agents/40-review-agent.md`
+- `./.ai/api-status.yml`
+  - 记录接口联调状态，由后端或人工确认后更新。
+  - 前端与 AI 只消费状态，用于决定是否 Mock、是否切真实 API、是否清理失效 Mock。
 - `./.ai/rules/`
   - 定义项目硬约束与边界规则，属于必须遵守项。
-  - 涵盖模块归属、开发边界、交付标准、测试与验证口径。
+  - 涵盖业务命名、模块归属、开发边界、交付标准、测试与验证口径。
+  - 核心基线文档：
+    - `./.ai/rules/00-repo-baseline.md`（跨端通用基线）
+    - `./.ai/rules/01-business-dictionary.md`（业务领域字典与命名映射）
   - 联动规则文档：
     - `./.ai/rules/30-fullstack-linkage-rules.md`（前后端联动强制规则）
 - `./.ai/skills/`
@@ -76,7 +82,7 @@
 标准读取顺序：
 
 1. `./.ai/agent.md`（先明确项目协作总入口）
-2. `./.ai/rules/*.md`（再明确硬约束与边界）
+2. `./.ai/rules/*.md`（再明确硬约束与边界；其中 `00-repo-baseline.md` 与 `01-business-dictionary.md` 优先读取）
 3. `./.ai/agents/*.md`（再匹配任务协作模式）
 4. `./.ai/skills/*/SKILL.md`（若存在可用 skill，再作为最后一步读取）
 

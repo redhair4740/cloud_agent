@@ -2,7 +2,7 @@
 
 > 此文件由 .ai/ 投影生成；测试阶段需手工同步，请勿脱离源文件单独修改。
 > 源文件：.ai/rules/30-fullstack-linkage-rules.md
-> 投影时间：2026-04-24
+> 投影时间：2026-04-25
 
 ## 1. 适用范围
 
@@ -15,9 +15,10 @@
 联动任务必须同时继承以下规则集合：
 
 1. `00-repo-baseline.md` 全局基线规则（global）
-2. `10-backend-development-rules.md` 后端开发规则（backend）
-3. `20-frontend-development-rules.md` 前端开发规则（frontend）
-4. `30-fullstack-linkage-rules.md` 联动规则（linkage，本文件）
+2. `01-business-dictionary.md` 业务领域字典（business glossary）
+3. `10-backend-development-rules.md` 后端开发规则（backend）
+4. `20-frontend-development-rules.md` 前端开发规则（frontend）
+5. `30-fullstack-linkage-rules.md` 联动规则（linkage，本文件）
 
 联动执行流程：
 
@@ -44,6 +45,7 @@
 
 - 规则继承声明：本次任务实际继承的规则集合。
 - 契约文档快照：`/v3/api-docs` JSON 或可访问地址。
+- 接口联调状态：`.ai/api-status.yml` 中对应接口的状态、确认人与更新时间。
 - 联动变更映射：后端字段/接口 -> 前端类型/调用 -> 页面行为。
 - 回归影响说明：受影响模块、页面、接口与失败路径。
 - 测试覆盖说明：后端单元测试覆盖场景（正常、边界、失败）与前端关键交互回归点；未执行测试必须写明原因。
@@ -60,18 +62,33 @@
 ### 6.1 契约唯一真源
 
 - OpenAPI 文档（`/v3/api-docs`）是接口契约的唯一真实来源。
+- `.ai/api-status.yml` 是接口联调状态的唯一真实来源，只描述接口是否可 Mock、是否可联调、是否废弃，不替代 OpenAPI 契约。
 - 后端通过 springdoc + knife4j 的注解（`@Operation` / `@Schema` / `@ApiResponse`）自动生成契约文档。
 - 前端实现必须以 OpenAPI 文档为准，不得自行猜测字段名、类型、枚举值或错误码语义。
 - 后端 Controller 注解是契约文档的生成源，任何接口变更必须反映在注解中。
+- 接口状态由后端或人工确认后更新；AI 不得根据代码存在、接口可访问或本地联调成功自行把状态提升为 `ready`。
 
-### 6.2 API-First 执行流程
+### 6.2 接口状态流转
+
+| 状态 | 含义 | 前端/AI 动作 |
+|------|------|-------------|
+| `planned` | 已规划，未提供稳定契约 | 不猜字段，等待契约或后端确认 |
+| `contracted` | OpenAPI 契约已提供 | 可生成类型，不默认联调 |
+| `mockable` | 允许基于契约 Mock | 只走统一 Mock 层，不散落硬编码 |
+| `partial` | 部分字段或路径可联调 | 稳定部分接真实 API，未完成部分继续 Mock |
+| `ready` | 后端确认可联调 | 默认切真实 API，清理仅服务该接口的 Mock |
+| `deprecated` | 接口废弃 | 禁止新增依赖，提出迁移方案 |
+
+状态变更必须记录确认人、更新时间与前端处理建议。若状态与 OpenAPI 契约冲突，以 OpenAPI 契约字段为准，同时要求后端更新状态清单。
+
+### 6.3 API-First 执行流程
 
 ```text
 1. Backend Agent 写 Controller 骨架（含完整注解）
    ↓
 2. 启动后端服务，访问 /v3/api-docs 拿到 OpenAPI 文档
    ↓
-3. 与前端确认契约（路径、方法、字段、错误码）
+3. 与前端确认契约（路径、方法、字段、错误码），并由后端/人工确认 .ai/api-status.yml 状态
    ↓
 4. Backend Agent 实现 Service 逻辑
 5. Frontend Agent 按 OpenAPI 文档实现前端
@@ -79,7 +96,7 @@
 6. 使用 contract-check skill 做一致性验证
 ```
 
-### 6.3 contract-check
+### 6.4 contract-check
 
 - 联动交付完成后，必须执行契约一致性检查。
 - 检查方式：使用 `.ai/skills/contract-check/SKILL.md` 定义的流程。

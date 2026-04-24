@@ -6,6 +6,7 @@
 
 - frontend-agent 在执行任何任务前，必须先加载：
   - `./.ai/rules/00-repo-baseline.md`
+  - `./.ai/rules/01-business-dictionary.md`
   - `./.ai/rules/20-frontend-development-rules.md`
 - 若任务涉及新接口或接口变更，frontend-agent 不得独立推进。
   - 必须先等待后端输出 OpenAPI 契约文档（`/v3/api-docs`）。

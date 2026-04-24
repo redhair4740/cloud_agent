@@ -8,6 +8,7 @@
 .ai/                          ← 唯一真实来源（所有规则、角色、技能的定义中心）
 ├── agent.md                  ← 项目协作总入口
 ├── project.yml               ← 项目元数据（目录映射、技术栈、版本号）
+├── api-status.yml            ← 接口联调状态清单（后端/人工确认，前端消费）
 ├── model-adapters.md         ← 跨模型适配层（能力分类与降级策略）
 ├── CHANGELOG.md              ← 规范变更追踪
 ├── agents/                   ← 协作角色定义
@@ -32,6 +33,7 @@
     └── rules/                ← Trae-CN 规则目录（投影自 .ai/rules/）
         ├── project_rules.md
         ├── 00-repo-baseline.md
+        ├── 01-business-dictionary.md
         ├── 10-backend-development-rules.md
         ├── 11-backend-object-layering-rules.md
         ├── 20-frontend-development-rules.md
@@ -51,7 +53,7 @@
 
 1. `AGENTS.md`（项目协作入口，Codex 基准）
 2. `.ai/agent.md`（项目协作总入口）
-3. `.ai/rules/*.md`（硬约束与边界规则，必须遵守）
+3. `.ai/rules/*.md`（硬约束与边界规则，必须遵守；优先读取 `00-repo-baseline.md` 与 `01-business-dictionary.md`）
 4. `.ai/agents/*.md`（协作角色定义，按需加载）
 5. `.ai/skills/*/SKILL.md`（可复用执行方法，按需加载）
 
@@ -61,8 +63,8 @@
 
 | 角色 | 文件 | 规则继承 | 适用场景 |
 |------|------|----------|----------|
-| Backend Agent | `20-backend-agent.md` | 基线 + 后端规则 + API 契约先行 | 后端单侧闭环任务 |
-| Frontend Agent | `30-frontend-agent.md` | 基线 + 前端规则 | 前端单侧闭环任务 |
+| Backend Agent | `20-backend-agent.md` | 基线 + 业务字典 + 后端规则 + API 契约先行 | 后端单侧闭环任务 |
+| Frontend Agent | `30-frontend-agent.md` | 基线 + 业务字典 + 前端规则 | 前端单侧闭环任务 |
 | Review Agent | `40-review-agent.md` | 按被评审对象加载 | 代码评审与风险扫描 |
 
 ### rules/ — 硬约束规则
@@ -70,6 +72,7 @@
 | 编号 | 文件 | 覆盖范围 |
 |------|------|----------|
 | 00 | `00-repo-baseline.md` | 跨前后端通用基线（沟通、证据、原型边界、文档管理） |
+| 01 | `01-business-dictionary.md` | 业务领域字典（核心业务词、英文命名、禁用译法、表/权限前缀） |
 | 10 | `10-backend-development-rules.md` | 后端开发强制规则（技术栈、PostgreSQL 兼容、SQL 规范、模块边界、编译验证） |
 | 11 | `11-backend-object-layering-rules.md` | 后端对象分层（轻量模块化：VO + DO，默认不引入 BO） |
 | 20 | `20-frontend-development-rules.md` | 前端开发强制规范（技术栈、API SDK、Pinia、Mock 边界） |
