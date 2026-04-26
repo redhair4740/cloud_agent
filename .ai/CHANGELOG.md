@@ -18,6 +18,14 @@
 
 ## 变更记录
 
+### 2026-04-26
+
+#### 协作提示词全量去重
+- **变更类型**: 修改
+- **变更摘要**: 新增 `runtime.md` 与 `commands.md`，将平台入口收敛为短导航，Trae 投影改为 stub，agents/rules/skills/templates 按职责去重，模板示例移至 `templates/examples/`
+- **影响范围**: `AGENTS.md`、`GEMINI.md`、`CLAUDE.md`、`.trae/rules/`、`.ai/runtime.md`、`.ai/commands.md`、`.ai/adapters/`、`.ai/agents/`、`.ai/rules/`、`.ai/skills/`、`.ai/templates/`
+- **变更人**: AI Agent
+
 ### 2026-04-24
 
 #### 新增 contract-check skill
