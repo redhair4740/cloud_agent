@@ -15,12 +15,12 @@
 ├── agents/             # 角色边界，按任务加载
 ├── skills/             # 可复用流程，语义命中时加载
 ├── templates/          # 文档模板，生成文档时加载
-└── adapters/           # 平台入口投影说明
+└── scripts/            # 协作配置同步脚本
 ```
 
 ## 默认读取顺序
 
-1. 平台短入口：`AGENTS.md`、`GEMINI.md`、`CLAUDE.md` 或 `.trae/rules/project_rules.md`。
+1. 平台入口：`AGENTS.md`、`CLAUDE.md` 或 `.trae/rules/project_rules.md`。
 2. `./.ai/runtime.md`。
 3. `./.ai/skills/task-classifier/SKILL.md` 做任务分类。
 4. 按任务读取必要的 `rules/`、`agents/`、`skills/` 或 `templates/`。
@@ -48,18 +48,10 @@
 | Skill | `skills/dynamic-menu-sync/SKILL.md` | 动态菜单与按钮权限同步 |
 | Skill | `skills/deploy-portainer-release/SKILL.md` | Portainer 发布方案与检查清单 |
 
-## 平台投影
-
-| 平台 | 入口 | 策略 |
-|------|------|------|
-| Codex | `AGENTS.md` | 短入口，指向 `runtime.md` |
-| Gemini CLI | `GEMINI.md` + `.gemini/settings.json` | 短入口，指向 `runtime.md` |
-| Claude Code | `CLAUDE.md` | 短入口，指向 `runtime.md` |
-| Trae-CN | `.trae/rules/project_rules.md` + stub | 避免自动加载规则全文，只指向 `.ai/` 真源 |
-
 ## 维护原则
 
-- `.ai/` → 平台入口是单向投影，禁止只改投影不改源。
+- `.ai/` 是唯一手工维护源，禁止只改 `.trae/` 生成内容不改源。
+- 修改 `.ai/` 后运行 `node .ai/scripts/sync-trae-from-ai.mjs` 同步 Trae 镜像。
 - 入口文件不复制规则全文，避免上下文过长和多处漂移。
 - `project.yml` 是目录和技术参数来源，文档中不要写死本地目录名。
 - 示例内容放在 `templates/examples/`，模板默认只保留空结构。

@@ -14,7 +14,7 @@
 | `agents/` | Backend/Frontend/Review 角色边界 | 按任务 |
 | `skills/` | 可复用执行流程 | 语义命中时 |
 | `templates/` | 文档模板 | 生成文档时 |
-| `adapters/` | 平台入口投影说明 | 治理维护时 |
+| `scripts/` | 协作配置同步脚本 | 治理维护时 |
 
 ## 2. 目录映射原则
 
@@ -30,7 +30,7 @@
 2. `runtime.md`：默认运行时摘要。
 3. `agents/`：角色边界，不替代规则。
 4. `skills/`：流程方法，不降低规则要求。
-5. `templates/` 与 `adapters/`：模板和投影说明。
+5. `templates/`、`scripts/`：模板、同步脚本。
 
 ## 4. 任务调度
 
@@ -53,17 +53,16 @@
 - Skill frontmatter 至少包含 `name`、`version`、`depends_on`、`description`。
 - Skill 只描述执行流程，通用红线和技术硬约束引用 `runtime.md` 与 `rules/`。
 
-## 7. 跨平台投影
+## 7. 跨平台适配
 
-- 投影方向固定为 `.ai/` → 平台入口，禁止反向修改投影文件后不同步源文件。
+- `.ai/` 固定为唯一手工维护源，禁止反向修改生成镜像后不同步源文件。
 - Codex：根目录 `AGENTS.md`，短入口。
-- Gemini CLI：`GEMINI.md` + `.gemini/settings.json`，短入口。
 - Claude Code：`CLAUDE.md`，短入口。
-- Trae-CN：`.trae/rules/project_rules.md` + stub 文件，只指向 `.ai/` 真源。
-- 入口文件只承载短导航，不复制 `rules/` 全文。
+- Trae-CN：运行 `node .ai/scripts/sync-trae-from-ai.mjs`，从 `.ai/` 生成运行时支撑文件及 `.trae/rules`、`.trae/agents`、`.trae/skills`、`.trae/templates` 自包含镜像。
+- Codex 与 Claude Code 入口只承载短导航，不复制 `rules/` 全文；Trae 读取脚本生成后的 `.trae/` 镜像。
 
 ## 8. 变更管理
 
-- 修改 `.ai/` 规范时同步检查入口投影是否需要更新。
+- 修改 `.ai/` 规范时同步检查入口适配是否需要更新，并运行 Trae 同步脚本。
 - 重要规范变更记录到 `CHANGELOG.md`。
 - 不新增平行治理说明源；如需分析报告，放入 `docs/governance/` 并在 `docs/README.md` 建索引。

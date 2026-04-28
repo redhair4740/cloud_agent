@@ -1,0 +1,6 @@
+# 由 .ai/scripts/sync-trae-from-ai.mjs 从 .ai/ 生成。
+# 请勿直接修改本文件；先修改 .ai/ 源文件，再重新运行同步脚本。
+interface:
+  display_name: "Portainer部署发布"
+  short_description: "为AI_Vision项目沉淀Jenkins加Harbor加Portainer的简化部署方案与检查清单"
+  default_prompt: "基于当前仓库与部署约束，按不改业务代码的前提输出Portainer发布方案、配置边界、交付清单与未验证项"

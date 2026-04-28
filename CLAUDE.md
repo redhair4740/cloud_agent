@@ -1,4 +1,4 @@
-# CLAUDE.md — AI_Vision 项目指令
+# CLAUDE.md — AI_Vision Claude Code 项目指令
 
 > 此文件由 `.ai/` 投影生成；请勿脱离源文件单独扩写规则全文。
 

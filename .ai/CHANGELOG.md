@@ -18,6 +18,14 @@
 
 ## 变更记录
 
+### 2026-04-28
+
+#### 简化 AI 工具适配范围
+- **变更类型**: 修改
+- **变更摘要**: 支持工具收敛为 Codex、Claude Code、Trae-CN；移除 Gemini 适配口径；Trae 从 stub 回指改为脚本同步的自包含镜像，并同步运行时支撑文件
+- **影响范围**: `AGENTS.md`、`CLAUDE.md`、`.ai/README.md`、`.ai/agent.md`、`.ai/adapters/`、`.ai/model-adapters.md`、`.ai/scripts/`、`.trae/`
+- **变更人**: AI Agent
+
 ### 2026-04-26
 
 #### 协作提示词全量去重
