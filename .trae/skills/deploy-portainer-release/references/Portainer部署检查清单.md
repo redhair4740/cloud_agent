@@ -1,7 +1,3 @@
-<!--
-由 .ai/scripts/sync-trae-from-ai.mjs 从 .ai/ 生成。
-请勿直接修改本文件；先修改 .ai/ 源文件，再重新运行同步脚本。
--->
 # Portainer 部署检查清单
 
 本文件给 `deploy-portainer-release` skill 提供更细的执行检查项。只有在需要继续落地部署资产、补交付清单、或核对发布边界时再读取，不必在每次触发 skill 时全文加载。

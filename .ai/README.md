@@ -14,13 +14,12 @@
 ├── rules/              # 详细硬规则，按任务加载
 ├── agents/             # 角色边界，按任务加载
 ├── skills/             # 可复用流程，语义命中时加载
-├── templates/          # 文档模板，生成文档时加载
-└── scripts/            # 协作配置同步脚本
+└── templates/          # 文档模板，生成文档时加载
 ```
 
 ## 默认读取顺序
 
-1. 平台入口：`AGENTS.md`、`CLAUDE.md` 或 `.trae/rules/project_rules.md`。
+1. 项目入口：`AGENTS.md` 或 `CLAUDE.md`。
 2. `./.ai/runtime.md`。
 3. `./.ai/skills/task-classifier/SKILL.md` 做任务分类。
 4. 按任务读取必要的 `rules/`、`agents/`、`skills/` 或 `templates/`。
@@ -50,8 +49,7 @@
 
 ## 维护原则
 
-- `.ai/` 是唯一手工维护源，禁止只改 `.trae/` 生成内容不改源。
-- 修改 `.ai/` 后运行 `node .ai/scripts/sync-trae-from-ai.mjs` 同步 Trae 镜像。
+- `.ai/` 是 Codex 和 Claude Code 的协作规范来源。
 - 入口文件不复制规则全文，避免上下文过长和多处漂移。
 - `project.yml` 是目录和技术参数来源，文档中不要写死本地目录名。
 - 示例内容放在 `templates/examples/`，模板默认只保留空结构。

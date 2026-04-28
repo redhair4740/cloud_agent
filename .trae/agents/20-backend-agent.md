@@ -1,7 +1,3 @@
-<!--
-由 .ai/scripts/sync-trae-from-ai.mjs 从 .ai/ 生成。
-请勿直接修改本文件；先修改 .ai/ 源文件，再重新运行同步脚本。
--->
 # Backend Agent 职责
 
 用于后端单侧闭环任务。技术栈、SQL、对象分层和验证要求以 `./.trae/rules/10-backend-development-rules.md` 与 `./.trae/rules/11-backend-object-layering-rules.md` 为准。

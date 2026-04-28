@@ -1,10 +1,6 @@
-<!--
-由 .ai/scripts/sync-trae-from-ai.mjs 从 .ai/ 生成。
-请勿直接修改本文件；先修改 .ai/ 源文件，再重新运行同步脚本。
--->
 # .trae 协作规范治理入口
 
-`.trae/` 是从 `.ai/` 生成的 Trae 自包含镜像。本文件只说明 Trae 侧如何读取生成内容；不要在 `.trae/` 内手工维护规则。
+`.trae/` 是 Trae 的原生协作规范目录。本文件只说明 Trae 侧如何组织和维护规则。
 
 ## 读取顺序
 
@@ -16,6 +12,6 @@
 
 ## 维护方式
 
-- 唯一手工维护源是 `.ai/`。
-- 修改 `.ai/` 后运行 `node .ai/scripts/sync-trae-from-ai.mjs`。
-- 脚本会重建 `.trae/rules`、`.trae/agents`、`.trae/skills`、`.trae/templates`，并更新运行时支撑文件。
+- `.trae/` 规则、角色、技能和模板单独维护，不从 `.ai/` 生成。
+- 核心红线与 `.ai/` 保持一致，但具体文件内容按 Trae 使用体验单独优化。
+- 修改 `.trae/` 后直接提交对应文件，不需要运行同步脚本。

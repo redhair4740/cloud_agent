@@ -1,7 +1,3 @@
-<!--
-由 .ai/scripts/sync-trae-from-ai.mjs 从 .ai/ 生成。
-请勿直接修改本文件；先修改 .ai/ 源文件，再重新运行同步脚本。
--->
 # AI_Vision 开发命令清单
 
 命令中的目录必须从 `./.trae/project.yml` 动态读取，不假定本地目录名。

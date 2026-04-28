@@ -1,7 +1,3 @@
-<!--
-由 .ai/scripts/sync-trae-from-ai.mjs 从 .ai/ 生成。
-请勿直接修改本文件；先修改 .ai/ 源文件，再重新运行同步脚本。
--->
 # Rule: 后端开发强制规则
 
 本规则只定义后端技术、SQL、模块边界和验证要求。对象分层细节见 `11-backend-object-layering-rules.md`，联动流程见 `30-fullstack-linkage-rules.md`。

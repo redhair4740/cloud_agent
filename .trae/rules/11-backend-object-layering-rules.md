@@ -1,7 +1,3 @@
-<!--
-由 .ai/scripts/sync-trae-from-ai.mjs 从 .ai/ 生成。
-请勿直接修改本文件；先修改 .ai/ 源文件，再重新运行同步脚本。
--->
 # Rule: 后端对象分层与目录组织
 
 本规则只定义后端对象分层和目录组织。技术栈、SQL、模块边界和编译验证见 `10-backend-development-rules.md`。

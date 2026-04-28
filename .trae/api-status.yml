@@ -1,5 +1,3 @@
-# 由 .ai/scripts/sync-trae-from-ai.mjs 从 .ai/ 生成。
-# 请勿直接修改本文件；先修改 .ai/ 源文件，再重新运行同步脚本。
 # AI_Vision 接口联调状态清单
 # 本文件由后端/人工确认后维护，前端与 AI 只消费状态，不得自行猜测并提升为 ready。
 # OpenAPI（/v3/api-docs）仍是接口契约唯一真源；本文件只描述联调状态与 Mock 策略。

@@ -1,7 +1,3 @@
-<!--
-由 .ai/scripts/sync-trae-from-ai.mjs 从 .ai/ 生成。
-请勿直接修改本文件；先修改 .ai/ 源文件，再重新运行同步脚本。
--->
 # 重构工单模板
 
 > 输出目录：`docs/design/yyyy-MM-dd/hh-mm-ss-设计方案-重构-文档名称.md`

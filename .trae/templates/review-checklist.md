@@ -1,7 +1,3 @@
-<!--
-由 .ai/scripts/sync-trae-from-ai.mjs 从 .ai/ 生成。
-请勿直接修改本文件；先修改 .ai/ 源文件，再重新运行同步脚本。
--->
 # 评审清单模板
 
 > 输出目录：`docs/review-tracking/yyyy-MM-dd/review清单-hh-mm-ss-文档名称-状态.md`

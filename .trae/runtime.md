@@ -1,7 +1,3 @@
-<!--
-由 .ai/scripts/sync-trae-from-ai.mjs 从 .ai/ 生成。
-请勿直接修改本文件；先修改 .ai/ 源文件，再重新运行同步脚本。
--->
 # AI_Vision 运行时协作入口
 
 本文件是 AI 默认加载的最小上下文入口。`.trae/rules/*` 才是详细硬规则真源；未命中任务时不要一次性加载全部规则、agents、skills 或 templates。

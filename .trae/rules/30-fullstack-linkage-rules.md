@@ -1,7 +1,3 @@
-<!--
-由 .ai/scripts/sync-trae-from-ai.mjs 从 .ai/ 生成。
-请勿直接修改本文件；先修改 .ai/ 源文件，再重新运行同步脚本。
--->
 # Rule: 前后端联动强制规则
 
 本规则只定义接口契约、API-First、api-status 与 contract-check。后端和前端单侧技术规则分别见 `10-backend-development-rules.md` 与 `20-frontend-development-rules.md`。

@@ -1,7 +1,3 @@
-<!--
-由 .ai/scripts/sync-trae-from-ai.mjs 从 .ai/ 生成。
-请勿直接修改本文件；先修改 .ai/ 源文件，再重新运行同步脚本。
--->
 # Rule: 仓库通用基线
 
 本文件仅定义跨前后端通用规则；后端专属规范放 `10-backend-development-rules.md`，前端专属规范放 `20-frontend-development-rules.md`。

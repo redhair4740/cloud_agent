@@ -1,7 +1,3 @@
-<!--
-由 .ai/scripts/sync-trae-from-ai.mjs 从 .ai/ 生成。
-请勿直接修改本文件；先修改 .ai/ 源文件，再重新运行同步脚本。
--->
 # Rule: 前端开发强制规则
 
 本规则只定义前端技术、API SDK、状态管理、Mock 和验证边界。接口契约或联动流程见 `30-fullstack-linkage-rules.md`。

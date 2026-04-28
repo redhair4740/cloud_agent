@@ -1,10 +1,6 @@
-<!--
-由 .ai/scripts/sync-trae-from-ai.mjs 从 .ai/ 生成。
-请勿直接修改本文件；先修改 .ai/ 源文件，再重新运行同步脚本。
--->
 # project_rules.md - AI_Vision Trae 入口
 
-本目录由 `.ai/` 同步生成，Trae 侧请读取这里的自包含镜像，不要回写生成文件。
+本文件是 Trae 的项目级入口。`.trae/` 是 Trae 原生规范目录，规则、角色、技能和模板均在本目录内单独维护。
 
 ## 默认读取
 
@@ -14,6 +10,6 @@
 
 ## 维护方式
 
-- 手工修改只发生在 `.ai/`。
-- 修改 `.ai/` 后运行 `node .ai/scripts/sync-trae-from-ai.mjs` 更新本目录。
+- `.trae/` 内容按 Trae 使用习惯单独维护。
+- 核心红线应与 `.ai/` 保持一致：简体中文、动态目录、OpenAPI 真源、api-status、未验证口径和高风险确认。
 - 未验证必须明确标注，高风险操作必须先确认。

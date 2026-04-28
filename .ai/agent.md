@@ -14,7 +14,6 @@
 | `agents/` | Backend/Frontend/Review 角色边界 | 按任务 |
 | `skills/` | 可复用执行流程 | 语义命中时 |
 | `templates/` | 文档模板 | 生成文档时 |
-| `scripts/` | 协作配置同步脚本 | 治理维护时 |
 
 ## 2. 目录映射原则
 
@@ -30,7 +29,7 @@
 2. `runtime.md`：默认运行时摘要。
 3. `agents/`：角色边界，不替代规则。
 4. `skills/`：流程方法，不降低规则要求。
-5. `templates/`、`scripts/`：模板、同步脚本。
+5. `templates/`：文档模板。
 
 ## 4. 任务调度
 
@@ -53,16 +52,14 @@
 - Skill frontmatter 至少包含 `name`、`version`、`depends_on`、`description`。
 - Skill 只描述执行流程，通用红线和技术硬约束引用 `runtime.md` 与 `rules/`。
 
-## 7. 跨平台适配
+## 7. 入口文件
 
-- `.ai/` 固定为唯一手工维护源，禁止反向修改生成镜像后不同步源文件。
-- Codex：根目录 `AGENTS.md`，短入口。
-- Claude Code：`CLAUDE.md`，短入口。
-- Trae-CN：运行 `node .ai/scripts/sync-trae-from-ai.mjs`，从 `.ai/` 生成运行时支撑文件及 `.trae/rules`、`.trae/agents`、`.trae/skills`、`.trae/templates` 自包含镜像。
-- Codex 与 Claude Code 入口只承载短导航，不复制 `rules/` 全文；Trae 读取脚本生成后的 `.trae/` 镜像。
+- `AGENTS.md` 和 `CLAUDE.md` 是项目级短入口，分别供对应工具原生读取。
+- 两个入口保持同一套读取逻辑和核心约束，只允许标题与工具名存在差异。
+- 入口文件只承载短导航，不复制 `rules/` 全文。
 
 ## 8. 变更管理
 
-- 修改 `.ai/` 规范时同步检查入口适配是否需要更新，并运行 Trae 同步脚本。
+- 修改 `.ai/` 规范时同步检查 `AGENTS.md` 与 `CLAUDE.md` 是否需要更新。
 - 重要规范变更记录到 `CHANGELOG.md`。
 - 不新增平行治理说明源；如需分析报告，放入 `docs/governance/` 并在 `docs/README.md` 建索引。

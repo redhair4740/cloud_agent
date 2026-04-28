@@ -1,7 +1,3 @@
-<!--
-由 .ai/scripts/sync-trae-from-ai.mjs 从 .ai/ 生成。
-请勿直接修改本文件；先修改 .ai/ 源文件，再重新运行同步脚本。
--->
 # Frontend Agent 职责
 
 用于前端单侧闭环任务。API SDK、Pinia、Mock、原型参考和验证要求以 `./.trae/rules/20-frontend-development-rules.md` 为准。
