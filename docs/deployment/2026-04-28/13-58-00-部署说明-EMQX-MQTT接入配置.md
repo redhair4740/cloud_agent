@@ -150,6 +150,7 @@ Cloud 校验规则：
 - `username` 必须等于节点凭证中的 `deviceId`。
 - `password` 必须匹配节点凭证的 BCrypt hash。
 - 节点必须启用。
+- 若后台刷新过节点凭证，旧凭证会失效且节点回到待激活；边缘端必须更新为新凭证并重新完成 `authenticate -> register`。
 
 鉴权成功后 Cloud 返回 per-device ACL：
 
@@ -209,6 +210,7 @@ X-EMQX-SIGNATURE: <VMESH_EDGE_INGEST_SHARED_SECRET>
   "clientId": "${clientid}",
   "username": "${username}",
   "deviceId": "${username}",
+  "hardwareFingerprint": "${payload.hardware_fingerprint}",
   "topic": "${topic}",
   "occurredAt": "${payload.occurred_at}",
   "payload": ${payload}
@@ -220,6 +222,8 @@ X-EMQX-SIGNATURE: <VMESH_EDGE_INGEST_SHARED_SECRET>
 - 如果 MQTT payload 本身已经是 Cloud `EdgeRuntimeIngestReqVO` 结构，HTTP Sink body 可以直接使用 `${payload}` 原样转发。
 - 如果由 EMQX 重新拼装 envelope，Rule SQL 必须先从 JSON payload 中解析 `messageId`、`deviceId`、`occurredAt` 等字段，不能让模板渲染出 `"messageId": "undefined"` 或 `"occurredAt": undefined`。
 - `deviceId` 应使用节点凭证中的设备标识，例如 `device-test`；不要把 MQTT 客户端的 Dashboard 用户名 `admin` 当作 `deviceId`。
+- `clientId` 必须透传 MQTT 客户端 ID，后端会校验其等于 `edge-node:{deviceId}`。
+- `register/heartbeat/device.report/task_progress` 必须携带 `hardware_fingerprint`；首次 `register` 会绑定该指纹，后续上报不一致会被拒收。
 - `payload` 字段必须是合法 JSON 对象；如果 `${payload}` 是字符串，需要先确认 EMQX 模板最终渲染后没有多余引号、转义错误或未定义变量。
 
 需要覆盖的事件：
@@ -301,16 +305,20 @@ Topic 规范：
 
 以下命令只用于本地或测试环境。生产环境调用前必须确认目标地址、密钥和数据影响。
 
+联调顺序固定为：`authenticate -> register -> heartbeat/task_progress`。
+说明：单独模拟 `heartbeat` 不再触发激活，节点必须先完成认证与 register 才能进入已激活态并接受运行态更新。
+如果刚刷新过凭证，应先把边缘端配置替换为新凭证；刷新凭证后的旧连接/旧密钥不能继续代表已激活状态。
+
 ### 7.1 模拟心跳上行
 
 ```bash
-curl -X POST "http://<cloud-host>:48080/admin-api/edge/runtime/ingest" -H "Content-Type: application/json" -H "X-EMQX-SIGNATURE: <shared-secret>" -d '{"eventType":"heartbeat","eventId":"evt-hb-001","messageId":"hb-001","clientId":"edge-node:<deviceId>","username":"<deviceId>","deviceId":"<deviceId>","topic":"vmesh/edge/node/<deviceId>/heartbeat","occurredAt":1776818460000,"payload":{"message_id":"hb-001","occurred_at":1776818460000,"runtime_status":"ONLINE","metrics":{"cpu_usage_pct":45.2,"memory_usage_pct":62.8,"gpu_usage_pct":78.0,"storage_usage_pct":35.5,"temperature_c":68.4},"network":{"edge_rtt_ms":42.5,"packet_loss_pct":0.1,"cloud_probe_rtt_ms":45.0}}}'
+curl -X POST "http://<cloud-host>:48080/admin-api/edge/runtime/ingest" -H "Content-Type: application/json" -H "X-EMQX-SIGNATURE: <shared-secret>" -d '{"eventType":"heartbeat","eventId":"evt-hb-001","messageId":"hb-001","clientId":"edge-node:<deviceId>","username":"<deviceId>","deviceId":"<deviceId>","hardwareFingerprint":"<hardwareFingerprint>","topic":"vmesh/edge/node/<deviceId>/heartbeat","occurredAt":1776818460000,"payload":{"message_id":"hb-001","occurred_at":1776818460000,"hardware_fingerprint":"<hardwareFingerprint>","runtime_status":"ONLINE","metrics":{"cpu_usage_pct":45.2,"memory_usage_pct":62.8,"gpu_usage_pct":78.0,"storage_usage_pct":35.5,"temperature_c":68.4},"network":{"edge_rtt_ms":42.5,"packet_loss_pct":0.1,"cloud_probe_rtt_ms":45.0}}}'
 ```
 
 ### 7.2 模拟任务进度上行
 
 ```bash
-curl -X POST "http://<cloud-host>:48080/admin-api/edge/runtime/ingest" -H "Content-Type: application/json" -H "X-EMQX-SIGNATURE: <shared-secret>" -d '{"eventType":"task_progress","eventId":"evt-task-001","messageId":"task-msg-001","clientId":"edge-node:<deviceId>","username":"<deviceId>","deviceId":"<deviceId>","topic":"vmesh/edge/node/<deviceId>/event","occurredAt":1776818580000,"payload":{"message_id":"task-msg-001","occurred_at":1776818580000,"event_type":"task_progress","data":{"task_key":"<taskKey>","command_key":"ota_update","stage":"download","status":"PROCESSING","progress_pct":65,"log_level":"INFO","message":"Downloading firmware 65%","error_code":null,"error_message":null}}}'
+curl -X POST "http://<cloud-host>:48080/admin-api/edge/runtime/ingest" -H "Content-Type: application/json" -H "X-EMQX-SIGNATURE: <shared-secret>" -d '{"eventType":"task_progress","eventId":"evt-task-001","messageId":"task-msg-001","clientId":"edge-node:<deviceId>","username":"<deviceId>","deviceId":"<deviceId>","hardwareFingerprint":"<hardwareFingerprint>","topic":"vmesh/edge/node/<deviceId>/event","occurredAt":1776818580000,"payload":{"message_id":"task-msg-001","occurred_at":1776818580000,"event_type":"task_progress","data":{"hardware_fingerprint":"<hardwareFingerprint>","task_key":"<taskKey>","command_key":"ota_update","stage":"download","status":"PROCESSING","progress_pct":65,"log_level":"INFO","message":"Downloading firmware 65%","error_code":null,"error_message":null}}}'
 ```
 
 ### 7.3 验证 EMQX API 地址

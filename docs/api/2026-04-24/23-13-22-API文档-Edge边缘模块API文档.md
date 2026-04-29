@@ -128,7 +128,10 @@
 | enabledStatus | Integer | 启用状态编码 | 1 |
 | enabled | Boolean | 是否启用 | true |
 | activationStatus | Integer | 激活状态编码 | 1 |
-| status | String | 状态字符串 | "online" |
+| status | String | 运行状态摘要（兼容字段，未启用或未激活返回 null） | "online" |
+| registrationStatus | String | 注册状态 | "ACTIVATED" |
+| connectionState | String | 连接状态 | "ONLINE" |
+| runtimeStatus | String | 运行状态 | "RUNNING" |
 | activationTime | LocalDateTime | 激活时间 | |
 | lastHeartbeatTime | LocalDateTime | 最后心跳 | |
 | cpuUsageRate | BigDecimal | CPU 使用率(%) | 20.15 |
@@ -138,7 +141,7 @@
 | defaultDispatchPolicy | String | 默认下发策略 | "IMMEDIATE" |
 | createTime | LocalDateTime | 创建时间 | |
 
-> **状态映射：** activationStatus = 0 → "pending", 1 → "online", 2 → "offline", 3 → "running", 4 → "warning"
+> **状态语义：** `activationStatus` 仅表示当前有效凭证版本是否激活（0=待激活，1=已激活）；在线/离线与运行状态请使用 `connectionState`、`runtimeStatus`，兼容字段 `status` 仅提供前端列表摘要。
 
 ---
 
@@ -156,7 +159,9 @@
 | region | String | 否 | 区域筛选 |
 | activationStatus | Integer | 否 | 激活状态筛选 |
 | enabledStatus | Integer | 否 | 启用状态筛选 |
-| status | String | 否 | 状态字符串（兼容字段） |
+| registrationStatus | String | 否 | 注册状态筛选 |
+| connectionState | String | 否 | 连接状态筛选 |
+| runtimeStatus | String | 否 | 运行状态筛选 |
 | enabled | Boolean | 否 | 是否启用（兼容字段） |
 
 - **响应：** `CommonResult<PageResult<EdgeNodeRespVO>>`
@@ -181,11 +186,11 @@
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
-| pending | Long | 待激活节点数 |
-| online | Long | 在线节点数 |
-| offline | Long | 离线节点数 |
-| running | Long | 运行中节点数 |
-| warning | Long | 告警节点数 |
+| pending | Long | 待激活节点数（`activationStatus=0`） |
+| online | Long | 已激活且在线节点数（`activationStatus=1 AND connectionState=ONLINE`） |
+| offline | Long | 已激活且离线节点数（`activationStatus=1 AND connectionState=OFFLINE`） |
+| running | Long | 已激活且运行中节点数（`activationStatus=1 AND runtimeStatus=RUNNING`） |
+| warning | Long | 已激活且告警节点数（`activationStatus=1 AND runtimeStatus=WARNING`） |
 | total | Long | 节点总数 |
 
 - **前端 SDK：** `EdgeNodeApi.getEdgeNodeStats()`
@@ -244,6 +249,8 @@
 | nodeId | Long | 是 | 节点编号 |
 
 - **响应：** `CommonResult<EdgeNodeCredentialRespVO>`（返回新凭证，含明文 secretKey）
+
+> **状态影响：** 刷新凭证会撤销旧 ACTIVE 凭证并生成新版本；节点 `activationStatus` 重置为 `0`，`activationTime/lastHeartbeatTime` 清空，runtime snapshot 收敛为 `registrationStatus=PREPARED`、`connectionState=OFFLINE`、`runtimeStatus=OFFLINE`。边缘端必须使用新凭证重新完成 `authenticate -> register` 后才恢复已激活与运行态更新。
 
 ---
 
@@ -898,15 +905,27 @@
 | eventType | String | 是 | 事件类型 |
 | eventId | String | 否 | 事件 ID |
 | messageId | String | 否 | 消息 ID |
-| clientId | String | 否 | 客户端 ID |
-| username | String | 否 | 用户名 |
-| deviceId | String | 否 | 设备 ID |
+| clientId | String | 是 | MQTT 客户端 ID，必须为 `edge-node:{deviceId}` |
+| username | String | 是 | MQTT 用户名，必须等于当前 ACTIVE 凭证的 `deviceId` |
+| deviceId | String | 否 | 设备 ID，缺省时兼容使用 `username` |
+| hardwareFingerprint | String | 边缘侧事件必填 | 节点硬件指纹；`register` 首次绑定，后续上报必须一致 |
 | topic | String | 否 | 主题 |
 | occurredAt | Long | 否 | 发生时间戳 |
 | reason | String | 否 | 原因 |
 | payload | Object | 否 | 载荷 |
 
 - **响应：** `CommonResult<Boolean>`
+
+- **运行时 ingest 错误码口径（联调约定）：**
+
+| 错误码 | 说明 | 触发条件 |
+|------|------|------|
+| EDGE_NODE_DISABLED | 节点未启用 | `enabledStatus=0` |
+| EDGE_RUNTIME_NODE_NOT_ACTIVATED | 节点未激活 | `activationStatus=0`，拒绝 runtime 状态推进 |
+| EDGE_RUNTIME_AUTH_DENIED | 凭证上下文不一致 | `clientId/username/deviceId` 与当前 ACTIVE 凭证不一致 |
+| EDGE_RUNTIME_DEVICE_BINDING_MISMATCH | 设备绑定不一致 | `hardwareFingerprint` 缺失、已被其他 ACTIVE 凭证绑定或与当前凭证绑定值不一致 |
+| EDGE_RUNTIME_INVALID_EVENT | 事件类型非法 | `eventType` 不在允许范围 |
+| EDGE_RUNTIME_INVALID_PAYLOAD | 事件载荷非法 | `deviceId/messageId/payload` 关键字段缺失或格式错误 |
 
 ---
 
@@ -1200,15 +1219,14 @@
 
 ### A. 枚举常量参考
 
-#### 节点激活状态映射
+#### 节点状态分层映射
 
-| activationStatus | status 字符串 | 含义 |
+| 字段 | 取值 | 含义 |
 |:---:|:---:|:---:|
-| 0 | pending | 待激活 |
-| 1 | online | 在线 |
-| 2 | offline | 离线 |
-| 3 | running | 运行中 |
-| 4 | warning | 告警 |
+| activationStatus | 0 / 1 | 当前凭证版本待激活 / 当前凭证版本已激活 |
+| registrationStatus | PREPARED / REGISTERED / ACTIVATED | 注册链路阶段 |
+| connectionState | UNKNOWN / ONLINE / OFFLINE | MQTT 连接态 |
+| runtimeStatus | OFFLINE / ONLINE / RUNNING / WARNING | 运行态 |
 
 #### 设备状态枚举（EdgeDeviceStatusEnum）
 
