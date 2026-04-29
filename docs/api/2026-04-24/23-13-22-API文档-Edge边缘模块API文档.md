@@ -29,8 +29,8 @@
 
 **基础路径：** `POST/GET/PUT/DELETE /edge/node/**`
 
-**Controller 源码：** [EdgeNodeController.java](/Users/yo/项目/ai_vision/cloud_agent/cloud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/node/EdgeNodeController.java)
-**前端 SDK：** [node.ts](/Users/yo/项目/ai_vision/cloud_agent/cloud_ui/src/api/edge/node.ts)
+**Controller 源码：** [EdgeNodeController.java](../../../WF_VMesh_Coud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/node/EdgeNodeController.java)
+**前端 SDK：** [node.ts](../../../WF_VMesh_Coud_UI/src/api/edge/node.ts)
 
 ---
 
@@ -284,8 +284,8 @@
 
 **基础路径：** `POST/GET/PUT/DELETE /edge/device/**`
 
-**Controller 源码：** [EdgeDeviceController.java](/Users/yo/项目/ai_vision/cloud_agent/cloud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/device/EdgeDeviceController.java)
-**前端 SDK：** [device.ts](/Users/yo/项目/ai_vision/cloud_agent/cloud_ui/src/api/edge/device.ts)
+**Controller 源码：** [EdgeDeviceController.java](../../../WF_VMesh_Coud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/device/EdgeDeviceController.java)
+**前端 SDK：** [device.ts](../../../WF_VMesh_Coud_UI/src/api/edge/device.ts)
 
 ---
 
@@ -402,8 +402,8 @@
 
 **基础路径：** `POST/GET/PUT/DELETE /edge/group/**`
 
-**Controller 源码：** [EdgeDeviceGroupController.java](/Users/yo/项目/ai_vision/cloud_agent/cloud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/group/EdgeDeviceGroupController.java)
-**前端 SDK：** [group.ts](/Users/yo/项目/ai_vision/cloud_agent/cloud_ui/src/api/edge/group.ts)
+**Controller 源码：** [EdgeDeviceGroupController.java](../../../WF_VMesh_Coud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/group/EdgeDeviceGroupController.java)
+**前端 SDK：** [group.ts](../../../WF_VMesh_Coud_UI/src/api/edge/group.ts)
 
 ---
 
@@ -503,7 +503,7 @@
 
 **基础路径：** `POST/GET/PUT/DELETE /edge/resource/**`
 
-**Controller 源码：** [EdgeResourceController.java](/Users/yo/项目/ai_vision/cloud_agent/cloud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/resource/EdgeResourceController.java)
+**Controller 源码：** [EdgeResourceController.java](../../../WF_VMesh_Coud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/resource/EdgeResourceController.java)
 
 ---
 
@@ -603,8 +603,8 @@
 
 **基础路径：** `POST/GET/PUT/DELETE /edge/resource-legacy/**`
 
-**Controller 源码：** [EdgeDispatchResourceController.java](/Users/yo/项目/ai_vision/cloud_agent/cloud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/resource/EdgeDispatchResourceController.java)
-**前端 SDK：** [resource.ts](/Users/yo/项目/ai_vision/cloud_agent/cloud_ui/src/api/edge/resource.ts)
+**Controller 源码：** [EdgeDispatchResourceController.java](../../../WF_VMesh_Coud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/resource/EdgeDispatchResourceController.java)
+**前端 SDK：** [resource.ts](../../../WF_VMesh_Coud_UI/src/api/edge/resource.ts)
 
 **说明：** 此 Controller 是旧版资源管理，路径为 `/edge/resource-legacy`，用于任务资源调度场景。
 
@@ -683,8 +683,8 @@
 
 **基础路径：** `POST/GET /edge/task/**`
 
-**Controller 源码：** [EdgeTaskController.java](/Users/yo/项目/ai_vision/cloud_agent/cloud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/task/EdgeTaskController.java)
-**前端 SDK：** [task.ts](/Users/yo/项目/ai_vision/cloud_agent/cloud_ui/src/api/edge/task.ts)
+**Controller 源码：** [EdgeTaskController.java](../../../WF_VMesh_Coud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/task/EdgeTaskController.java)
+**前端 SDK：** [task.ts](../../../WF_VMesh_Coud_UI/src/api/edge/task.ts)
 
 ---
 
@@ -844,10 +844,11 @@
 
 ### 1.7 运行时管理 (Edge Runtime Controller)
 
-**基础路径：** `POST /edge/runtime/**`
+**Controller 基础路径：** `POST /edge/runtime/**`
+**外部访问路径：** `POST /admin-api/edge/runtime/**`
 
-**Controller 源码：** [EdgeRuntimeController.java](/Users/yo/项目/ai_vision/cloud_agent/cloud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/runtime/EdgeRuntimeController.java)
-**前端 SDK：** [runtime.ts](/Users/yo/项目/ai_vision/cloud_agent/cloud_ui/src/api/edge/runtime.ts)
+**Controller 源码：** [EdgeRuntimeController.java](../../../WF_VMesh_Coud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/runtime/EdgeRuntimeController.java)
+**前端 SDK：** [runtime.ts](../../../WF_VMesh_Coud_UI/src/api/edge/runtime.ts)
 
 > **说明：** 运行时接口由 EMQX 通过 HTTP Hook 调用，非前端管理页面直接使用（除了 replay-event）。
 
@@ -889,7 +890,7 @@
 
 - **方法：** `POST /edge/runtime/ingest`
 - **请求头：**
-  - `X-EMQX-SIGNATURE` (可选): EMQX 签名
+  - `X-EMQX-SIGNATURE` (必填): EMQX HTTP Sink 共享密钥签名，必须与后端 `VMESH_EDGE_INGEST_SHARED_SECRET` 完全一致
 - **请求体：** `EdgeRuntimeIngestReqVO`
 
 | 字段 | 类型 | 必填 | 说明 |
@@ -920,10 +921,11 @@
 
 ### 1.8 监控中心 (Edge Monitor Controller)
 
-**基础路径：** `GET /edge/monitor/**`
+**Controller 基础路径：** `GET /edge/monitor/**`
+**外部访问路径：** `GET /admin-api/edge/monitor/**`
 
-**Controller 源码：** [EdgeMonitorController.java](/Users/yo/项目/ai_vision/cloud_agent/cloud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/monitor/EdgeMonitorController.java)
-**前端 SDK：** [monitor.ts](/Users/yo/项目/ai_vision/cloud_agent/cloud_ui/src/api/edge/monitor.ts)
+**Controller 源码：** [EdgeMonitorController.java](../../../WF_VMesh_Coud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/monitor/EdgeMonitorController.java)
+**前端 SDK：** [monitor.ts](../../../WF_VMesh_Coud_UI/src/api/edge/monitor.ts)
 
 ---
 
@@ -998,7 +1000,80 @@
 
 ---
 
-#### 1.8.4 获取高负载节点
+#### 1.8.4 分页获取连接设备异常状态
+
+- **方法：** `GET /edge/monitor/device-abnormal/page`
+- **外部访问：** `GET /admin-api/edge/monitor/device-abnormal/page`
+- **权限：** `edge:monitor:query`
+- **查询参数：**
+
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| pageNo | Integer | 页码 |
+| pageSize | Integer | 每页条数 |
+| keyword | String | 节点名称、设备名称、设备编码关键词 |
+| nodeId | Long | 边缘节点 ID |
+| deviceType | String | 设备类型，如 CAMERA |
+| status | String | 异常状态 |
+
+- **响应：** `CommonResult<PageResult<EdgeMonitorAbnormalDeviceRespVO>>`
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| deviceId | Long | 设备 ID |
+| deviceKey | String | 设备业务编码 |
+| nodeId | Long | 所属边缘节点 ID |
+| nodeName | String | 所属边缘节点名称 |
+| deviceName | String | 设备名称 |
+| deviceType | String | 设备类型 |
+| status | String | 异常状态 |
+| statusLabel | String | 异常状态中文标签 |
+| metricText | String | 异常指标展示文本 |
+| abnormalReason | String | 异常说明 |
+| lastReportedAt | LocalDateTime | 最近上报时间 |
+
+- **前端 SDK：** `EdgeMonitorApi.getAbnormalDevicePage(params)`
+
+---
+
+#### 1.8.5 获取边缘节点系统状态预警
+
+- **方法：** `GET /edge/monitor/system-status/page`
+- **外部访问：** `GET /admin-api/edge/monitor/system-status/page`
+- **权限：** `edge:monitor:query`
+- **查询参数：**
+
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| pageNo | Integer | 页码；当前返回 List，可不传 |
+| pageSize | Integer | 每页条数；当前返回 List，可不传 |
+| sortBy | String | 排序字段（cpu / npu / temp / memory / storage） |
+| healthLevel | String | 健康等级 |
+
+- **响应：** `CommonResult<List<EdgeMonitorSystemStatusRespVO>>`
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| nodeId | Long | 边缘节点 ID |
+| nodeName | String | 边缘节点名称 |
+| activeTaskKey | String | 当前承载任务 Key |
+| activeTaskName | String | 当前承载任务名称 |
+| systemStatus | String | 系统状态摘要 |
+| healthLevel | String | 健康等级 |
+| cpuUsageRate | BigDecimal | CPU 使用率 |
+| npuUsageRate | BigDecimal | NPU/GPU 使用率 |
+| memoryUsageRate | BigDecimal | 内存使用率 |
+| storageUsageRate | BigDecimal | 存储使用率 |
+| temperatureC | BigDecimal | 设备温度 |
+| packetLossPct | BigDecimal | 丢包率 |
+| recommendation | String | 处置建议 |
+| lastMetricAt | LocalDateTime | 最近指标时间 |
+
+- **前端 SDK：** `EdgeMonitorApi.getSystemStatusPage(params)`
+
+---
+
+#### 1.8.6 获取高负载节点
 
 - **方法：** `GET /edge/monitor/high-load/page`
 - **权限：** `edge:monitor:query`
@@ -1026,7 +1101,7 @@
 
 ---
 
-#### 1.8.5 分页获取活动告警
+#### 1.8.7 分页获取活动告警
 
 - **方法：** `GET /edge/monitor/alert/page`
 - **权限：** `edge:monitor:query`
@@ -1060,7 +1135,7 @@
 
 ---
 
-#### 1.8.6 获取节点运行详情
+#### 1.8.8 获取节点运行详情
 
 - **方法：** `GET /edge/monitor/node/{nodeId}/detail`
 - **权限：** `edge:monitor:query`
@@ -1094,7 +1169,7 @@
 
 ---
 
-#### 1.8.7 获取节点指标趋势
+#### 1.8.9 获取节点指标趋势
 
 - **方法：** `GET /edge/monitor/node/{nodeId}/trend`
 - **权限：** `edge:monitor:query`
@@ -1161,13 +1236,13 @@
 
 | 模块 | SDK 文件路径 | 导出对象 |
 |------|-------------|----------|
-| 节点管理 | [node.ts](/Users/yo/项目/ai_vision/cloud_agent/cloud_ui/src/api/edge/node.ts) | EdgeNodeApi |
-| 设备台账 | [device.ts](/Users/yo/项目/ai_vision/cloud_agent/cloud_ui/src/api/edge/device.ts) | EdgeDeviceApi |
-| 设备分组 | [group.ts](/Users/yo/项目/ai_vision/cloud_agent/cloud_ui/src/api/edge/group.ts) | EdgeGroupApi |
-| 任务中心 | [task.ts](/Users/yo/项目/ai_vision/cloud_agent/cloud_ui/src/api/edge/task.ts) | EdgeTaskApi |
-| 边缘监控 | [monitor.ts](/Users/yo/项目/ai_vision/cloud_agent/cloud_ui/src/api/edge/monitor.ts) | EdgeMonitorApi |
-| 运行时 | [runtime.ts](/Users/yo/项目/ai_vision/cloud_agent/cloud_ui/src/api/edge/runtime.ts) | EdgeRuntimeApi |
-| 任务资源 | [resource.ts](/Users/yo/项目/ai_vision/cloud_agent/cloud_ui/src/api/edge/resource.ts) | EdgeResourceApi |
+| 节点管理 | [node.ts](../../../WF_VMesh_Coud_UI/src/api/edge/node.ts) | EdgeNodeApi |
+| 设备台账 | [device.ts](../../../WF_VMesh_Coud_UI/src/api/edge/device.ts) | EdgeDeviceApi |
+| 设备分组 | [group.ts](../../../WF_VMesh_Coud_UI/src/api/edge/group.ts) | EdgeGroupApi |
+| 任务中心 | [task.ts](../../../WF_VMesh_Coud_UI/src/api/edge/task.ts) | EdgeTaskApi |
+| 边缘监控 | [monitor.ts](../../../WF_VMesh_Coud_UI/src/api/edge/monitor.ts) | EdgeMonitorApi |
+| 运行时 | [runtime.ts](../../../WF_VMesh_Coud_UI/src/api/edge/runtime.ts) | EdgeRuntimeApi |
+| 任务资源 | [resource.ts](../../../WF_VMesh_Coud_UI/src/api/edge/resource.ts) | EdgeResourceApi |
 
 ---
 
@@ -1175,11 +1250,11 @@
 
 | 模块 | 组件 | 路径 |
 |------|------|------|
-| edge | Node Controller | [EdgeNodeController.java](/Users/yo/项目/ai_vision/cloud_agent/cloud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/node/EdgeNodeController.java) |
-| edge | Device Controller | [EdgeDeviceController.java](/Users/yo/项目/ai_vision/cloud_agent/cloud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/device/EdgeDeviceController.java) |
-| edge | Group Controller | [EdgeDeviceGroupController.java](/Users/yo/项目/ai_vision/cloud_agent/cloud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/group/EdgeDeviceGroupController.java) |
-| edge | Resource Controller | [EdgeResourceController.java](/Users/yo/项目/ai_vision/cloud_agent/cloud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/resource/EdgeResourceController.java) |
-| edge | Dispatch Resource Controller | [EdgeDispatchResourceController.java](/Users/yo/项目/ai_vision/cloud_agent/cloud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/resource/EdgeDispatchResourceController.java) |
-| edge | Task Controller | [EdgeTaskController.java](/Users/yo/项目/ai_vision/cloud_agent/cloud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/task/EdgeTaskController.java) |
-| edge | Runtime Controller | [EdgeRuntimeController.java](/Users/yo/项目/ai_vision/cloud_agent/cloud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/runtime/EdgeRuntimeController.java) |
-| edge | Monitor Controller | [EdgeMonitorController.java](/Users/yo/项目/ai_vision/cloud_agent/cloud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/monitor/EdgeMonitorController.java) |
+| edge | Node Controller | [EdgeNodeController.java](../../../WF_VMesh_Coud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/node/EdgeNodeController.java) |
+| edge | Device Controller | [EdgeDeviceController.java](../../../WF_VMesh_Coud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/device/EdgeDeviceController.java) |
+| edge | Group Controller | [EdgeDeviceGroupController.java](../../../WF_VMesh_Coud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/group/EdgeDeviceGroupController.java) |
+| edge | Resource Controller | [EdgeResourceController.java](../../../WF_VMesh_Coud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/resource/EdgeResourceController.java) |
+| edge | Dispatch Resource Controller | [EdgeDispatchResourceController.java](../../../WF_VMesh_Coud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/resource/EdgeDispatchResourceController.java) |
+| edge | Task Controller | [EdgeTaskController.java](../../../WF_VMesh_Coud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/task/EdgeTaskController.java) |
+| edge | Runtime Controller | [EdgeRuntimeController.java](../../../WF_VMesh_Coud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/runtime/EdgeRuntimeController.java) |
+| edge | Monitor Controller | [EdgeMonitorController.java](../../../WF_VMesh_Coud/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/monitor/EdgeMonitorController.java) |
