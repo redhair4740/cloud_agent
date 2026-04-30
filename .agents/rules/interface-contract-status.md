@@ -1,3 +1,7 @@
+---
+alwaysApply: false
+description: 
+---
 # 接口契约与联调状态规则
 
 ## 契约真源

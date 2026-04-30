@@ -1,3 +1,7 @@
+---
+alwaysApply: false
+description: 
+---
 # 后端对象分层规则
 
 ## 默认分层

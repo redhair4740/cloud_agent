@@ -1,3 +1,7 @@
+---
+alwaysApply: false
+description: 
+---
 # 前后端联动与 API-First 规则
 
 ## 适用范围

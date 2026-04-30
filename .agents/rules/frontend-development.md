@@ -1,3 +1,7 @@
+---
+alwaysApply: false
+description: 
+---
 # 前端开发规则
 
 ## 技术栈

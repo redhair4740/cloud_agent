@@ -1,3 +1,7 @@
+---
+alwaysApply: false
+description: 
+---
 # 仓库通用基线
 
 ## 沟通与证据
