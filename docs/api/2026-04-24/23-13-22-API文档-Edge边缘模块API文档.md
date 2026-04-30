@@ -187,8 +187,8 @@
 | 字段 | 类型 | 说明 |
 |------|------|------|
 | pending | Long | 待激活节点数（`activationStatus=0`） |
-| online | Long | 已激活且在线节点数（`activationStatus=1 AND connectionState=ONLINE`） |
-| offline | Long | 已激活且离线节点数（`activationStatus=1 AND connectionState=OFFLINE`） |
+| online | Long | 已激活且在线节点数（`activationStatus=1 AND connectionState=ONLINE`，受心跳超时巡检后的快照影响） |
+| offline | Long | 已激活且离线节点数（`activationStatus=1 AND connectionState=OFFLINE`，包含连接断开与心跳超时巡检离线） |
 | running | Long | 已激活且运行中节点数（`activationStatus=1 AND runtimeStatus=RUNNING`） |
 | warning | Long | 已激活且告警节点数（`activationStatus=1 AND runtimeStatus=WARNING`） |
 | total | Long | 节点总数 |
@@ -1011,11 +1011,13 @@
 |------|------|------|
 | nodeId | Long | 节点编号 |
 | nodeName | String | 节点名称 |
-| status | String | 在线状态 |
+| status | String | 在线状态：`ONLINE` / `WARNING` / `OFFLINE` |
 | lastHeartbeatAt | LocalDateTime | 最后心跳时间 |
-| heartbeatIntervalSec | Integer | 心跳间隔(秒) |
-| heartbeatSuccessRate24h | BigDecimal | 24小时心跳成功率 |
-| heartbeatSlots | List<Boolean> | 最近心跳槽位（30槽脉冲图） |
+| heartbeatIntervalSec | Integer | 心跳间隔(秒)，未上报时默认 `20` |
+| heartbeatSuccessRate24h | BigDecimal | 24小时心跳成功率，按实际心跳周期动态计算 |
+| heartbeatSlots | List<Boolean> | 最近心跳槽位（20槽脉冲图） |
+
+说明：注册或连接后长期无心跳的节点不会永久保持在线。后端由 `EdgeRuntimeServiceImpl#scanHeartbeatTimeouts` 定时巡检，默认 `vmesh.edge.runtime.heartbeat-scan-interval-ms=30000` 毫秒；超时阈值为 `max(vmesh.edge.runtime.heartbeat-timeout-sec, heartbeatIntervalSec * 3)`。
 
 ---
 
@@ -1067,7 +1069,7 @@
 | pageNo | Integer | 页码；当前返回 List，可不传 |
 | pageSize | Integer | 每页条数；当前返回 List，可不传 |
 | sortBy | String | 排序字段（cpu / npu / temp / memory / storage） |
-| healthLevel | String | 健康等级 |
+| healthLevel | String | 健康等级：`GOOD` / `WARN` / `CRITICAL` |
 
 - **响应：** `CommonResult<List<EdgeMonitorSystemStatusRespVO>>`
 
@@ -1181,9 +1183,9 @@
 | edgeRttMs | BigDecimal | 边缘 RTT(ms) |
 | cloudProbeRttMs | BigDecimal | 云探测 RTT(ms) |
 | packetLossPct | BigDecimal | 丢包率(%) |
-| heartbeatSuccessRate24h | BigDecimal | 24h 心跳成功率 |
+| heartbeatSuccessRate24h | BigDecimal | 24h 心跳成功率，按实际心跳周期动态计算 |
 | healthScore | Integer | 健康评分 |
-| healthLevel | String | 健康等级 |
+| healthLevel | String | 健康等级：`GOOD` / `WARN` / `CRITICAL` |
 | latestEventId | String | 最近事件 ID |
 
 ---
@@ -1224,7 +1226,7 @@
 | 字段 | 取值 | 含义 |
 |:---:|:---:|:---:|
 | activationStatus | 0 / 1 | 当前凭证版本待激活 / 当前凭证版本已激活 |
-| registrationStatus | PREPARED / REGISTERED / ACTIVATED | 注册链路阶段 |
+| registrationStatus | PREPARED / HANDSHAKING / ACTIVATED | 注册链路阶段；`HANDSHAKING` 为预留/中间态口径，当前 runtime 注册与连接事件会推进到 `ACTIVATED` |
 | connectionState | UNKNOWN / ONLINE / OFFLINE | MQTT 连接态 |
 | runtimeStatus | OFFLINE / ONLINE / RUNNING / WARNING | 运行态 |
 

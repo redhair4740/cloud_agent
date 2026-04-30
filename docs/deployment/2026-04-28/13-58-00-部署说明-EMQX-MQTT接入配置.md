@@ -88,6 +88,7 @@ vmesh:
 | `vmesh.edge.runtime.ingest-shared-secret` | `VMESH_EDGE_INGEST_SHARED_SECRET` | 不提交真实值 | EMQX HTTP Sink 调 Cloud 时携带的共享密钥，必填非空 |
 | `vmesh.edge.runtime.heartbeat-interval-sec` | `VMESH_EDGE_HEARTBEAT_INTERVAL_SEC` | `20` | 心跳间隔 |
 | `vmesh.edge.runtime.heartbeat-timeout-sec` | `VMESH_EDGE_HEARTBEAT_TIMEOUT_SEC` | `60` | 心跳超时 |
+| `vmesh.edge.runtime.heartbeat-scan-interval-ms` | `VMESH_EDGE_HEARTBEAT_SCAN_INTERVAL_MS` | `30000` | Cloud 侧心跳超时巡检间隔，单位毫秒 |
 
 敏感配置只允许写入环境变量、Portainer Stack 变量或宿主机实际部署配置文件，不允许提交到仓库。
 
@@ -118,9 +119,18 @@ vmesh:
       ingest-shared-secret: ${VMESH_EDGE_INGEST_SHARED_SECRET:}
       heartbeat-interval-sec: 20
       heartbeat-timeout-sec: 60
+      heartbeat-scan-interval-ms: 30000
 ```
 
 部署环境由 `deploy/application-deploy.yaml.template` 和 Portainer 环境变量共同生效。
+
+心跳超时离线规则：
+
+- 边缘端可在心跳 payload 中上报 `heartbeat_interval_sec` 或 `heartbeatIntervalSec`，未上报时使用 `vmesh.edge.runtime.heartbeat-interval-sec`。
+- Cloud 侧由 `EdgeRuntimeServiceImpl#scanHeartbeatTimeouts` 按 `vmesh.edge.runtime.heartbeat-scan-interval-ms` 定时巡检。
+- 超时阈值为 `max(vmesh.edge.runtime.heartbeat-timeout-sec, heartbeatIntervalSec * 3)`；默认配置下为 `max(60, 20 * 3) = 60` 秒。
+- 巡检会把超时节点写为 `connectionState=OFFLINE`、`runtimeStatus=OFFLINE`，并在 `edge_monitor_alert` 打开 `OFFLINE` 告警。
+- 后续收到有效心跳后，Cloud 会恢复 `OFFLINE` 告警为 `RECOVERED`，并重新计算心跳成功率与健康分。
 
 ## 5. EMQX 侧配置
 
@@ -265,6 +275,7 @@ Topic 规范：
   "message_id": "hb-20260428-0001",
   "occurred_at": 1776818460000,
   "runtime_status": "ONLINE",
+  "heartbeat_interval_sec": 20,
   "metrics": {
     "cpu_usage_pct": 45.2,
     "memory_usage_pct": 62.8,
@@ -312,7 +323,7 @@ Topic 规范：
 ### 7.1 模拟心跳上行
 
 ```bash
-curl -X POST "http://<cloud-host>:48080/admin-api/edge/runtime/ingest" -H "Content-Type: application/json" -H "X-EMQX-SIGNATURE: <shared-secret>" -d '{"eventType":"heartbeat","eventId":"evt-hb-001","messageId":"hb-001","clientId":"edge-node:<deviceId>","username":"<deviceId>","deviceId":"<deviceId>","hardwareFingerprint":"<hardwareFingerprint>","topic":"vmesh/edge/node/<deviceId>/heartbeat","occurredAt":1776818460000,"payload":{"message_id":"hb-001","occurred_at":1776818460000,"hardware_fingerprint":"<hardwareFingerprint>","runtime_status":"ONLINE","metrics":{"cpu_usage_pct":45.2,"memory_usage_pct":62.8,"gpu_usage_pct":78.0,"storage_usage_pct":35.5,"temperature_c":68.4},"network":{"edge_rtt_ms":42.5,"packet_loss_pct":0.1,"cloud_probe_rtt_ms":45.0}}}'
+curl -X POST "http://<cloud-host>:48080/admin-api/edge/runtime/ingest" -H "Content-Type: application/json" -H "X-EMQX-SIGNATURE: <shared-secret>" -d '{"eventType":"heartbeat","eventId":"evt-hb-001","messageId":"hb-001","clientId":"edge-node:<deviceId>","username":"<deviceId>","deviceId":"<deviceId>","hardwareFingerprint":"<hardwareFingerprint>","topic":"vmesh/edge/node/<deviceId>/heartbeat","occurredAt":1776818460000,"payload":{"message_id":"hb-001","occurred_at":1776818460000,"hardware_fingerprint":"<hardwareFingerprint>","runtime_status":"ONLINE","heartbeat_interval_sec":20,"metrics":{"cpu_usage_pct":45.2,"memory_usage_pct":62.8,"gpu_usage_pct":78.0,"storage_usage_pct":35.5,"temperature_c":68.4},"network":{"edge_rtt_ms":42.5,"packet_loss_pct":0.1,"cloud_probe_rtt_ms":45.0}}}'
 ```
 
 ### 7.2 模拟任务进度上行

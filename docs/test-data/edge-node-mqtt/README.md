@@ -33,9 +33,15 @@
 | 2 | 节点心跳在线 | `02-节点心跳在线.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 运行状态更新为在线 |
 | 3 | 设备快照上报 | `03-设备快照上报.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/device/report` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 外设状态进入运行事件链路 |
 | 4 | 任务进度上报 | `04-任务进度上报.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/event` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 任务进度更新 |
-| 5 | 告警心跳 | `05-节点心跳告警.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 运行状态更新为告警 |
+| 5 | 告警心跳 | `05-节点心跳告警.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 运行状态更新为告警；这是资源/运行告警场景，不是超时离线 |
 | 6 | 错误硬件指纹 | `90-错误硬件指纹心跳.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 云端拒收 |
 | 7 | 错误设备身份 | `91-错误设备身份心跳.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 云端应因上下文不一致拒收 |
+
+## 超时离线场景
+
+超时离线不由某个 payload 文件直接触发。测试方式是先完成 `authenticate -> register -> heartbeat`，确认节点进入在线态后停止继续发布 heartbeat，等待 Cloud 巡检任务处理。
+
+当前后端巡检入口为 `EdgeRuntimeServiceImpl#scanHeartbeatTimeouts`，默认配置 `vmesh.edge.runtime.heartbeat-scan-interval-ms=30000` 毫秒。超时阈值为 `max(vmesh.edge.runtime.heartbeat-timeout-sec, heartbeatIntervalSec * 3)`；默认心跳 `20` 秒、超时 `60` 秒时，停止心跳后约一个超时窗口加一次巡检间隔内会降级为离线，并打开 `OFFLINE` 告警。后续恢复有效心跳后，`OFFLINE` 告警会恢复为 `RECOVERED`。
 
 ## 使用说明
 
