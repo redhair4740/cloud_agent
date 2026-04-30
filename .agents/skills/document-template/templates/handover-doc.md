@@ -1,3 +1,12 @@
+---
+lifecycle: record
+topic:
+type: 交接文档
+created:
+status: draft
+related:
+---
+
 # 交接文档模板
 
 > 输出目录：`docs/design/yyyy-MM-dd/hh-mm-ss-交接文档-文档名称.md`

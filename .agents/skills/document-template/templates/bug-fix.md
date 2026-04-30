@@ -1,3 +1,12 @@
+---
+lifecycle: record
+topic:
+type: Bug修复工单
+created:
+status: draft
+related:
+---
+
 # Bug 修复工单模板
 
 > 输出目录：`docs/design/yyyy-MM-dd/hh-mm-ss-设计方案-Bug修复-文档名称.md`

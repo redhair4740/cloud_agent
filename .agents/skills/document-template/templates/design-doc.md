@@ -1,6 +1,17 @@
+---
+lifecycle: living
+topic:
+type: 设计方案
+created:
+last_updated:
+status: draft
+supersedes:
+related:
+---
+
 # 设计文档模板
 
-> 输出目录：`docs/design/yyyy-MM-dd/hh-mm-ss-设计方案-文档名称.md`
+> 输出目录：`docs/design/<主题短名>/设计方案.md`
 > 示例见：`../examples/design-doc.example.md`
 
 ## 1. 背景
@@ -55,3 +66,8 @@
 - 风险：
 - 回滚方案：
 - 未验证项：
+
+## 变更日志
+
+| 日期 | 变更摘要 | 变更来源 |
+|------|---------|---------|

@@ -1,3 +1,12 @@
+---
+lifecycle: record
+topic:
+type: 重构工单
+created:
+status: draft
+related:
+---
+
 # 重构工单模板
 
 > 输出目录：`docs/design/yyyy-MM-dd/hh-mm-ss-设计方案-重构-文档名称.md`

@@ -1,3 +1,12 @@
+---
+lifecycle: record
+topic:
+type: review清单
+created:
+status: 未完成
+related:
+---
+
 # 评审清单模板
 
 > 输出目录：`docs/review-tracking/yyyy-MM-dd/review清单-hh-mm-ss-文档名称-状态.md`
