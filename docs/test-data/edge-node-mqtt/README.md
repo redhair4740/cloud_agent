@@ -36,8 +36,10 @@
 | 5 | 告警心跳 | `05-节点心跳告警.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 运行状态更新为告警；这是资源/运行告警场景，不是超时离线 |
 | 6 | 云端下发配置更新 | `06-云端下发配置更新.json` | `vmesh/edge/node/device-aa034de0a2f147faab579ba0b45db13f/command/config_update` | 云端发布 MQTT 消息到边缘端，QoS 0 | 边缘端收到 `config_update` 命令 |
 | 7 | 云端下发重启 | `07-云端下发重启.json` | `vmesh/edge/node/device-aa034de0a2f147faab579ba0b45db13f/command/reboot` | 云端发布 MQTT 消息到边缘端，QoS 0 | 边缘端收到 `reboot` 命令 |
-| 8 | 错误硬件指纹 | `90-错误硬件指纹心跳.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 云端拒收 |
-| 9 | 错误设备身份 | `91-错误设备身份心跳.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 云端应因上下文不一致拒收 |
+| 8 | 重启任务完成上报 | `08-重启任务完成上报.json` | `vmesh/edge/node/device-aa034de0a2f147faab579ba0b45db13f/event` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 任务 `TASK-2049721057496186880` 进入 `SUCCESS`，进度为 `100` |
+| 9 | 配置更新任务完成上报 | `09-配置更新任务完成上报.json` | `vmesh/edge/node/device-aa034de0a2f147faab579ba0b45db13f/event` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 任务 `TASK-2049720986113327104` 进入 `SUCCESS`，进度为 `100` |
+| 10 | 错误硬件指纹 | `90-错误硬件指纹心跳.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 云端拒收 |
+| 11 | 错误设备身份 | `91-错误设备身份心跳.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 云端应因上下文不一致拒收 |
 
 ## 云端下发边缘端命令
 
@@ -71,6 +73,27 @@ EMQX Rule Engine / HTTP Sink 需要把 MQTT 上下文映射到 Cloud：
 - `clientId`: `${clientid}`
 - `username`: `${username}`
 - `deviceId`: `${username}`
-- `hardwareFingerprint`: `${payload.hardware_fingerprint}`
+- `hardwareFingerprint`: `${payload.data.hardware_fingerprint}`（`register` / `heartbeat` 这类非任务 payload 可按实际结构改成 `${payload.hardware_fingerprint}`）
 - `topic`: `${topic}`
 - `payload`: `${payload}`
+
+任务完成上报的 MQTT payload 只发送 `task_progress` 内部结构，例如 `08-重启任务完成上报.json` 与 `09-配置更新任务完成上报.json`。不要把 Cloud `/edge/runtime/ingest` 的完整 HTTP envelope 当 MQTT payload 发到 `{topicRoot}/event`，否则 EMQX 模板会读不到 `payload.event_type`、`payload.message_id`、`payload.occurred_at`，容易渲染出非法 JSON。
+
+任务进度上报推荐的 HTTP Sink Body 模板：
+
+```json
+{
+  "eventType": "${payload.event_type}",
+  "eventId": "${payload.message_id}",
+  "messageId": "${payload.message_id}",
+  "clientId": "${clientid}",
+  "username": "${username}",
+  "deviceId": "${username}",
+  "hardwareFingerprint": "${payload.data.hardware_fingerprint}",
+  "topic": "${topic}",
+  "occurredAt": ${payload.occurred_at},
+  "payload": ${payload}
+}
+```
+
+`occurredAt` 是数字，模板中不要加引号；任何字段没有值时不要输出 `undefined`，应先修正 Rule SQL 或 payload 结构。

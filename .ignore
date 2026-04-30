@@ -7,19 +7,15 @@
 !.gitignore
 
 # 允许 Codex 访问 dist 文件夹
-!ai/
-!ai/**
+!.agents/
+!.agents/**
+!..trae/
+!..trae/**
 !docs/
 !/docs/**
-!wf_vmesh_cloud_design/
-!wf_vmesh_cloud_design/**
-!WF_VMesh_Coud/
-!WF_VMesh_Coud/**
-!WF_VMesh_Coud_UI/
-!WF_VMesh_Coud_UI/**
-!cloud/
-!cloud/**
-!cloud_design/
-!cloud_design/**
-!cloud_ui/
-!cloud_ui/**
+!moon_cloud_design/
+!moon_cloud_design/**
+!moon_cloud_backend/
+!moon_cloud_backend/**
+!moon_cloud_frontend/
+!moon_cloud_frontend/**
