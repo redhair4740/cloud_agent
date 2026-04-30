@@ -1,6 +1,6 @@
 ---
 alwaysApply: false
-description: 
+description: 约束后端 Controller、Service、Mapper、DO、VO/DTO 的职责边界与目录分层。
 ---
 # 后端对象分层规则
 
@@ -10,6 +10,10 @@ description:
 - Service 负责业务编排、事务边界和跨对象协作。
 - Mapper 只负责数据库访问，不承载业务判断。
 - DO 对应数据库结构，VO/DTO 对应接口或应用层传输结构。
+
+## 命名约定
+
+- 后端实体默认按 `XxxDO`、`XxxMapper`、`XxxService`、`XxxController` 命名，`Xxx` 来自业务词表推荐英文。
 
 ## 目录组织
 

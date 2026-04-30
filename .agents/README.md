@@ -6,6 +6,7 @@
 
 - `rules/`：稳定约束、边界、接口状态和质量口径。
 - `skills/`：可独立使用的任务流程，每个 `SKILL.md` 包含触发场景、执行流程和输出要求。
+- `references/`：可增长的事实表、业务词表和枚举参考，不承载执行流程。
 
 ## 使用原则
 
@@ -13,6 +14,7 @@
 - 不维护角色定义或任务编排层。
 - Rule 只写稳定约束和边界，不写执行流程。
 - Skill 只写可复用流程，不写通用红线的重复全文。
+- Reference 只写可查阅数据，不写强制流程或任务调度。
 - Skill 之间不做硬依赖，不要求先调用另一个 Skill。
 - 未验证必须明确标注“未验证/未执行测试/未编译验证”。
 
@@ -21,6 +23,7 @@
 - 新增约束优先放入 `rules/`，新增流程优先放入 `skills/`。
 - 不在本目录中加入工具专属入口、生成链路、同步脚本说明或工具差异说明。
 - 不把历史方案、临时分析或项目执行记录写入本目录。
-- 文档管理规则保留在 `rules/repo-baseline.md`，避免在多个文件重复维护。
-- 接口契约与联调状态规则保留在 `rules/interface-contract-status.md`，避免在流程类 skill 中重复维护。
+- 文档管理规则保留在 `rules/document-governance.md`，避免污染 alwaysApply 基线。
+- 接口契约与联调状态红线保留在 `rules/interface-contract-status.md`，状态模型保留在 `references/interface-status-model.md`。
+- 业务词表保留在 `references/business-terms.md`，避免把可增长数据内联到 rule。
 - 文档模板作为 `skills/document-template/` 的资源维护，不在顶层新增模板目录。
