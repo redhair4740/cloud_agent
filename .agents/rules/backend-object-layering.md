@@ -1,6 +1,6 @@
 ---
 alwaysApply: false
-description: 
+description: 约束后端 Controller、Service、Mapper、DO、VO/DTO 的职责边界与目录分层。
 ---
 # 后端对象分层规则
 

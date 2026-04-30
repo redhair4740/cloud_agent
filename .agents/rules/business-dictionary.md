@@ -1,6 +1,6 @@
 ---
 alwaysApply: false
-description: 
+description: 统一项目业务名词、英文命名、表前缀、权限标识和未收录词处理方式。
 ---
 # 业务领域字典
 

@@ -1,6 +1,6 @@
 ---
 alwaysApply: false
-description: 
+description: 定义仓库级沟通、证据、注释、验证、协作、风险和文档管理基线。
 ---
 # 仓库通用基线
 

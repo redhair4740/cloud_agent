@@ -1,6 +1,6 @@
 ---
 alwaysApply: false
-description: 
+description: 定义前后端联动任务的 API-First 流程、契约真源、硬约束和最低交付项。
 ---
 # 前后端联动与 API-First 规则
 

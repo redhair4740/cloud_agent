@@ -1,6 +1,6 @@
 ---
 alwaysApply: false
-description: 
+description: 定义接口契约真源、联调状态枚举、状态清单字段和状态维护要求。
 ---
 # 接口契约与联调状态规则
 

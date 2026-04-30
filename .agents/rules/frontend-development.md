@@ -1,6 +1,6 @@
 ---
 alwaysApply: false
-description: 
+description: 约束前端技术栈、API SDK 使用、页面状态、注释、Mock 边界和交付要求。
 ---
 # 前端开发规则
 

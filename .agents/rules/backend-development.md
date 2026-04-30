@@ -1,6 +1,6 @@
 ---
 alwaysApply: false
-description: 
+description: 约束后端技术栈、PostgreSQL 数据访问、增量 SQL、模块边界、注释和验证交付。
 ---
 # 后端开发规则
 
