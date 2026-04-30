@@ -34,8 +34,19 @@
 | 3 | 设备快照上报 | `03-设备快照上报.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/device/report` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 外设状态进入运行事件链路 |
 | 4 | 任务进度上报 | `04-任务进度上报.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/event` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 任务进度更新 |
 | 5 | 告警心跳 | `05-节点心跳告警.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 运行状态更新为告警；这是资源/运行告警场景，不是超时离线 |
-| 6 | 错误硬件指纹 | `90-错误硬件指纹心跳.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 云端拒收 |
-| 7 | 错误设备身份 | `91-错误设备身份心跳.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 云端应因上下文不一致拒收 |
+| 6 | 云端下发配置更新 | `06-云端下发配置更新.json` | `vmesh/edge/node/device-aa034de0a2f147faab579ba0b45db13f/command/config_update` | 云端发布 MQTT 消息到边缘端，QoS 0 | 边缘端收到 `config_update` 命令 |
+| 7 | 云端下发重启 | `07-云端下发重启.json` | `vmesh/edge/node/device-aa034de0a2f147faab579ba0b45db13f/command/reboot` | 云端发布 MQTT 消息到边缘端，QoS 0 | 边缘端收到 `reboot` 命令 |
+| 8 | 错误硬件指纹 | `90-错误硬件指纹心跳.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 云端拒收 |
+| 9 | 错误设备身份 | `91-错误设备身份心跳.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 云端应因上下文不一致拒收 |
+
+## 云端下发边缘端命令
+
+以下样例是 Cloud 发布到边缘端订阅 Topic 的 MQTT payload，不经过 Cloud `/edge/runtime/ingest` 入站接口。
+
+| 场景 | 文件 | Topic | QoS | command_key |
+|---|---|---|---|---|
+| 配置更新 | `06-云端下发配置更新.json` | `vmesh/edge/node/device-aa034de0a2f147faab579ba0b45db13f/command/config_update` | `0` | `config_update` |
+| 重启 | `07-云端下发重启.json` | `vmesh/edge/node/device-aa034de0a2f147faab579ba0b45db13f/command/reboot` | `0` | `reboot` |
 
 ## 超时离线场景
 

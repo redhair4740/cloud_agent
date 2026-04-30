@@ -1,0 +1,12 @@
+{
+  "occurred_at": 1777526539722,
+  "device_id": "device-aa034de0a2f147faab579ba0b45db13f",
+  "payload": {
+    "meg": "hello"
+  },
+  "task_key": "TASK-2049720986113327104",
+  "command_key": "config_update",
+  "message_id": "cmd-2860591e8c454be780ae80978c4207ae",
+  "client_id": "edge-node:device-aa034de0a2f147faab579ba0b45db13f",
+  "node_id": 10
+}
