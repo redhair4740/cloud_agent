@@ -1,0 +1,18 @@
+{
+  "message_id": "heartbeat-warning-device-169a7ca9ef444b188eca02342099b82e-001",
+  "occurred_at": 1776818640000,
+  "hardware_fingerprint": "hwfp-device-169a7ca9ef444b188eca02342099b82e",
+  "runtime_status": "WARNING",
+  "metrics": {
+    "cpu_usage_pct": 94.2,
+    "memory_usage_pct": 88.6,
+    "gpu_usage_pct": 91.0,
+    "storage_usage_pct": 76.5,
+    "temperature_c": 82.4
+  },
+  "network": {
+    "edge_rtt_ms": 125.5,
+    "packet_loss_pct": 6.2,
+    "cloud_probe_rtt_ms": 132.0
+  }
+}

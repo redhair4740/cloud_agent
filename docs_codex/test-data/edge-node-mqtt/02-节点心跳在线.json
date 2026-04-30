@@ -1,0 +1,18 @@
+{
+  "message_id": "heartbeat-device-169a7ca9ef444b188eca02342099b82e-001",
+  "occurred_at": 1776818460000,
+  "hardware_fingerprint": "hwfp-device-169a7ca9ef444b188eca02342099b82e",
+  "runtime_status": "ONLINE",
+  "metrics": {
+    "cpu_usage_pct": 35.2,
+    "memory_usage_pct": 48.6,
+    "gpu_usage_pct": 12.0,
+    "storage_usage_pct": 41.5,
+    "temperature_c": 55.4
+  },
+  "network": {
+    "edge_rtt_ms": 20.5,
+    "packet_loss_pct": 0.0,
+    "cloud_probe_rtt_ms": 22.0
+  }
+}

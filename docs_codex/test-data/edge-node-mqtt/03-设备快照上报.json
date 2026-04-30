@@ -1,0 +1,22 @@
+{
+  "message_id": "device-report-device-169a7ca9ef444b188eca02342099b82e-001",
+  "occurred_at": 1776818520000,
+  "hardware_fingerprint": "hwfp-device-169a7ca9ef444b188eca02342099b82e",
+  "devices": [
+    {
+      "device_code": "CAMERA-01",
+      "device_name": "焊接工位相机 01",
+      "device_type": "CAMERA",
+      "status": "online",
+      "stream_status": "running",
+      "last_frame_at": 1776818519000
+    },
+    {
+      "device_code": "LIGHT-01",
+      "device_name": "环形光源 01",
+      "device_type": "LIGHT",
+      "status": "online",
+      "brightness": 78
+    }
+  ]
+}
