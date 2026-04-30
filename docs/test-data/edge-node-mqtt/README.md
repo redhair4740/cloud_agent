@@ -8,7 +8,7 @@
 - `deviceId`: `device-169a7ca9ef444b188eca02342099b82e`
 - `clientId`: `edge-node:device-169a7ca9ef444b188eca02342099b82e`
 - `brokerEndpoint`: `http://10.94.32.89:8883`
-- `topicRoot`: `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e`
+- `topicRoot`: `moon/dev/tenants/0/edge/v1/nodes/device-169a7ca9ef444b188eca02342099b82e`
 - `hardwareFingerprint`: `hwfp-device-169a7ca9ef444b188eca02342099b82e`
 - `credentialVersion`: `2`
 
@@ -29,17 +29,17 @@
 | 顺序 | 业务场景 | 文件 | 发布 Topic | 后端接口 | 预期 |
 |---|---|---|---|---|---|
 | 0 | 节点连接认证 | 无 payload 文件 | MQTT CONNECT | `POST {cloudBaseUrl}/edge/runtime/authenticate` | EMQX 使用连接参数完成认证并拿到 ACL |
-| 1 | 节点注册激活 | `01-节点注册激活.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/register` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 首次绑定硬件指纹，节点变为已激活 |
-| 2 | 节点心跳在线 | `02-节点心跳在线.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 运行状态更新为在线 |
-| 3 | 设备快照上报 | `03-设备快照上报.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/device/report` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 外设状态进入运行事件链路 |
-| 4 | 任务进度上报 | `04-任务进度上报.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/event` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 任务进度更新 |
-| 5 | 告警心跳 | `05-节点心跳告警.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 运行状态更新为告警；这是资源/运行告警场景，不是超时离线 |
-| 6 | 云端下发配置更新 | `06-云端下发配置更新.json` | `vmesh/edge/node/device-aa034de0a2f147faab579ba0b45db13f/command/config_update` | 云端发布 MQTT 消息到边缘端，QoS 0 | 边缘端收到 `config_update` 命令 |
-| 7 | 云端下发重启 | `07-云端下发重启.json` | `vmesh/edge/node/device-aa034de0a2f147faab579ba0b45db13f/command/reboot` | 云端发布 MQTT 消息到边缘端，QoS 0 | 边缘端收到 `reboot` 命令 |
-| 8 | 重启任务完成上报 | `08-重启任务完成上报.json` | `vmesh/edge/node/device-aa034de0a2f147faab579ba0b45db13f/event` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 任务 `TASK-2049721057496186880` 进入 `SUCCESS`，进度为 `100` |
-| 9 | 配置更新任务完成上报 | `09-配置更新任务完成上报.json` | `vmesh/edge/node/device-aa034de0a2f147faab579ba0b45db13f/event` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 任务 `TASK-2049720986113327104` 进入 `SUCCESS`，进度为 `100` |
-| 10 | 错误硬件指纹 | `90-错误硬件指纹心跳.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 云端拒收 |
-| 11 | 错误设备身份 | `91-错误设备身份心跳.json` | `vmesh/edge/node/device-169a7ca9ef444b188eca02342099b82e/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 云端应因上下文不一致拒收 |
+| 1 | 节点注册激活 | `01-节点注册激活.json` | `moon/dev/tenants/0/edge/v1/nodes/device-169a7ca9ef444b188eca02342099b82e/lifecycle/register` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 首次绑定硬件指纹，节点变为已激活 |
+| 2 | 节点心跳在线 | `02-节点心跳在线.json` | `moon/dev/tenants/0/edge/v1/nodes/device-169a7ca9ef444b188eca02342099b82e/telemetry/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 运行状态更新为在线 |
+| 3 | 设备快照上报 | `03-设备快照上报.json` | `moon/dev/tenants/0/edge/v1/nodes/device-169a7ca9ef444b188eca02342099b82e/telemetry/device-report` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 外设状态进入运行事件链路 |
+| 4 | 任务进度上报 | `04-任务进度上报.json` | `moon/dev/tenants/0/edge/v1/nodes/device-169a7ca9ef444b188eca02342099b82e/events/task-progress` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 任务进度更新 |
+| 5 | 告警心跳 | `05-节点心跳告警.json` | `moon/dev/tenants/0/edge/v1/nodes/device-169a7ca9ef444b188eca02342099b82e/telemetry/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 运行状态更新为告警；这是资源/运行告警场景，不是超时离线 |
+| 6 | 云端下发配置更新 | `06-云端下发配置更新.json` | `moon/dev/tenants/0/edge/v1/nodes/device-aa034de0a2f147faab579ba0b45db13f/commands/config_update` | 云端发布 MQTT 消息到边缘端，QoS 1 | 边缘端收到 `config_update` 命令 |
+| 7 | 云端下发重启 | `07-云端下发重启.json` | `moon/dev/tenants/0/edge/v1/nodes/device-aa034de0a2f147faab579ba0b45db13f/commands/reboot` | 云端发布 MQTT 消息到边缘端，QoS 1 | 边缘端收到 `reboot` 命令 |
+| 8 | 重启任务完成上报 | `08-重启任务完成上报.json` | `moon/dev/tenants/0/edge/v1/nodes/device-aa034de0a2f147faab579ba0b45db13f/events/task-progress` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 任务 `TASK-2049721057496186880` 进入 `SUCCESS`，进度为 `100` |
+| 9 | 配置更新任务完成上报 | `09-配置更新任务完成上报.json` | `moon/dev/tenants/0/edge/v1/nodes/device-aa034de0a2f147faab579ba0b45db13f/events/task-progress` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 任务 `TASK-2049720986113327104` 进入 `SUCCESS`，进度为 `100` |
+| 10 | 错误硬件指纹 | `90-错误硬件指纹心跳.json` | `moon/dev/tenants/0/edge/v1/nodes/device-169a7ca9ef444b188eca02342099b82e/telemetry/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 云端拒收 |
+| 11 | 错误设备身份 | `91-错误设备身份心跳.json` | `moon/dev/tenants/0/edge/v1/nodes/device-169a7ca9ef444b188eca02342099b82e/telemetry/heartbeat` | `POST {cloudBaseUrl}/edge/runtime/ingest` | 云端应因上下文不一致拒收 |
 
 ## 云端下发边缘端命令
 
@@ -47,8 +47,8 @@
 
 | 场景 | 文件 | Topic | QoS | command_key |
 |---|---|---|---|---|
-| 配置更新 | `06-云端下发配置更新.json` | `vmesh/edge/node/device-aa034de0a2f147faab579ba0b45db13f/command/config_update` | `0` | `config_update` |
-| 重启 | `07-云端下发重启.json` | `vmesh/edge/node/device-aa034de0a2f147faab579ba0b45db13f/command/reboot` | `0` | `reboot` |
+| 配置更新 | `06-云端下发配置更新.json` | `moon/dev/tenants/0/edge/v1/nodes/device-aa034de0a2f147faab579ba0b45db13f/commands/config_update` | `1` | `config_update` |
+| 重启 | `07-云端下发重启.json` | `moon/dev/tenants/0/edge/v1/nodes/device-aa034de0a2f147faab579ba0b45db13f/commands/reboot` | `1` | `reboot` |
 
 ## 超时离线场景
 
@@ -77,7 +77,7 @@ EMQX Rule Engine / HTTP Sink 需要把 MQTT 上下文映射到 Cloud：
 - `topic`: `${topic}`
 - `payload`: `${payload}`
 
-任务完成上报的 MQTT payload 只发送 `task_progress` 内部结构，例如 `08-重启任务完成上报.json` 与 `09-配置更新任务完成上报.json`。不要把 Cloud `/edge/runtime/ingest` 的完整 HTTP envelope 当 MQTT payload 发到 `{topicRoot}/event`，否则 EMQX 模板会读不到 `payload.event_type`、`payload.message_id`、`payload.occurred_at`，容易渲染出非法 JSON。
+任务完成上报的 MQTT payload 只发送 `task_progress` 内部结构，例如 `08-重启任务完成上报.json` 与 `09-配置更新任务完成上报.json`。不要把 Cloud `/edge/runtime/ingest` 的完整 HTTP envelope 当 MQTT payload 发到 `{topicRoot}/events/task-progress`，否则 EMQX 模板会读不到 `payload.event_type`、`payload.message_id`、`payload.occurred_at`，容易渲染出非法 JSON。
 
 任务进度上报推荐的 HTTP Sink Body 模板：
 
