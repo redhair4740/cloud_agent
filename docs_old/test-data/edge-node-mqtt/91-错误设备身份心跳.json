@@ -1,7 +1,0 @@
-{
-  "message_id": "bad-device-context-device-169a7ca9ef444b188eca02342099b82e-001",
-  "occurred_at": 1776818760000,
-  "hardware_fingerprint": "hwfp-device-169a7ca9ef444b188eca02342099b82e",
-  "runtime_status": "ONLINE",
-  "test_note": "发布该 payload 时请故意使用错误 clientId 或 username，例如 clientId=edge-node:wrong-device 或 username=wrong-device，云端应拒收。"
-}
