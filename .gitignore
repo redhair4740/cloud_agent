@@ -7,3 +7,4 @@ moon_cloud_frontend/deploy/build/
 .codex
 .DS_Store
 .trae/specs/
+.idea/
