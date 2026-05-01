@@ -15,7 +15,7 @@ description: 当任务涉及前后端契约、OpenAPI、接口字段、错误码
 
 - OpenAPI `/v3/api-docs` 是接口契约唯一真源。
 - 接口联调状态只描述能否 mock、可联调或已废弃，不替代字段契约。
-- 接口状态合法值和状态清单字段以 `.agents/references/interface-status-model.md` 为准。
+- 接口状态合法值和状态清单字段以 `.claude/references/interface-status-model.md` 为准。
 - 契约检查只输出一致性结论，不负责把接口状态提升为 `ready`。
 - 没有真实 OpenAPI 或没有读取前端调用时，结论必须标注“未验证”。
 - 没有确认接口状态时，必须标注“状态未确认”。

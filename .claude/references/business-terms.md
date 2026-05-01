@@ -1,6 +1,6 @@
 # 业务术语参考表
 
-本文件维护项目业务名词、推荐英文、禁用或慎用英文、典型代码命名和表/权限前缀。命名治理规则见 `.agents/rules/business-dictionary.md`。
+本文件维护项目业务名词、推荐英文、禁用或慎用英文、典型代码命名和表/权限前缀。命名治理规则见 `.claude/rules/business-dictionary.md`。
 
 ## 核心业务实体命名
 
