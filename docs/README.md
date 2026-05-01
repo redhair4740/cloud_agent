@@ -29,7 +29,7 @@ status: active
 | 前端性能治理 | [设计方案](./design/前端性能治理/设计方案.md) | 前端瘦身与依赖清理边界 |
 | EMQX MQTT 接入 | [部署方案](./deployment/EMQX-MQTT接入/部署方案.md) | Topic、鉴权、Rule Engine、配置项与联调边界 |
 | Portainer 部署 | [部署方案](./deployment/Portainer部署/部署方案.md) | Jenkins、镜像、Docker Compose、Portainer 发布边界 |
-| 协作治理 | [治理方案](./governance/协作治理/治理方案.md) | `.agents` 规范、API-First、文档治理、三工程协作边界 |
+| 协作治理 | [设计方案](./design/协作治理/设计方案.md) | `.agents` 规范、API-First、文档治理、三工程协作边界 |
 | Edge MQTT 测试数据 | [测试数据说明](./test-data/edge-node-mqtt/README.md) | MQTT payload 使用顺序与 Cloud ingest 映射 |
 | Review 流水记录 | [Review 与优化建议跟踪](./review-tracking/README.md) | review 清单、优化建议、联调发现和回归风险流水记录 |
 
@@ -46,7 +46,7 @@ status: active
 | `docs_old/design/2026-04-24/frontend-slimming-plan.md` | [前端性能治理](./design/前端性能治理/设计方案.md) | 已迁移审核后结论，未保留过激删除清单 |
 | `docs_old/deployment/2026-04-17/*Portainer*` | [Portainer 部署](./deployment/Portainer部署/部署方案.md) | 已迁移并修正当前仓库路径 |
 | `docs_old/deployment/2026-04-28/*EMQX*`、`docs_old/deployment/2026-04-30/*MQTT双向Topic*` | [EMQX MQTT 接入](./deployment/EMQX-MQTT接入/部署方案.md) | 已合并迁移 |
-| `docs_old/governance/2026-04-17/*` | [协作治理](./governance/协作治理/治理方案.md) | 已迁移稳定治理结论，旧评审快照正文不保留 |
+| `docs_old/governance/2026-04-17/*` | [协作治理](./design/协作治理/设计方案.md) | 已迁移稳定治理结论，旧评审快照正文不保留 |
 | `docs_old/test-data/edge-node-mqtt/README.md`、`*.json` | [Edge MQTT 测试数据](./test-data/edge-node-mqtt/README.md) 与同目录 11 个 JSON | 已原样迁移测试样例 |
 | `docs_old/review-tracking/**` | [Review 流水记录](./review-tracking/README.md) | 已按用户确认作为流水记录迁移 |
 | `docs_old/design/2026-04-22/*交接文档*` | [Edge 全链路交接记录](./design/2026-04-22/21-01-00-交接文档-Edge全链路落地任务交接.md) | 已按用户确认作为方案附属流水记录迁移 |
@@ -69,7 +69,7 @@ status: active
 ## 未迁移内容
 
 - `docs_old/review-tracking/**`：属于 review 流水记录，已迁移到 [review-tracking](./review-tracking/README.md)。
-- `docs_old/governance/**`：旧治理评审和协作分析正文不迁移；其中稳定结论已重整进 [协作治理](./governance/协作治理/治理方案.md)。
+- `docs_old/governance/**`：旧治理评审和协作分析正文不迁移；其中稳定结论已重整进 [协作治理](./design/协作治理/设计方案.md)。
 - `docs_old/design/**/交接文档-*`：属于方案附属流水记录；当前已迁移 `Edge全链路落地任务交接`。
 - `docs_old/design/.DS_Store`、`docs_old/design/**/.DS_Store`：系统文件，不迁移。
 
@@ -82,3 +82,4 @@ status: active
 | 2026-04-30 | 补充迁移 `review-tracking` 流水记录并修正索引 | 用户补充确认 |
 | 2026-04-30 | 补充迁移 Edge 全链路交接文档并关联主方案 | 用户补充确认 |
 | 2026-04-30 | 将迁移后流水记录文件名前缀从错误的 `00-00-00` 修正为 `21-01-00` | 用户补充确认 |
+| 2026-05-01 | 将协作治理从治理方案修正为设计方案并迁移到 `design/协作治理/设计方案.md` | 用户审查问题 2 |
