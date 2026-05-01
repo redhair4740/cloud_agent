@@ -64,7 +64,7 @@ status: active
 | 前端页面 | `moon_cloud_frontend/src/views/edge/**`、`moon_cloud_frontend/src/views/algorithm/**` |
 | 原型页面 | `moon_cloud_design/src/views/EdgeManagement.vue`、`moon_cloud_design/src/views/EdgeHealthMonitor.vue`、`moon_cloud_design/src/views/EdgeTaskRecord.vue` |
 | 文档规范 | `.agents/rules/document-governance.md`、`.agents/skills/document-template/SKILL.md` |
-| 契约规范 | `.agents/rules/interface-contract-status.md`、`.agents/rules/fullstack-api-first.md`、`.agents/references/interface-status-model.md` |
+| 契约规范 | `.agents/rules/fullstack-api-first.md`、`.agents/references/interface-status-model.md` |
 
 ## 未迁移内容
 

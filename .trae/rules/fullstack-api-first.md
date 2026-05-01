@@ -1,6 +1,6 @@
 ---
 alwaysApply: false
-description: 定义前后端联动任务的适用范围、契约真源、API-First 顺序和硬约束。
+description: 定义前后端联动任务的适用范围、契约真源、联调状态权限边界、API-First 顺序和硬约束。
 ---
 # 前后端联动与 API-First 规则
 
@@ -18,6 +18,8 @@ description: 定义前后端联动任务的适用范围、契约真源、API-Fir
 - 前端实现必须以 OpenAPI 为准，不得猜字段名、类型、枚举或错误码语义。
 - 接口状态只描述是否可 Mock、可联调或废弃，不替代 OpenAPI 字段契约。
 - 接口状态按 `.agents/references/interface-status-model.md` 的状态枚举维护，AI 不得自行提升为 `ready`。
+- 接口状态必须由后端负责人、接口负责人或人工确认人维护。
+- 状态清单只能描述联调可用性，不写字段结构；字段结构回到 OpenAPI。
 
 ## API-First 流程
 

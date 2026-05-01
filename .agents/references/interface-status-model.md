@@ -1,6 +1,6 @@
 # 接口状态模型参考
 
-本文件维护接口联调状态枚举、前端/AI 动作和状态清单字段。状态治理红线见 `.agents/rules/interface-contract-status.md`，契约检查流程见 `.agents/skills/contract-check/SKILL.md`。
+本文件维护接口联调状态枚举、前端/AI 动作和状态清单字段。状态治理红线见 `.agents/rules/fullstack-api-first.md`，契约检查流程见 `.agents/skills/contract-check/SKILL.md`。
 
 ## 状态枚举
 

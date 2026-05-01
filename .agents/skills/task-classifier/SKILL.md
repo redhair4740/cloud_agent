@@ -40,7 +40,6 @@ trigger_files:
   - <backend-dir>/.../controller/**
   - <frontend-dir>/src/api/**
 suggested_rules:
-  - repo-baseline
   - business-dictionary
   - backend-development
   - frontend-development

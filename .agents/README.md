@@ -24,6 +24,6 @@
 - 不在本目录中加入工具专属入口、生成链路、同步脚本说明或工具差异说明。
 - 不把历史方案、临时分析或项目执行记录写入本目录。
 - 文档管理规则保留在 `rules/document-governance.md`，避免污染 alwaysApply 基线。
-- 接口契约与联调状态红线保留在 `rules/interface-contract-status.md`，状态模型保留在 `references/interface-status-model.md`。
+- 接口契约与联调状态规则合并入 `rules/fullstack-api-first.md`，状态模型保留在 `references/interface-status-model.md`。
 - 业务词表保留在 `references/business-terms.md`，避免把可增长数据内联到 rule。
 - 文档模板作为 `skills/document-template/` 的资源维护，不在顶层新增模板目录。
