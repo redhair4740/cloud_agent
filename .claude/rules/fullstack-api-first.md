@@ -1,0 +1,37 @@
+---
+alwaysApply: false
+description: 定义前后端联动任务的适用范围、契约真源、API-First 顺序和硬约束。
+---
+# 前后端联动与 API-First 规则
+
+## 适用范围
+
+- 同一任务同时涉及后端 Controller/VO/OpenAPI 与前端 API/页面/store/Mock。
+- 新增或调整接口路径、方法、请求参数、响应字段、枚举、错误码、鉴权或分页语义。
+- 前端需求无法在既有 OpenAPI 契约下实现。
+- Review 中发现接口变更和前端消费不一致。
+
+## 契约真源
+
+- OpenAPI `/v3/api-docs` 是接口契约唯一真源。
+- 后端 Controller 注解是 OpenAPI 生成源，接口变化必须反映在注解中。
+- 前端实现必须以 OpenAPI 为准，不得猜字段名、类型、枚举或错误码语义。
+- 接口状态只描述是否可 Mock、可联调或废弃，不替代 OpenAPI 字段契约。
+- 接口状态按 `.agents/references/interface-status-model.md` 的状态枚举维护，AI 不得自行提升为 `ready`。
+
+## API-First 流程
+
+1. 后端先写 Controller 骨架和完整 OpenAPI 注解。
+2. 导出或提供 `/v3/api-docs` 契约。
+3. 前后端确认路径、方法、参数、字段、错误码和鉴权语义。
+4. 后端或人工确认接口状态。
+5. 后端实现 Service 逻辑。
+6. 前端按 OpenAPI 实现类型、调用和页面行为。
+7. 使用契约检查 skill 做一致性验证。
+
+## 联动硬约束
+
+- 禁止把联动理解为只改一个端；必须同步核对契约与页面行为。
+- 禁止单边先改协议再要求另一端兜底。
+- 字段、枚举、错误码、分页筛选参数必须端到端一致，不一致先修正再交付。
+- Mock 不得散落到组件、Pinia action 或 API SDK 内部。
