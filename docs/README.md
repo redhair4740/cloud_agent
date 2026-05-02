@@ -1,18 +1,18 @@
 ---
 lifecycle: record
-topic: docs_codex
+topic: docs
 type: 索引
 created: 2026-04-30
 status: active
 ---
 
-# docs_codex 项目文档索引
+# docs 项目文档索引
 
 ## 使用约定
 
 - 本目录是从 `docs_old` 重整后的当前有效文档集，只保留对当前项目仍有指导意义的活文档和测试数据说明。
 - 不迁移旧的 `review-tracking` 时间线、治理评审快照、交接快照和 dated 历史记录。
-- 文档结构遵守 `.agents/rules/document-governance.md`：活文档使用 `docs_codex/<类型目录>/<主题短名>/<类型标签>.md`。
+- 文档结构遵守 `.agents/rules/document-governance.md`：活文档使用 `docs/<类型目录>/<主题短名>/<类型标签>.md`。
 - 当前文档以本仓库源码为准，旧文档中的 `WF_VMesh_Coud`、`WF_VMesh_Coud_UI`、`cloud/`、`cloud_ui/` 路径已统一修正为 `moon_cloud_backend/`、`moon_cloud_frontend/`、`moon_cloud_design/`。
 - 未执行构建、测试、数据库迁移或接口联调的内容，正文均标注“未验证/未执行测试/未编译验证”。
 
@@ -35,7 +35,7 @@ status: active
 
 ## 迁移覆盖检查
 
-| docs_old 来源 | docs_codex 去向 | 结论 |
+| docs_old 来源 | docs 去向 | 结论 |
 |---------------|-----------------|------|
 | `docs_old/README.md` | [README](./README.md) | 已迁移为当前索引 |
 | `docs_old/api/2026-04-24/*Edge*`、`docs_old/api/2026-04-28/*边缘监控与任务流水*` | [Edge API](./api/Edge边缘模块/API文档.md)、[边缘监控与任务流水](./design/边缘监控与任务流水/设计方案.md) | 已合并迁移 |
@@ -77,7 +77,7 @@ status: active
 
 | 日期 | 变更摘要 | 变更来源 |
 |------|----------|----------|
-| 2026-04-30 | 从 `docs_old` 重整当前有效文档，落位到 `docs_codex` | 用户要求与 `.agents/rules/document-governance.md` |
+| 2026-04-30 | 从 `docs_old` 重整当前有效文档，落位到 `docs` | 用户要求与 `.agents/rules/document-governance.md` |
 | 2026-04-30 | 补充测试数据 JSON 原样迁移和迁移覆盖检查 | 用户补充要求 |
 | 2026-04-30 | 补充迁移 `review-tracking` 流水记录并修正索引 | 用户补充确认 |
 | 2026-04-30 | 补充迁移 Edge 全链路交接文档并关联主方案 | 用户补充确认 |

@@ -5,7 +5,7 @@ type: review清单
 created: 2026-04-20
 status: 已完成
 related:
-  - docs_codex/design/边云协同Edge全链路/设计方案.md
+  - docs/design/边云协同Edge全链路/设计方案.md
 ---
 
 # Edge 模块结构收敛

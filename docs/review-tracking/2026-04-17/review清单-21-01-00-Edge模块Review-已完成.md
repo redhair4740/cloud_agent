@@ -5,7 +5,7 @@ type: review清单
 created: 2026-04-17
 status: 已完成
 related:
-  - docs_codex/api/Edge边缘模块/API文档.md
+  - docs/api/Edge边缘模块/API文档.md
 ---
 
 # Edge 模块 Review

@@ -5,7 +5,7 @@ type: review清单
 created: 2026-04-20
 status: 已完成
 related:
-  - docs_codex/deployment/EMQX-MQTT接入/部署方案.md
+  - docs/deployment/EMQX-MQTT接入/部署方案.md
 ---
 
 # Edge MQTT / EMQX 云边集成

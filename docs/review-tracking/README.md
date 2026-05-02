@@ -5,7 +5,7 @@ type: 索引
 created: 2026-04-30
 status: active
 related:
-  - docs_codex/README.md
+  - docs/README.md
 ---
 
 # Review 与优化建议跟踪
@@ -23,7 +23,7 @@ related:
 ## 目录结构
 
 ```
-docs_codex/review-tracking/
+docs/review-tracking/
 ├── README.md                          ← 本文件（索引与约定）
 ├── 2026-04-17/
 │   └── review清单-21-01-00-Edge模块Review-已完成.md
@@ -51,7 +51,7 @@ docs_codex/review-tracking/
 
 ## 迁移说明
 
-- 本目录属于流水记录文档，已按用户确认从 `docs_old/review-tracking/**` 迁移到 `docs_codex/review-tracking/**`。
+- 本目录属于流水记录文档，已按用户确认从 `docs_old/review-tracking/**` 迁移到 `docs/review-tracking/**`。
 - 历史清单正文中的旧路径和当时验证状态保留原样，用作当时 review 证据；本索引只修正当前文件名和链接。
 - 迁移后已将错误的 `00-00-00` 文件名前缀修正为 `21-01-00`。
 

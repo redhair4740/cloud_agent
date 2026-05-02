@@ -9,8 +9,8 @@ supersedes:
   - docs_old/api/2026-04-24/23-13-22-API文档-Edge边缘模块API文档.md
   - docs_old/api/2026-04-28/13-01-47-API文档-边缘监控与任务流水接口.md
 related:
-  - docs_codex/design/边云协同Edge全链路/设计方案.md
-  - docs_codex/design/边缘监控与任务流水/设计方案.md
+  - docs/design/边云协同Edge全链路/设计方案.md
+  - docs/design/边缘监控与任务流水/设计方案.md
 ---
 
 # Edge 边缘模块 API 文档
