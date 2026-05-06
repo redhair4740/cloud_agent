@@ -27,6 +27,53 @@ status: active
 | 云端配置下发 | `{topicRoot}/commands/config_update` | Cloud 调 EMQX `/api/v5/publish` | 边缘端收到配置更新命令 |
 | 云端重启下发 | `{topicRoot}/commands/reboot` | Cloud 调 EMQX `/api/v5/publish` | 边缘端收到重启命令 |
 
+### 2.1 已跑通的模拟 Topic（心跳）
+
+> 目的：把「当前已跑通」的模拟 Topic 和样例数据固化到文档，方便边缘端按同一口径对齐。
+
+- 已跑通 Topic（`eventType=heartbeat`，后缀对应关系见 `moon_cloud_backend/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/service/runtime/EdgeTopicService.java#resolveEventTopicSuffix:75`）：
+
+```text
+moon/dev/tenants/1/edge/v1/nodes/device-aa034de0a2f147faab579ba0b45db13f/telemetry/heartbeat
+```
+
+- MQTT 连接参数（与本文「MQTT 连接参数」一致）：
+
+```text
+clientId = edge-node:device-aa034de0a2f147faab579ba0b45db13f
+username = device-aa034de0a2f147faab579ba0b45db13f
+password = 节点凭证 secret（禁止写入文档）
+```
+
+- 下发（Cloud -> Edge）订阅 Topic（用于接收 `{topicRoot}/commands/#`；tenantId 使用通配符以兼容多租户）：
+
+```text
+moon/dev/tenants/+/edge/v1/nodes/device-aa034de0a2f147faab579ba0b45db13f/#
+```
+
+- 发布 payload（直接使用本目录样例文件 `02-节点心跳在线.json`，作为 MQTT publish 的消息体）：
+
+```json
+{
+  "message_id": "heartbeat-device-169a7ca9ef444b188eca02342099b82e-001",
+  "occurred_at": 1776818460000,
+  "hardware_fingerprint": "hwfp-device-169a7ca9ef444b188eca02342099b82e",
+  "runtime_status": "ONLINE",
+  "metrics": {
+    "cpu_usage_pct": 35.2,
+    "memory_usage_pct": 48.6,
+    "gpu_usage_pct": 12.0,
+    "storage_usage_pct": 41.5,
+    "temperature_c": 55.4
+  },
+  "network": {
+    "edge_rtt_ms": 20.5,
+    "packet_loss_pct": 0.0,
+    "cloud_probe_rtt_ms": 22.0
+  }
+}
+```
+
 ## 3. 样例文件索引
 
 | 文件 | 方向 | 场景 | 说明 |
@@ -71,7 +118,7 @@ topicRoot = moon/{env}/tenants/{tenantId}/edge/{version}/nodes/{deviceId}
   "clientId": "${clientid}",
   "username": "${username}",
   "deviceId": "${username}",
-  "hardwareFingerprint": "${payload.data.hardware_fingerprint}",
+  "hardwareFingerprint": "${payload.hardware_fingerprint}",
   "topic": "${topic}",
   "occurredAt": ${payload.occurred_at},
   "payload": ${payload}
@@ -84,6 +131,7 @@ topicRoot = moon/{env}/tenants/{tenantId}/edge/{version}/nodes/{deviceId}
 - Rule SQL 必须先保证字段存在，禁止输出 `undefined`。
 - `clientId` 必须等于 `edge-node:{deviceId}`。
 - `topic` 必须与 eventType 对应的 Topic 后缀匹配。
+- 入站字段口径以 `moon_cloud_backend/vmesh-module-edge/src/main/java/com/wf/vmesh/module/edge/controller/admin/runtime/vo/EdgeRuntimeIngestReqVO.java:10` 为准（payload 透传，不在 VO 层做结构约束）。
 
 ## 6. 超时离线场景
 
@@ -114,3 +162,4 @@ topicRoot = moon/{env}/tenants/{tenantId}/edge/{version}/nodes/{deviceId}
 |------|----------|----------|
 | 2026-04-30 | 初始重整旧测试数据目录说明 | `docs_old/test-data/edge-node-mqtt/README.md` 与当前源码 |
 | 2026-04-30 | 按用户要求原样迁移 11 个 MQTT JSON payload 样例，并补充样例索引 | `docs_old/test-data/edge-node-mqtt/*.json` |
+| 2026-05-06 | 补充已跑通的心跳模拟 Topic 与可直接发布的 payload 示例 | 现场联调结果 + `EdgeTopicService#resolveEventTopicSuffix` |
