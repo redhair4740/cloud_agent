@@ -120,23 +120,32 @@ ingest 请求要求：
 
 说明：
 
-- 当前仓库尚未存在 `/edge/sync/**` Controller、前端 `src/api/edge/sync.ts` 或 `src/views/edge/sync/**` 页面。
-- 以下为本轮设计方案约定的目标接口，用于后续 API-First 实施，不代表当前已实现。
+- 当前仓库已存在 `/edge/sync/**` Controller、前端 `src/api/edge/sync.ts` 与 `src/views/edge/sync/index.vue` 页面。
+- 以下接口已实现，用于支持实时同步、断网续传、一致性校验能力。
 
 | 接口 | 方法 | 路径 | 状态 | 来源 |
 |------|------|------|------|------|
-| 同步概览 | GET | `/edge/sync/overview` | planned | `docs/design/边缘数据同步/设计方案.md` |
-| 同步批次分页 | GET | `/edge/sync/batch/page` | planned | `docs/design/边缘数据同步/设计方案.md` |
-| 同步明细分页 | GET | `/edge/sync/item/page` | planned | `docs/design/边缘数据同步/设计方案.md` |
-| 节点快照分页 | GET | `/edge/sync/node/{nodeId}/snapshot/page` | planned | `docs/design/边缘数据同步/设计方案.md` |
-| 差异详情 | GET | `/edge/sync/node/{nodeId}/diff/{objectType}` | planned | `docs/design/边缘数据同步/设计方案.md` |
-| 冲突分页 | GET | `/edge/sync/conflict/page` | planned | `docs/design/边缘数据同步/设计方案.md` |
-| 发起同步 | POST | `/edge/sync/node/{nodeId}/publish` | planned | `docs/design/边缘数据同步/设计方案.md` |
-| 发起一致性校验 | POST | `/edge/sync/node/{nodeId}/reconcile` | planned | `docs/design/边缘数据同步/设计方案.md` |
-| 重试补传 | POST | `/edge/sync/item/{itemId}/retry` | planned | `docs/design/边缘数据同步/设计方案.md` |
-| 以云端为准 | POST | `/edge/sync/conflict/{conflictId}/confirm-cloud` | planned | `docs/design/边缘数据同步/设计方案.md` |
-| 采纳边端回写 | POST | `/edge/sync/conflict/{conflictId}/confirm-edge` | planned | `docs/design/边缘数据同步/设计方案.md` |
-| 同步入站 | POST | `/edge/sync/ingest` | planned | `docs/design/边缘数据同步/设计方案.md` |
+| 同步概览 | GET | `/edge/sync/overview` | current | `EdgeSyncController#getOverview`、`src/api/edge/sync.ts` |
+| 同步批次分页 | GET | `/edge/sync/batch/page` | current | `EdgeSyncController#getBatchPage` |
+| 同步明细分页 | GET | `/edge/sync/item/page` | current | `EdgeSyncController#getItemPage` |
+| 节点快照分页 | GET | `/edge/sync/node/{nodeId}/snapshot/page` | current | `EdgeSyncController#getSnapshotPage` |
+| 差异详情 | GET | `/edge/sync/node/{nodeId}/diff/{objectType}` | current | `EdgeSyncController#getDiff` |
+| 冲突分页 | GET | `/edge/sync/conflict/page` | current | `EdgeSyncController#getConflictPage` |
+| 发起同步 | POST | `/edge/sync/node/{nodeId}/publish` | current | `EdgeSyncController#publish` |
+| 发起一致性校验 | POST | `/edge/sync/node/{nodeId}/reconcile` | current | `EdgeSyncController#reconcile` |
+| 重试补传 | POST | `/edge/sync/item/{itemId}/retry` | current | `EdgeSyncController#retryItem` |
+| 以云端为准 | POST | `/edge/sync/conflict/{conflictId}/confirm-cloud` | current | `EdgeSyncController#confirmCloud` |
+| 采纳边端回写 | POST | `/edge/sync/conflict/{conflictId}/confirm-edge` | current | `EdgeSyncController#confirmEdge` |
+| 同步入站 | POST | `/edge/sync/ingest` | current | `EdgeSyncController#ingest` |
+
+关键字段：
+
+| 字段 | 说明 |
+|------|------|
+| `objectType` | 同步对象类型：`NODE_BASE_CONFIG`、`DEVICE_GROUP_DEF`、`RESOURCE_BINDING`、`DEVICE_RUNTIME_FACT`、`DEVICE_METADATA`、`DEVICE_GROUP_MEMBERSHIP` |
+| `direction` | 同步方向：`CLOUD_TO_EDGE`、`EDGE_TO_CLOUD`、`BIDIRECTIONAL` |
+| `batchStatus` | 批次状态：`PENDING`、`PUBLISHED`、`PARTIAL_SUCCESS`、`COMPLETED`、`FAILED` |
+| `itemStatus` | 明细状态：`PENDING`、`PUBLISHED`、`ACKED`、`APPLIED`、`RETRY_WAITING`、`CONFLICT_PENDING`、`MERGED`、`FAILED` |
 
 ## 3. 枚举与字段口径
 
@@ -155,7 +164,7 @@ ingest 请求要求：
 ## 4. 验证与未确认项
 
 - 已验证：静态确认 Controller 路径、前端 SDK 路径、VO 关键字段。
-- 未验证：未读取实时 OpenAPI，未执行接口联调，未执行后端编译，未执行前端构建；`/edge/sync/**` 仍未实际落码。
+- 未验证：未读取实时 OpenAPI，未执行接口联调，未执行后端编译，未执行前端构建。
 - 未确认项：`/edge/sync/**` 的最终错误码、分页字段、OpenAPI 注解、按钮权限和真实边端同步协议细节。
 
 ## 变更日志
@@ -163,4 +172,4 @@ ingest 请求要求：
 | 日期 | 变更摘要 | 变更来源 |
 |------|----------|----------|
 | 2026-04-30 | 合并 Edge API 旧文档和监控任务接口文档，按当前源码重整 | `docs_old/api/**Edge*`、`Edge*Controller`、`src/api/edge/*.ts` |
-| 2026-05-06 | 补充数据同步 `/edge/sync/**` 目标接口与枚举口径，标记为 planned | 用户需求“实时同步 + 断网续传 + 一致性” |
+| 2026-05-06 | 补充数据同步 `/edge/sync/**` 当前接口与枚举口径，并修正为已落地现状 | 用户需求“实时同步 + 断网续传 + 一致性” |
