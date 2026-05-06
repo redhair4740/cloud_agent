@@ -15,7 +15,7 @@
 !/docs/**
 !moon_cloud_design/
 !moon_cloud_design/**
-!moon_cloud_backend/
-!moon_cloud_backend/**
 !moon_cloud_frontend/
 !moon_cloud_frontend/**
+!moon_cloud_backend/
+!moon_cloud_backend/**

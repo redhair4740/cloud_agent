@@ -23,6 +23,7 @@ status: active
 | Edge 边缘模块 | [API文档](./api/Edge边缘模块/API文档.md) | 节点、设备、分组、资源、运行时、监控、任务中心接口总览 |
 | Algorithm 算法模块 | [API文档](./api/Algorithm算法模块/API文档.md) | 算法、配置、发布接口总览 |
 | 边云协同 Edge 全链路 | [设计方案](./design/边云协同Edge全链路/设计方案.md) | Edge 管理、Runtime、监控、任务、资源中心总体方案 |
+| 边缘数据同步 | [设计方案](./design/边缘数据同步/设计方案.md) | 实时同步、断网续传、一致性校验与冲突确认 |
 | Edge 全链路交接记录 | [交接文档](./design/2026-04-22/21-01-00-交接文档-Edge全链路落地任务交接.md) | Edge 全链路方案的附属流水记录 |
 | 边缘监控与任务流水 | [设计方案](./design/边缘监控与任务流水/设计方案.md) | 监控页、任务流水页与目标接口口径 |
 | 边缘节点状态语义 | [设计方案](./design/边缘节点状态语义/设计方案.md) | enabled、activation、registration、connection、runtime 分层 |
@@ -41,6 +42,7 @@ status: active
 | `docs_old/api/2026-04-24/*Edge*`、`docs_old/api/2026-04-28/*边缘监控与任务流水*` | [Edge API](./api/Edge边缘模块/API文档.md)、[边缘监控与任务流水](./design/边缘监控与任务流水/设计方案.md) | 已合并迁移 |
 | `docs_old/api/2026-04-24/*Algorithm*` | [Algorithm API](./api/Algorithm算法模块/API文档.md) | 已迁移 |
 | `docs_old/design/2026-04-21/*MQTT与监控任务中心总览*`、`docs_old/design/2026-04-22/*Edge全链路生产级设计*` | [Edge 全链路设计](./design/边云协同Edge全链路/设计方案.md) | 已合并迁移 |
+| 当前轮“云边协同数据同步方案”需求 | [边缘数据同步](./design/边缘数据同步/设计方案.md) | 新增独立 sync 子域活文档 |
 | `docs_old/design/2026-04-28/*边缘监控与任务流水*` | [边缘监控与任务流水](./design/边缘监控与任务流水/设计方案.md) | 已迁移 |
 | `docs_old/design/2026-04-29/*边缘节点状态语义*` | [边缘节点状态语义](./design/边缘节点状态语义/设计方案.md) | 已迁移 |
 | `docs_old/design/2026-04-24/frontend-slimming-plan.md` | [前端性能治理](./design/前端性能治理/设计方案.md) | 已迁移审核后结论，未保留过激删除清单 |
@@ -63,6 +65,7 @@ status: active
 | 前端 Algorithm API | `moon_cloud_frontend/src/api/algorithm/*.ts` |
 | 前端页面 | `moon_cloud_frontend/src/views/edge/**`、`moon_cloud_frontend/src/views/algorithm/**` |
 | 原型页面 | `moon_cloud_design/src/views/EdgeManagement.vue`、`moon_cloud_design/src/views/EdgeHealthMonitor.vue`、`moon_cloud_design/src/views/EdgeTaskRecord.vue` |
+| Edge 菜单 SQL | `moon_cloud_backend/sql/postgresql/2026-04-24/2026-04-24-12-37-46.sql` |
 | 文档规范 | `.agents/rules/document-governance.md`、`.agents/skills/document-template/SKILL.md` |
 | 契约规范 | `.agents/rules/fullstack-api-first.md`、`.agents/references/interface-status-model.md` |
 
@@ -83,3 +86,4 @@ status: active
 | 2026-04-30 | 补充迁移 Edge 全链路交接文档并关联主方案 | 用户补充确认 |
 | 2026-04-30 | 将迁移后流水记录文件名前缀从错误的 `00-00-00` 修正为 `21-01-00` | 用户补充确认 |
 | 2026-05-01 | 将协作治理从治理方案修正为设计方案并迁移到 `design/协作治理/设计方案.md` | 用户审查问题 2 |
+| 2026-05-06 | 新增“边缘数据同步”活文档，并补充索引与 Edge 菜单 SQL 证据 | 用户需求“实时同步 + 断网续传 + 一致性” |

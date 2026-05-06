@@ -11,6 +11,7 @@ supersedes:
 related:
   - docs/design/边云协同Edge全链路/设计方案.md
   - docs/design/边缘监控与任务流水/设计方案.md
+  - docs/design/边缘数据同步/设计方案.md
 ---
 
 # Edge 边缘模块 API 文档
@@ -115,6 +116,28 @@ ingest 请求要求：
 | 取消任务 | POST | `/edge/task/{taskKey}/cancel` | current | `EdgeTaskController#cancelTask` |
 | 重试任务 | POST | `/edge/task/{taskKey}/retry` | current | `EdgeTaskController#retryTask` |
 
+### 2.7 数据同步 `/edge/sync`
+
+说明：
+
+- 当前仓库尚未存在 `/edge/sync/**` Controller、前端 `src/api/edge/sync.ts` 或 `src/views/edge/sync/**` 页面。
+- 以下为本轮设计方案约定的目标接口，用于后续 API-First 实施，不代表当前已实现。
+
+| 接口 | 方法 | 路径 | 状态 | 来源 |
+|------|------|------|------|------|
+| 同步概览 | GET | `/edge/sync/overview` | planned | `docs/design/边缘数据同步/设计方案.md` |
+| 同步批次分页 | GET | `/edge/sync/batch/page` | planned | `docs/design/边缘数据同步/设计方案.md` |
+| 同步明细分页 | GET | `/edge/sync/item/page` | planned | `docs/design/边缘数据同步/设计方案.md` |
+| 节点快照分页 | GET | `/edge/sync/node/{nodeId}/snapshot/page` | planned | `docs/design/边缘数据同步/设计方案.md` |
+| 差异详情 | GET | `/edge/sync/node/{nodeId}/diff/{objectType}` | planned | `docs/design/边缘数据同步/设计方案.md` |
+| 冲突分页 | GET | `/edge/sync/conflict/page` | planned | `docs/design/边缘数据同步/设计方案.md` |
+| 发起同步 | POST | `/edge/sync/node/{nodeId}/publish` | planned | `docs/design/边缘数据同步/设计方案.md` |
+| 发起一致性校验 | POST | `/edge/sync/node/{nodeId}/reconcile` | planned | `docs/design/边缘数据同步/设计方案.md` |
+| 重试补传 | POST | `/edge/sync/item/{itemId}/retry` | planned | `docs/design/边缘数据同步/设计方案.md` |
+| 以云端为准 | POST | `/edge/sync/conflict/{conflictId}/confirm-cloud` | planned | `docs/design/边缘数据同步/设计方案.md` |
+| 采纳边端回写 | POST | `/edge/sync/conflict/{conflictId}/confirm-edge` | planned | `docs/design/边缘数据同步/设计方案.md` |
+| 同步入站 | POST | `/edge/sync/ingest` | planned | `docs/design/边缘数据同步/设计方案.md` |
+
 ## 3. 枚举与字段口径
 
 | 字段/枚举 | 类型 | 说明 | 来源 |
@@ -124,15 +147,20 @@ ingest 请求要求：
 | `deviceAbnormal.status` | String | `OFFLINE`、`STREAM_LOST`、`FRAME_DROP`、`AUTH_FAILED` | `EdgeMonitorAbnormalDeviceRespVO` 与旧接口文档 |
 | `healthLevel` | String | `GOOD`、`WARN`、`CRITICAL` 等健康等级 | `EdgeMonitorSystemStatusRespVO` |
 | `topicRoot` | String | `moon/{env}/tenants/{tenantId}/edge/{version}/nodes/{deviceId}` | `EdgeTopicService` |
+| `sync.objectType` | String | `NODE_BASE_CONFIG`、`DEVICE_GROUP_DEF`、`RESOURCE_BINDING`、`DEVICE_RUNTIME_FACT`、`DEVICE_METADATA`、`DEVICE_GROUP_MEMBERSHIP` | `docs/design/边缘数据同步/设计方案.md` |
+| `sync.direction` | String | `CLOUD_TO_EDGE`、`EDGE_TO_CLOUD`、`BIDIRECTIONAL` | `docs/design/边缘数据同步/设计方案.md` |
+| `sync.batchStatus` | String | `PENDING`、`PUBLISHED`、`PARTIAL_SUCCESS`、`COMPLETED`、`FAILED` | `docs/design/边缘数据同步/设计方案.md` |
+| `sync.itemStatus` | String | `PENDING`、`PUBLISHED`、`ACKED`、`APPLIED`、`RETRY_WAITING`、`CONFLICT_PENDING`、`MERGED`、`FAILED` | `docs/design/边缘数据同步/设计方案.md` |
 
 ## 4. 验证与未确认项
 
 - 已验证：静态确认 Controller 路径、前端 SDK 路径、VO 关键字段。
-- 未验证：未读取实时 OpenAPI，未执行接口联调，未执行后端编译，未执行前端构建。
-- 未确认项：接口权限码、错误码细节、分页参数完整字段、真实线上菜单权限是否已全部配置。
+- 未验证：未读取实时 OpenAPI，未执行接口联调，未执行后端编译，未执行前端构建；`/edge/sync/**` 仍未实际落码。
+- 未确认项：`/edge/sync/**` 的最终错误码、分页字段、OpenAPI 注解、按钮权限和真实边端同步协议细节。
 
 ## 变更日志
 
 | 日期 | 变更摘要 | 变更来源 |
 |------|----------|----------|
 | 2026-04-30 | 合并 Edge API 旧文档和监控任务接口文档，按当前源码重整 | `docs_old/api/**Edge*`、`Edge*Controller`、`src/api/edge/*.ts` |
+| 2026-05-06 | 补充数据同步 `/edge/sync/**` 目标接口与枚举口径，标记为 planned | 用户需求“实时同步 + 断网续传 + 一致性” |

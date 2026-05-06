@@ -1,8 +1,8 @@
 moon_cloud_design
-moon_cloud_backend
 moon_cloud_frontend
-moon_cloud_backend/deploy/build/
+moon_cloud_backend
 moon_cloud_frontend/deploy/build/
+moon_cloud_backend/deploy/build/
 # AI 工具投影文件（纳入版本控制）
 .codex
 .DS_Store
