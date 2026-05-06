@@ -129,23 +129,31 @@ ingest 请求要求：
 | 同步批次分页 | GET | `/edge/sync/batch/page` | current | `EdgeSyncController#getBatchPage` |
 | 同步明细分页 | GET | `/edge/sync/item/page` | current | `EdgeSyncController#getItemPage` |
 | 节点快照分页 | GET | `/edge/sync/node/{nodeId}/snapshot/page` | current | `EdgeSyncController#getSnapshotPage` |
-| 差异详情 | GET | `/edge/sync/node/{nodeId}/diff/{objectType}` | current | `EdgeSyncController#getDiff` |
+| 差异详情 | GET | `/edge/sync/node/{nodeId}/diff/{objectType}?objectKey=...` | current | `EdgeSyncController#getDiff` |
 | 冲突分页 | GET | `/edge/sync/conflict/page` | current | `EdgeSyncController#getConflictPage` |
 | 发起同步 | POST | `/edge/sync/node/{nodeId}/publish` | current | `EdgeSyncController#publish` |
 | 发起一致性校验 | POST | `/edge/sync/node/{nodeId}/reconcile` | current | `EdgeSyncController#reconcile` |
 | 重试补传 | POST | `/edge/sync/item/{itemId}/retry` | current | `EdgeSyncController#retryItem` |
 | 以云端为准 | POST | `/edge/sync/conflict/{conflictId}/confirm-cloud` | current | `EdgeSyncController#confirmCloud` |
-| 采纳边端回写 | POST | `/edge/sync/conflict/{conflictId}/confirm-edge` | current | `EdgeSyncController#confirmEdge` |
 | 同步入站 | POST | `/edge/sync/ingest` | current | `EdgeSyncController#ingest` |
 
 关键字段：
 
 | 字段 | 说明 |
 |------|------|
-| `objectType` | 同步对象类型：`NODE_BASE_CONFIG`、`DEVICE_GROUP_DEF`、`RESOURCE_BINDING`、`DEVICE_RUNTIME_FACT`、`DEVICE_METADATA`、`DEVICE_GROUP_MEMBERSHIP` |
+| `objectType` | 同步对象类型：`NODE_BASE_CONFIG`、`RESOURCE_BINDING`、`NODE_RUNTIME_FACT` |
+| `objectKey` | 对象级同步键；同一 `nodeId + objectType` 下通过 `objectKey` 区分具体资源或节点对象 |
+| `expectedVersion / expectedHash` | 明细期望版本与内容哈希；用于边端 apply 后的收敛判定 |
 | `direction` | 同步方向：`CLOUD_TO_EDGE`、`EDGE_TO_CLOUD`、`BIDIRECTIONAL` |
-| `batchStatus` | 批次状态：`PENDING`、`PUBLISHED`、`PARTIAL_SUCCESS`、`COMPLETED`、`FAILED` |
-| `itemStatus` | 明细状态：`PENDING`、`PUBLISHED`、`ACKED`、`APPLIED`、`RETRY_WAITING`、`CONFLICT_PENDING`、`MERGED`、`FAILED` |
+| `batchStatus` | 批次状态：`PENDING`、`PUBLISHED`、`WAITING_CONFIRMATION`、`PARTIAL_SUCCESS`、`COMPLETED`、`FAILED` |
+| `itemStatus` | 明细状态：`PENDING`、`PUBLISHED`、`ACKED`、`APPLIED`、`RETRY_WAITING`、`CONFLICT_PENDING`、`MERGED`、`FAILED`、`RESOLVED_CLOUD`、`RESOLVED_EDGE` |
+
+补充说明：
+
+- `/edge/sync/node/{nodeId}/publish` 生成的是对象级明细，不再是“每种类型一条空壳消息”。
+- 同步下行 payload 会携带 `object_key`、`version`、`hash`、`content`；`retry` 与离线补传复用同一对象载荷。
+- `edge/sync` 当前只处理节点级云边同步，不再把设备元数据、设备分组关系当作同步对象。
+- `/edge/sync/conflict/{conflictId}/confirm-cloud` 仅保留为云端基线重发入口；节点级对象收到 `sync.conflict` 时优先按云端基线自动重试，不再支持“采纳边端回写”。
 
 ## 3. 枚举与字段口径
 
@@ -156,7 +164,7 @@ ingest 请求要求：
 | `deviceAbnormal.status` | String | `OFFLINE`、`STREAM_LOST`、`FRAME_DROP`、`AUTH_FAILED` | `EdgeMonitorAbnormalDeviceRespVO` 与旧接口文档 |
 | `healthLevel` | String | `GOOD`、`WARN`、`CRITICAL` 等健康等级 | `EdgeMonitorSystemStatusRespVO` |
 | `topicRoot` | String | `moon/{env}/tenants/{tenantId}/edge/{version}/nodes/{deviceId}` | `EdgeTopicService` |
-| `sync.objectType` | String | `NODE_BASE_CONFIG`、`DEVICE_GROUP_DEF`、`RESOURCE_BINDING`、`DEVICE_RUNTIME_FACT`、`DEVICE_METADATA`、`DEVICE_GROUP_MEMBERSHIP` | `docs/design/边缘数据同步/设计方案.md` |
+| `sync.objectType` | String | `NODE_BASE_CONFIG`、`RESOURCE_BINDING`、`NODE_RUNTIME_FACT` | `docs/design/边缘数据同步/设计方案.md` |
 | `sync.direction` | String | `CLOUD_TO_EDGE`、`EDGE_TO_CLOUD`、`BIDIRECTIONAL` | `docs/design/边缘数据同步/设计方案.md` |
 | `sync.batchStatus` | String | `PENDING`、`PUBLISHED`、`PARTIAL_SUCCESS`、`COMPLETED`、`FAILED` | `docs/design/边缘数据同步/设计方案.md` |
 | `sync.itemStatus` | String | `PENDING`、`PUBLISHED`、`ACKED`、`APPLIED`、`RETRY_WAITING`、`CONFLICT_PENDING`、`MERGED`、`FAILED` | `docs/design/边缘数据同步/设计方案.md` |

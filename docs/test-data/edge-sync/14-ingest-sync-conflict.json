@@ -1,0 +1,34 @@
+{
+  "eventType": "sync.conflict",
+  "batchKey": "${BATCH_KEY}",
+  "objectType": "NODE_BASE_CONFIG",
+  "objectKey": "${OBJECT_KEY}",
+  "status": "CONFLICT",
+  "clientId": "edge-node:${DEVICE_ID}",
+  "username": "${DEVICE_ID}",
+  "deviceId": "${DEVICE_ID}",
+  "topic": "moon/dev/tenants/1/edge/v1/nodes/${DEVICE_ID}/sync/conflict",
+  "occurredAt": 1778054580000,
+  "payload": {
+    "cloudVersion": "node-config-v20260506-01",
+    "edgeVersion": "node-config-v20260501-01",
+    "cloudHash": "sha256-cloud-node-config-01",
+    "edgeHash": "sha256-edge-node-config-01",
+    "conflictFields": [
+      "topicRoot",
+      "defaultDispatchPolicy"
+    ],
+    "cloudData": {
+      "id": "${OBJECT_KEY}",
+      "topicRoot": "moon/dev/tenants/1/edge/v1/nodes/${DEVICE_ID}",
+      "defaultDispatchPolicy": "CLOUD_FIRST",
+      "enabledStatus": 1
+    },
+    "edgeData": {
+      "id": "${OBJECT_KEY}",
+      "topicRoot": "moon/dev/tenants/1/edge/v1/nodes/${DEVICE_ID}/legacy",
+      "defaultDispatchPolicy": "EDGE_LOCAL",
+      "enabledStatus": 1
+    }
+  }
+}

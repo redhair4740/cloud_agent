@@ -1,0 +1,36 @@
+{
+  "eventType": "sync.diff",
+  "batchKey": "${BATCH_KEY}",
+  "objectType": "NODE_BASE_CONFIG",
+  "objectKey": "${OBJECT_KEY}",
+  "status": "DIFF",
+  "clientId": "edge-node:${DEVICE_ID}",
+  "username": "${DEVICE_ID}",
+  "deviceId": "${DEVICE_ID}",
+  "topic": "moon/dev/tenants/1/edge/v1/nodes/${DEVICE_ID}/sync/diff",
+  "occurredAt": 1778054520000,
+  "payload": {
+    "cloudVersion": "node-config-v20260506-01",
+    "edgeVersion": "node-config-v20260501-01",
+    "cloudHash": "sha256-cloud-node-config-01",
+    "edgeHash": "sha256-edge-node-config-01",
+    "conflictFields": [
+      "defaultDispatchPolicy",
+      "heartbeatIntervalSec"
+    ],
+    "cloud": {
+      "id": "${OBJECT_KEY}",
+      "name": "边缘节点-2001",
+      "defaultDispatchPolicy": "CLOUD_FIRST",
+      "heartbeatIntervalSec": 20,
+      "enabledStatus": 1
+    },
+    "edge": {
+      "id": "${OBJECT_KEY}",
+      "name": "边缘节点-2001",
+      "defaultDispatchPolicy": "EDGE_LOCAL",
+      "heartbeatIntervalSec": 30,
+      "enabledStatus": 1
+    }
+  }
+}

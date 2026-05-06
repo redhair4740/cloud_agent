@@ -1,0 +1,19 @@
+{
+  "eventType": "sync.ack",
+  "batchKey": "${BATCH_KEY}",
+  "objectType": "NODE_BASE_CONFIG",
+  "objectKey": "${OBJECT_KEY}",
+  "status": "ACKED",
+  "clientId": "edge-node:${DEVICE_ID}",
+  "username": "${DEVICE_ID}",
+  "deviceId": "${DEVICE_ID}",
+  "topic": "moon/dev/tenants/1/edge/v1/nodes/${DEVICE_ID}/sync/ack",
+  "occurredAt": 1778054400000,
+  "payload": {
+    "message_id": "ack-${BATCH_KEY}",
+    "batch_key": "${BATCH_KEY}",
+    "object_type": "NODE_BASE_CONFIG",
+    "object_key": "${OBJECT_KEY}",
+    "status": "ACKED"
+  }
+}

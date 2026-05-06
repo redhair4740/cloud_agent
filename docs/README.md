@@ -32,6 +32,7 @@ status: active
 | Portainer 部署 | [部署方案](./deployment/Portainer部署/部署方案.md) | Jenkins、镜像、Docker Compose、Portainer 发布边界 |
 | 协作治理 | [设计方案](./design/协作治理/设计方案.md) | `.agents` 规范、API-First、文档治理、三工程协作边界 |
 | Edge MQTT 测试数据 | [测试数据说明](./test-data/edge-node-mqtt/README.md) | MQTT payload 使用顺序与 Cloud ingest 映射 |
+| Edge Sync 测试数据 | [测试数据说明](./test-data/edge-sync/README.md) | 实时同步、断网续传、一致性校验联调样例 |
 | Review 流水记录 | [Review 与优化建议跟踪](./review-tracking/README.md) | review 清单、优化建议、联调发现和回归风险流水记录 |
 
 ## 迁移覆盖检查
@@ -50,6 +51,7 @@ status: active
 | `docs_old/deployment/2026-04-28/*EMQX*`、`docs_old/deployment/2026-04-30/*MQTT双向Topic*` | [EMQX MQTT 接入](./deployment/EMQX-MQTT接入/部署方案.md) | 已合并迁移 |
 | `docs_old/governance/2026-04-17/*` | [协作治理](./design/协作治理/设计方案.md) | 已迁移稳定治理结论，旧评审快照正文不保留 |
 | `docs_old/test-data/edge-node-mqtt/README.md`、`*.json` | [Edge MQTT 测试数据](./test-data/edge-node-mqtt/README.md) 与同目录 11 个 JSON | 已原样迁移测试样例 |
+| 当前轮 `edge/sync` 联调需求 | [Edge Sync 测试数据](./test-data/edge-sync/README.md) 与同目录 6 个 JSON | 新增同步专用测试样例 |
 | `docs_old/review-tracking/**` | [Review 流水记录](./review-tracking/README.md) | 已按用户确认作为流水记录迁移 |
 | `docs_old/design/2026-04-22/*交接文档*` | [Edge 全链路交接记录](./design/2026-04-22/21-01-00-交接文档-Edge全链路落地任务交接.md) | 已按用户确认作为方案附属流水记录迁移 |
 | `docs_old/.DS_Store`、`docs_old/**/.DS_Store` | 不迁移 | 系统文件，不属于文档 |
@@ -87,3 +89,4 @@ status: active
 | 2026-04-30 | 将迁移后流水记录文件名前缀从错误的 `00-00-00` 修正为 `21-01-00` | 用户补充确认 |
 | 2026-05-01 | 将协作治理从治理方案修正为设计方案并迁移到 `design/协作治理/设计方案.md` | 用户审查问题 2 |
 | 2026-05-06 | 新增“边缘数据同步”活文档，并补充索引与 Edge 菜单 SQL 证据 | 用户需求“实时同步 + 断网续传 + 一致性” |
+| 2026-05-06 | 新增 `edge/sync` 测试数据目录、JSON 样例与联调流程说明 | 用户需求“生成同步数据的测试数据、测试流程文档” |

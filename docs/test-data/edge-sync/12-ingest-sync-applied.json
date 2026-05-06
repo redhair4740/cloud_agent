@@ -1,0 +1,21 @@
+{
+  "eventType": "sync.applied",
+  "batchKey": "${BATCH_KEY}",
+  "objectType": "NODE_BASE_CONFIG",
+  "objectKey": "${OBJECT_KEY}",
+  "status": "APPLIED",
+  "clientId": "edge-node:${DEVICE_ID}",
+  "username": "${DEVICE_ID}",
+  "deviceId": "${DEVICE_ID}",
+  "topic": "moon/dev/tenants/1/edge/v1/nodes/${DEVICE_ID}/sync/applied",
+  "occurredAt": 1778054460000,
+  "payload": {
+    "message_id": "applied-${BATCH_KEY}",
+    "batch_key": "${BATCH_KEY}",
+    "object_type": "NODE_BASE_CONFIG",
+    "object_key": "${OBJECT_KEY}",
+    "status": "APPLIED",
+    "version": "node-config-v20260506-01",
+    "hash": "sha256-node-config-v20260506-01"
+  }
+}
