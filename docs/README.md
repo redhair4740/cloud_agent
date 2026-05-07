@@ -27,6 +27,7 @@ status: active
 | Edge 全链路交接记录 | [交接文档](./design/2026-04-22/21-01-00-交接文档-Edge全链路落地任务交接.md) | Edge 全链路方案的附属流水记录 |
 | 边缘监控与任务流水 | [设计方案](./design/边缘监控与任务流水/设计方案.md) | 监控页、任务流水页与目标接口口径 |
 | 边缘节点状态语义 | [设计方案](./design/边缘节点状态语义/设计方案.md) | enabled、activation、registration、connection、runtime 分层 |
+| 边缘设备上报 | [设计方案](./design/边缘设备上报/设计方案.md) | device.report 消费、双层模型、频率控制、设备生命周期与归档恢复 |
 | 前端性能治理 | [设计方案](./design/前端性能治理/设计方案.md) | 前端瘦身与依赖清理边界 |
 | EMQX MQTT 接入 | [部署方案](./deployment/EMQX-MQTT接入/部署方案.md) | Topic、鉴权、Rule Engine、配置项与联调边界 |
 | Portainer 部署 | [部署方案](./deployment/Portainer部署/部署方案.md) | Jenkins、镜像、Docker Compose、Portainer 发布边界 |

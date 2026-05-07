@@ -3,7 +3,7 @@ lifecycle: living
 topic: Edge边缘模块
 type: API文档
 created: 2026-04-30
-last_updated: 2026-04-30
+last_updated: 2026-05-07
 status: active
 supersedes:
   - docs_old/api/2026-04-24/23-13-22-API文档-Edge边缘模块API文档.md
@@ -58,10 +58,32 @@ related:
 
 | 主题 | 方法与路径 | 状态 | 来源 |
 |------|------------|------|------|
-| 设备 CRUD | `POST /edge/device/create`、`PUT /edge/device/update`、`DELETE /edge/device/delete`、`GET /edge/device/get`、`GET /edge/device/page` | current | `EdgeDeviceController`、`src/api/edge/device.ts` |
+| 设备创建 | `POST /edge/device/create` | deprecated | `EdgeDeviceController`、`src/api/edge/device.ts` |
+| 设备编辑 | `PUT /edge/device/update` | current | `EdgeDeviceController`、`src/api/edge/device.ts` |
+| 设备归档 | `DELETE /edge/device/delete?id={id}` | current | `EdgeDeviceController`、`src/api/edge/device.ts` |
+| 设备恢复 | `POST /edge/device/restore` | planned | `docs/design/边缘设备上报/设计方案.md` |
+| 设备查询 | `GET /edge/device/get`、`GET /edge/device/page` | current | `EdgeDeviceController`、`src/api/edge/device.ts` |
 | 设备导出 | `GET /edge/device/export-excel` | current | `EdgeDeviceController#exportExcel` |
 | 分组 CRUD | `POST /edge/group/create`、`PUT /edge/group/update`、`DELETE /edge/group/delete`、`GET /edge/group/get`、`GET /edge/group/page` | current | `EdgeDeviceGroupController`、`src/api/edge/group.ts` |
 | 分组精简列表 | `GET /edge/group/simple-list` | current | `EdgeDeviceGroupController#getSimpleList` |
+
+设备管理收口口径（边缘设备上报）：
+
+- 真源：边缘端 `device.report` 上报为设备主数据真源，云端不再手工创建设备。
+- create：`/edge/device/create` 标记停用（deprecated），预期返回“设备由边缘端自动注册”。
+- delete：`/edge/device/delete` 语义调整为“归档”（逻辑删除），不是物理删除。
+- restore：新增 `/edge/device/restore` 用于取消归档并恢复查询可见性。
+- update：仅允许元数据编辑（如名称、分组、位置），运行态字段由上报覆盖。
+
+`GET /edge/device/page` 新增筛选字段（目标口径）：
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `edgeNodeId` | Long | 按边缘节点筛选 |
+| `source` | String | 数据来源筛选（预期 `EDGE_REPORT`） |
+| `runtimeStatus` | String | 运行态筛选（如在线/离线） |
+| `streamStatus` | String | 视频流态筛选（如 running/stream_lost） |
+| `reportMode` | String | 上报模式筛选（`incremental` / `full_snapshot`） |
 
 ### 2.3 资源中心
 
@@ -90,6 +112,8 @@ ingest 请求要求：
 - Body 使用 `EdgeRuntimeIngestReqVO`，包含 `eventType`、`eventId/messageId`、`clientId`、`username`、`deviceId`、`hardwareFingerprint`、`topic`、`occurredAt`、`payload` 等运行时上下文。
 - `client.connected`、`client.disconnected` 允许不显式传 `eventType`，服务端会按 `payload.event_type`、`payload.event` 或业务 Topic 后缀归一化识别。
 - 允许事件类型包括 `register`、`heartbeat`、`device.report`、`task_progress`、`task.progress`，以及 EMQX 连接事件。
+- `device.report` payload 建议包含 `report_mode` 字段：`incremental`（增量）或 `full_snapshot`（全量快照）。
+- `device.report` 设备项运行态字段建议至少包含：`runtime_status`、`stream_status`、`reported_at`（或由服务端观测时间回填）。
 
 ### 2.5 监控中心 `/edge/monitor`
 
@@ -169,12 +193,15 @@ ingest 请求要求：
 | `sync.direction` | String | `CLOUD_TO_EDGE`、`EDGE_TO_CLOUD`、`BIDIRECTIONAL` | `docs/design/边缘数据同步/设计方案.md` |
 | `sync.batchStatus` | String | `PENDING`、`PUBLISHED`、`PARTIAL_SUCCESS`、`COMPLETED`、`FAILED` | `docs/design/边缘数据同步/设计方案.md` |
 | `sync.itemStatus` | String | `PENDING`、`PUBLISHED`、`ACKED`、`APPLIED`、`RETRY_WAITING`、`CONFLICT_PENDING`、`MERGED`、`FAILED` | `docs/design/边缘数据同步/设计方案.md` |
+| `device.report_mode` | String | `incremental`、`full_snapshot`；用于区分增量和全量上报 | `docs/design/边缘设备上报/设计方案.md` |
+| `device.runtimeStatus` | String | 运行态（在线/离线）字段；由边缘上报驱动 | `docs/design/边缘设备上报/设计方案.md` |
+| `device.streamStatus` | String | 流状态（如 `running`、`stream_lost`）字段；由边缘上报驱动 | `docs/design/边缘设备上报/设计方案.md` |
 
 ## 4. 验证与未确认项
 
 - 已验证：静态确认 Controller 路径、前端 SDK 路径、VO 关键字段。
-- 未验证：未读取实时 OpenAPI，未执行接口联调，未执行后端编译，未执行前端构建。
-- 未确认项：`/edge/sync/**` 的最终错误码、分页字段、OpenAPI 注解、按钮权限和真实边端同步协议细节。
+- 未验证：未读取实时 OpenAPI；未执行接口联调；未执行后端编译；未执行前端构建；未验证 `/edge/device/create` 停用返回码；未验证 `/edge/device/delete` 是否已完成归档语义切换；未验证 `/edge/device/restore` 是否已在代码中发布。
+- 未确认项：`/edge/sync/**` 的最终错误码、分页字段、OpenAPI 注解、按钮权限和真实边端同步协议细节；`report_mode` 与运行态字段的最终 OpenAPI 出参命名。
 
 ## 变更日志
 
@@ -182,3 +209,4 @@ ingest 请求要求：
 |------|----------|----------|
 | 2026-04-30 | 合并 Edge API 旧文档和监控任务接口文档，按当前源码重整 | `docs_old/api/**Edge*`、`Edge*Controller`、`src/api/edge/*.ts` |
 | 2026-05-06 | 补充数据同步 `/edge/sync/**` 当前接口与枚举口径，并修正为已落地现状 | 用户需求“实时同步 + 断网续传 + 一致性” |
+| 2026-05-07 | 设备管理改为“边端上报真源 + 云端查询/元数据编辑/归档恢复”：补 report_mode、运行态字段、create 停用、delete=归档、restore 与新筛选字段 | 用户需求“文档与 API 口径收口（边缘设备上报）” |
