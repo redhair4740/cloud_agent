@@ -2,7 +2,16 @@
   "occurred_at": 1777526539722,
   "device_id": "device-aa034de0a2f147faab579ba0b45db13f",
   "payload": {
-    "meg": "hello"
+    "report_interval_sec": 20,
+    "log_level": "INFO",
+    "camera": {
+      "exposure_mode": "auto",
+      "frame_rate": 15
+    },
+    "network": {
+      "probe_host": "cloud.example.internal",
+      "probe_interval_sec": 30
+    }
   },
   "task_key": "TASK-2049720986113327104",
   "command_key": "config_update",

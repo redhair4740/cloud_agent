@@ -1,8 +1,12 @@
 {
-  "message_id": "heartbeat-device-169a7ca9ef444b188eca02342099b82e-001",
+  "event_type": "heartbeat",
+  "message_id": "heartbeat-device-aa034de0a2f147faab579ba0b45db13f-001",
   "occurred_at": 1776818460000,
-  "hardware_fingerprint": "hwfp-device-169a7ca9ef444b188eca02342099b82e",
+  "hardware_fingerprint": "hwfp-device-aa034de0a2f147faab579ba0b45db13f",
   "runtime_status": "ONLINE",
+  "software_version": "edge-runtime-test-1.0.0",
+  "agent_version": "vmesh-edge-agent-1.0.0",
+  "heartbeat_interval_sec": 20,
   "metrics": {
     "cpu_usage_pct": 35.2,
     "memory_usage_pct": 48.6,

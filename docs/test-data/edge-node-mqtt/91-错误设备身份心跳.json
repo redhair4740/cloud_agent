@@ -1,7 +1,8 @@
 {
-  "message_id": "bad-device-context-device-169a7ca9ef444b188eca02342099b82e-001",
+  "event_type": "heartbeat",
+  "message_id": "bad-device-context-device-aa034de0a2f147faab579ba0b45db13f-001",
   "occurred_at": 1776818760000,
-  "hardware_fingerprint": "hwfp-device-169a7ca9ef444b188eca02342099b82e",
+  "hardware_fingerprint": "hwfp-device-aa034de0a2f147faab579ba0b45db13f",
   "runtime_status": "ONLINE",
   "test_note": "发布该 payload 时请故意使用错误 clientId 或 username，例如 clientId=edge-node:wrong-device 或 username=wrong-device，云端应拒收。"
 }

@@ -1,0 +1,18 @@
+{
+  "eventId": "emqx-client-connected-device-aa034de0a2f147faab579ba0b45db13f-001",
+  "messageId": "emqx-client-connected-device-aa034de0a2f147faab579ba0b45db13f-001",
+  "clientId": "edge-node:device-aa034de0a2f147faab579ba0b45db13f",
+  "username": "device-aa034de0a2f147faab579ba0b45db13f",
+  "deviceId": "device-aa034de0a2f147faab579ba0b45db13f",
+  "occurredAt": 1776818385000,
+  "payload": {
+    "event": "client.connected",
+    "clientid": "edge-node:device-aa034de0a2f147faab579ba0b45db13f",
+    "username": "device-aa034de0a2f147faab579ba0b45db13f",
+    "connected_at": 1776818385000,
+    "peerhost": "10.0.0.21",
+    "proto_name": "MQTT",
+    "proto_ver": 5,
+    "keepalive": 60
+  }
+}

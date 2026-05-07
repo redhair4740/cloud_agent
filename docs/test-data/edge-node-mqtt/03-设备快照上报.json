@@ -1,7 +1,8 @@
 {
-  "message_id": "device-report-device-169a7ca9ef444b188eca02342099b82e-001",
+  "event_type": "device.report",
+  "message_id": "device-report-device-aa034de0a2f147faab579ba0b45db13f-001",
   "occurred_at": 1776818520000,
-  "hardware_fingerprint": "hwfp-device-169a7ca9ef444b188eca02342099b82e",
+  "hardware_fingerprint": "hwfp-device-aa034de0a2f147faab579ba0b45db13f",
   "devices": [
     {
       "device_code": "CAMERA-01",

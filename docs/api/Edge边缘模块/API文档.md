@@ -88,6 +88,7 @@ ingest 请求要求：
 
 - Header 必须包含 `X-EMQX-SIGNATURE`。
 - Body 使用 `EdgeRuntimeIngestReqVO`，包含 `eventType`、`eventId/messageId`、`clientId`、`username`、`deviceId`、`hardwareFingerprint`、`topic`、`occurredAt`、`payload` 等运行时上下文。
+- `client.connected`、`client.disconnected` 允许不显式传 `eventType`，服务端会按 `payload.event_type`、`payload.event` 或业务 Topic 后缀归一化识别。
 - 允许事件类型包括 `register`、`heartbeat`、`device.report`、`task_progress`、`task.progress`，以及 EMQX 连接事件。
 
 ### 2.5 监控中心 `/edge/monitor`
